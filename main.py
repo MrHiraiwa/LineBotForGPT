@@ -39,7 +39,7 @@ def get_encrypted_message(message, hashed_secret_key):
 def get_decrypted_message(enc_message, hashed_secret_key):
     cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
     message = cipher.decrypt(base64.b64decode(enc_message))
-    return message.decode()
+    return message.decode().rstrip("\0")
 
 def isBeforeYesterday(date, now):
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
