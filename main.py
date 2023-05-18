@@ -27,11 +27,6 @@ systemPrompt = """
 def systemRole():
     return { "role": "system", "content": systemPrompt }
 
-def hashString(userId, m):
-    hash = md5(userId.encode()).hexdigest()
-    hash = int(hash, 16)
-    return (hash % m) + 1
-
 def get_encrypted_message(message, secret_key):
     cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
     message = message + (16 - len(message) % 16) * "\0"
