@@ -33,13 +33,13 @@ def hashString(userId, m):
     return (hash % m) + 1
 
 def get_encrypted_message(message, secret_key):
-    cipher = AES.new(secret_key, AES.MODE_ECB)
+    cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
     message = message + (16 - len(message) % 16) * "\0"
     enc_message = base64.b64encode(cipher.encrypt(message))
     return enc_message.decode()
 
-def get_decrypted_message(enc_message, secret_key):
-    cipher = AES.new(secret_key, AES.MODE_ECB)
+def get_decrypted_message(enc_message, SECRET_KEY):
+    cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
     message = cipher.decrypt(base64.b64decode(enc_message))
     return message.decode()
 
