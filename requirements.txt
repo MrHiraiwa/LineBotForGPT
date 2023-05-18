@@ -1,4 +1,4 @@
 Flask==2.1.0
-google-cloud-firestore==3.3.0
+google-cloud-firestore==2.11.1
 requests==2.27.1
 pycryptodome==3.12.0
