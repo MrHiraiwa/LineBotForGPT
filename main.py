@@ -93,12 +93,12 @@ def lineBot():
         return 'OK', 200
 
     messages = user['messages'] + [{'role': 'user', 'content': userMessage}]
-    messages = [systemRole()] + messages[-(MAX_TOKEN_NUM-1):]  # keep messages within MAX_TOKEN_NUM
+    messages = messages[-(MAX_TOKEN_NUM-1):]  # keep messages within MAX_TOKEN_NUM
 
     response = requests.post(
         'https://api.openai.com/v1/chat/completions',
         headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-        json={'model': 'gpt-3.5-turbo', 'messages': messages}
+        json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
     )
     botReply = response.json()['choices'][0]['message']['content'].trim()
 
