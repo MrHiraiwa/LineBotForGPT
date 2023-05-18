@@ -23,9 +23,6 @@ errorMessage = '現在アクセスが集中しているため、しばらくし�
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 SYSTEM_PROMPT = s.getenv('SYSTEM_PROMPT')
-あなたはユーザーの親友です。
-ユーザーと気さくに話します。
-"""
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
