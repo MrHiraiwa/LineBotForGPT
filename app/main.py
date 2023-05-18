@@ -10,7 +10,6 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
