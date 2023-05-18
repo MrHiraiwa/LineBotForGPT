@@ -71,7 +71,7 @@ def lineBot():
     if doc.exists:
         user = doc.to_dict()
         dailyUsage = user.get('dailyUsage', 0)
-        user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], SECRET_KEY)} for msg in user['messages']]
+        user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
 
         if isBeforeYesterday(user['updatedDateString'].date(), nowDate):
             dailyUsage = 0
@@ -105,7 +105,7 @@ def lineBot():
     )
     botReply = response.json()['choices'][0]['message']['content'].trim()
 
-    user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, SECRET_KEY)})
+    user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, hashed_secret_key})
     user['updatedDateString'] = nowDate
     user['dailyUsage'] += 1
     doc_ref.set(user)
