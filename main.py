@@ -105,7 +105,7 @@ def lineBot():
     )
     botReply = response.json()['choices'][0]['message']['content'].trim()
 
-    user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, hashed_secret_key})
+    user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, hashed_secret_key)})
     user['updatedDateString'] = nowDate
     user['dailyUsage'] += 1
     doc_ref.set(user)
