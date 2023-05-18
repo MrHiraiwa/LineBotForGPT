@@ -14,7 +14,7 @@ OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
 MAX_TOKEN_NUM = 2000
-SECRET_KEY = b'secret'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
