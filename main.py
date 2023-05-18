@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from hashlib import md5
 import base64
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
 from google.cloud import firestore
 import requests
 from flask import Flask, request
@@ -15,6 +16,8 @@ LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
 MAX_TOKEN_NUM = 2000
 SECRET_KEY = os.getenv('SECRET_KEY')
+hash_object = SHA256.new(data=SECRET_KEY.encode())
+hashed_secret_key = hash_object.digest()
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
@@ -27,14 +30,14 @@ systemPrompt = """
 def systemRole():
     return { "role": "system", "content": systemPrompt }
 
-def get_encrypted_message(message, secret_key):
-    cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
+def get_encrypted_message(message, hashed_secret_key):
+    cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
     message = message + (16 - len(message) % 16) * "\0"
     enc_message = base64.b64encode(cipher.encrypt(message))
     return enc_message.decode()
 
-def get_decrypted_message(enc_message, SECRET_KEY):
-    cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
+def get_decrypted_message(enc_message, hashed_secret_key):
+    cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
     message = cipher.decrypt(base64.b64decode(enc_message))
     return message.decode()
 
