@@ -123,7 +123,7 @@ def lineBot():
         headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
         json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
     )
-    botReply = response.json()['choices'][0]['message']['content'].trim()
+    botReply = response.json()['choices'][0]['message']['content'].strip()
 
     # Save bot response after received
     user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, hashed_secret_key)})
