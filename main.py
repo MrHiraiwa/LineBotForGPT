@@ -88,7 +88,8 @@ def lineBot():
         dailyUsage = user.get('dailyUsage', 0)
         user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
 
-        if isBeforeYesterday(user['updatedDateString'].date(), nowDate):
+        # Comparing datetime objects instead of date objects
+        if (nowDate - user['updatedDateString']) > timedelta(days=1):
             dailyUsage = 0
     else:
         user = {
@@ -104,7 +105,8 @@ def lineBot():
     elif userMessage.strip() in ["忘れて", "わすれて"]:
         user['messages'] = []
         doc_ref.set(user)
-        callLineApi('記憶を消去しました。', replyToken)
+        callLineApi('記憶を消去しました。', replyToken
+
         return 'OK', 200
     elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
         callLineApi(countMaxMessage, replyToken)
