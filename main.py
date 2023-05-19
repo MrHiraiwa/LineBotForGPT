@@ -56,6 +56,9 @@ def callLineApi(replyText, replyToken):
 
 @app.route('/', methods=['POST'])
 def lineBot():
+    if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
+        return 'OK', 200
+    
     event = request.json['events'][0]
     replyToken = event['replyToken']
     userId = event['source']['userId']
