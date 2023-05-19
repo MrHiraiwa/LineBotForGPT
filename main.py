@@ -22,7 +22,7 @@ hashed_secret_key = hash_object.digest()
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
-SYSTEM_PROMPT = s.getenv('SYSTEM_PROMPT')
+SYSTEM_PROMPT = os.getenv('SYSTEM_PROMPT')
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
