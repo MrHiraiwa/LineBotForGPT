@@ -29,13 +29,13 @@ def systemRole():
 
 def get_encrypted_message(message, hashed_secret_key):
     cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
-    message = message + (16 - len(message) % 16) * "\0"
+    message = (message + (16 - len(message) % 16) * "\0").encode('utf-8')
     enc_message = base64.b64encode(cipher.encrypt(message))
     return enc_message.decode()
 
 def get_decrypted_message(enc_message, hashed_secret_key):
     cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
-    message = cipher.decrypt(base64.b64decode(enc_message))
+    message = cipher.decrypt(base64.b64decode(enc_message.encode('utf-8')))
     return message.decode().rstrip("\0")
 
 def isBeforeYesterday(date, now):
