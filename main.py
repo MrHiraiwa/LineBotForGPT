@@ -105,16 +105,13 @@ def lineBot():
     elif userMessage.strip() in ["忘れて", "わすれて"]:
         user['messages'] = []
         doc_ref.set(user)
-        callLineApi('記憶を消去しました。', replyToken
-
+        callLineApi('記憶を消去しました。', replyToken)
         return 'OK', 200
     elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
         callLineApi(countMaxMessage, replyToken)
         return 'OK', 200
 
-    # Save user message first
-    encryptedUserMessage = get_encrypted_message(userMessage, hashed_secret_key)
-    user['messages'].append({'role': 'user', 'content': encryptedUserMessage})
+    user['messages'].append({'role': 'user', 'content': userMessage})
 
     # Remove old logs if the total characters exceed 2000 before sending to the API.
     total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
@@ -122,9 +119,8 @@ def lineBot():
         removed_message = user['messages'].pop(0)  # Remove the oldest message
         total_chars -= len(removed_message['content'])
 
-    doc_ref.set(user)
+    doc_ref.set({**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
 
-    # Use the non-encrypted messages for the API
     messages = user['messages'] + [{'role': 'user', 'content': userMessage}]
 
     response = requests.post(
@@ -134,12 +130,12 @@ def lineBot():
     )
     botReply = response.json()['choices'][0]['message']['content'].strip()
 
-    # Save bot response after received
-    user['messages'].append({'role': 'assistant', 'content': get_encrypted_message(botReply, hashed_secret_key)})
+    user['messages'].append({'role': 'assistant', 'content': botReply})
     user['updatedDateString'] = nowDate
     user['dailyUsage'] += 1
 
-    doc_ref.set(user)
+    doc_ref.set({**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
 
     callLineApi(botReply, replyToken)
     return 'OK', 200
+
