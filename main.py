@@ -25,6 +25,22 @@ countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しま
 
 SYSTEM_PROMPT = os.getenv('SYSTEM_PROMPT')
 
+REQUIRED_ENV_VARS = [
+    "OPENAI_APIKEY",
+    "LINE_ACCESS_TOKEN",
+    "MAX_DAILY_USAGE",
+    "SECRET_KEY",
+    "SYSTEM_PROMPT"
+]
+
+def check_env_vars():
+    missing_vars = [var for var in REQUIRED_ENV_VARS if os.getenv(var) is None]
+    if missing_vars:
+        missing_vars_str = ", ".join(missing_vars)
+        callLineApi(f"Missing required environment variables: {missing_vars_str}", replyToken)  # Replace replyToken with actual token
+        return False
+    return True
+
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
 
@@ -70,7 +86,9 @@ def callLineApi(replyText, replyToken):
 def lineBot():
     if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
         return 'OK', 200
-
+    if not check_env_vars():
+        return 'OK', 200
+    
     event = request.json['events'][0]
     replyToken = event['replyToken']
     userId = event['source']['userId']
