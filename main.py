@@ -65,6 +65,8 @@ def lineBot():
     doc_ref = db.collection(u'users').document(userId)
     doc = doc_ref.get()
 
+    dailyUsage = 0
+
     if doc.exists:
         user = doc.to_dict()
         dailyUsage = user.get('dailyUsage', 0)
