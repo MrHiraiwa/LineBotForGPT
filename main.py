@@ -8,6 +8,7 @@ from Crypto.Hash import SHA256
 from google.cloud import firestore
 import requests
 from flask import Flask, request
+from pytz import utc
 
 app = Flask(__name__)
 
@@ -67,7 +68,6 @@ def callLineApi(replyText, replyToken):
     }
     requests.post(url, headers=headers, data=json.dumps(data))
 
-    
 @app.route('/', methods=['POST'])
 def lineBot():
     if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
@@ -76,7 +76,7 @@ def lineBot():
     event = request.json['events'][0]
     replyToken = event['replyToken']
     userId = event['source']['userId']
-    nowDate = datetime.utcnow()  # Use UTC time instead of local time
+    nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
 
     db = firestore.Client()
     doc_ref = db.collection(u'users').document(userId)
