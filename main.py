@@ -49,9 +49,7 @@ def get_decrypted_message(enc_message, hashed_secret_key):
     except Exception as e:
         print(f"Error decrypting message: {e}")
         return None
-
-
-
+    
 def isBeforeYesterday(date, now):
     today = now.date()
     return today > date
