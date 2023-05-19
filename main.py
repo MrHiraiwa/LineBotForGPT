@@ -1,3 +1,58 @@
+import os
+import json
+from datetime import datetime, timedelta
+from hashlib import md5
+import base64
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
+from google.cloud import firestore
+import requests
+from flask import Flask, request
+
+app = Flask(__name__)
+
+OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
+LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
+MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
+MAX_TOKEN_NUM = 2000
+SECRET_KEY = os.getenv('SECRET_KEY')
+hash_object = SHA256.new(data=SECRET_KEY.encode())
+hashed_secret_key = hash_object.digest()
+
+errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
+countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
+
+SYSTEM_PROMPT = s.getenv('SYSTEM_PROMPT')
+
+def systemRole():
+    return { "role": "system", "content": SYSTEM_PROMPT }
+
+def get_encrypted_message(message, hashed_secret_key):
+    cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
+    message = message + (16 - len(message) % 16) * "\0"
+    enc_message = base64.b64encode(cipher.encrypt(message))
+    return enc_message.decode()
+
+def get_decrypted_message(enc_message, hashed_secret_key):
+    cipher = AES.new(hashed_secret_key, AES.MODE_ECB)
+    message = cipher.decrypt(base64.b64decode(enc_message))
+    return message.decode().rstrip("\0")
+
+def isBeforeYesterday(date, now):
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    return today > date
+
+def callLineApi(replyText, replyToken):
+    url = 'https://api.line.me/v2/bot/message/reply'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+    }
+    data = {
+        'replyToken': replyToken,
+        'messages': [{'type': 'text', 'text': replyText}]
+    }
+    requests.post(url, headers=headers, data=json.dumps(data))
 @app.route('/', methods=['POST'])
 def lineBot():
     event = request.json['events'][0]
