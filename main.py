@@ -88,7 +88,7 @@ def lineBot():
         doc_ref.set(user)
         callLineApi('記憶を消去しました。', replyToken)
         return 'OK', 200
-    elif MAX_DAILY_USAGE is not None and MAX_DAILY_USAGE <= dailyUsage:
+    elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
         callLineApi(countMaxMessage, replyToken)
         return 'OK', 200
 
