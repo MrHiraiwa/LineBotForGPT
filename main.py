@@ -99,15 +99,13 @@ def lineBot():
             'updatedDateString': nowDate,
             'dailyUsage': 0
         }
-
-    userMessage = event['message'].get('text')
+        userMessage = event['message'].get('text')
     if not userMessage:
         return 'OK', 200
     elif userMessage.strip() in ["忘れて", "わすれて"]:
         user['messages'] = []
-        doc_ref.set(user)
+        user['updatedDateString'] = nowDate
         callLineApi('記憶を消去しました。', replyToken)
-        return 'OK', 200
     elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
         callLineApi(countMaxMessage, replyToken)
         return 'OK', 200
@@ -119,8 +117,6 @@ def lineBot():
     while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
         removed_message = user['messages'].pop(0)  # Remove the oldest message
         total_chars -= len(removed_message['content'])
-
-    doc_ref.set({**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
 
     messages = user['messages'] + [{'role': 'user', 'content': userMessage}]
 
@@ -138,7 +134,6 @@ def lineBot():
         return 'OK', 200  # Return OK to prevent LINE bot from retrying
 
     botReply = response_json['choices'][0]['message']['content'].strip()
-
 
     user['messages'].append({'role': 'assistant', 'content': botReply})
     user['updatedDateString'] = nowDate
