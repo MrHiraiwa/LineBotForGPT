@@ -16,7 +16,7 @@ LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
 MAX_TOKEN_NUM = 2000
 SECRET_KEY = os.getenv('SECRET_KEY')
-hash_object = SHA256.new(data=SECRET_KEY.encode())
+hash_object = SHA256.new(data=SECRET_KEY.encode('utf-8'))
 hashed_secret_key = hash_object.digest()
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
