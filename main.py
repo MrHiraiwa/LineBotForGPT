@@ -129,7 +129,16 @@ def lineBot():
         headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
         json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
     )
-    botReply = response.json()['choices'][0]['message']['content'].strip()
+    
+    response_json = response.json()
+
+    # Error handling
+    if 'error' in response_json:
+        print(f"OpenAI error: {response_json['error']}")
+        return 'OK', 200  # Return OK to prevent LINE bot from retrying
+
+    botReply = response_json['choices'][0]['message']['content'].strip()
+
 
     user['messages'].append({'role': 'assistant', 'content': botReply})
     user['updatedDateString'] = nowDate
