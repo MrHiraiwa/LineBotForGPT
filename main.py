@@ -99,6 +99,7 @@ def lineBot():
         }
 
         userMessage = event['message'].get('text')
+        
     if not userMessage:
         return 'OK', 200
     elif userMessage.strip() in ["忘れて", "わすれて"]:
@@ -117,7 +118,7 @@ def lineBot():
         removed_message = user['messages'].pop(0)  # Remove the oldest message
         total_chars -= len(removed_message['content'])
 
-    messages = user['messages'] + [{'role': 'user', 'content': userMessage}]
+    messages = user['messages']
 
     response = requests.post(
         'https://api.openai.com/v1/chat/completions',
