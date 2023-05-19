@@ -53,6 +53,7 @@ def callLineApi(replyText, replyToken):
         'messages': [{'type': 'text', 'text': replyText}]
     }
     requests.post(url, headers=headers, data=json.dumps(data))
+
 @app.route('/', methods=['POST'])
 def lineBot():
     event = request.json['events'][0]
@@ -87,7 +88,7 @@ def lineBot():
         doc_ref.set(user)
         callLineApi('記憶を消去しました。', replyToken)
         return 'OK', 200
-    elif MAX_DAILY_USAGE and MAX_DAILY_USAGE <= dailyUsage:
+    elif MAX_DAILY_USAGE is not None and MAX_DAILY_USAGE <= dailyUsage:
         callLineApi(countMaxMessage, replyToken)
         return 'OK', 200
 
