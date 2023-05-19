@@ -82,6 +82,8 @@ def lineBot():
 
     dailyUsage = 0
 
+    userMessage = event['message'].get('text')
+    
     if doc.exists:
         user = doc.to_dict()
         dailyUsage = user.get('dailyUsage', 0)
@@ -98,8 +100,6 @@ def lineBot():
             'dailyUsage': 0
         }
 
-        userMessage = event['message'].get('text')
-        
     if not userMessage:
         return 'OK', 200
     elif userMessage.strip() in ["忘れて", "わすれて"]:
@@ -111,7 +111,7 @@ def lineBot():
         return 'OK', 200
 
     user['messages'].append({'role': 'user', 'content': userMessage})
-
+    
     # Remove old logs if the total characters exceed 2000 before sending to the API.
     total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
     while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
