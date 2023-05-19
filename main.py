@@ -65,20 +65,20 @@ def lineBot():
     doc_ref = db.collection(u'users').document(userId)
     doc = doc_ref.get()
 
-    if doc.exists:
-        user = doc.to_dict()
-        dailyUsage = user.get('dailyUsage', 0)
-        user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
+if doc.exists:
+    user = doc.to_dict()
+    dailyUsage = user.get('dailyUsage', 0)
+    user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
 
-        if isBeforeYesterday(user['updatedDateString'].date(), nowDate):
-            dailyUsage = 0
-    else:
-        user = {
-            'userId': userId,
-            'messages': [],
-            'updatedDateString': nowDate,
-            'dailyUsage': 0
-        }
+    if isBeforeYesterday(user['updatedDateString'].date(), nowDate):
+        dailyUsage = 0
+else:
+    user = {
+        'userId': userId,
+        'messages': [],
+        'updatedDateString': nowDate,
+        'dailyUsage': 0
+    }
 
     userMessage = event['message'].get('text')
     if not userMessage:
