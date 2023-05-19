@@ -67,6 +67,7 @@ def callLineApi(replyText, replyToken):
     }
     requests.post(url, headers=headers, data=json.dumps(data))
 
+    
 @app.route('/', methods=['POST'])
 def lineBot():
     if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
@@ -75,7 +76,7 @@ def lineBot():
     event = request.json['events'][0]
     replyToken = event['replyToken']
     userId = event['source']['userId']
-    nowDate = datetime.now()
+    nowDate = datetime.utcnow()  # Use UTC time instead of local time
 
     db = firestore.Client()
     doc_ref = db.collection(u'users').document(userId)
