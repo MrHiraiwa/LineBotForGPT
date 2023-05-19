@@ -37,9 +37,10 @@ def check_env_vars():
     missing_vars = [var for var in REQUIRED_ENV_VARS if os.getenv(var) is None]
     if missing_vars:
         missing_vars_str = ", ".join(missing_vars)
-        callLineApi(f"Missing required environment variables: {missing_vars_str}", replyToken)  # Replace replyToken with actual token
+        print(f"Missing required environment variables: {missing_vars_str}")
         return False
     return True
+
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
