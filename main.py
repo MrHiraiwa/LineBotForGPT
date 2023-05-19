@@ -45,7 +45,7 @@ def get_decrypted_message(enc_message, hashed_secret_key):
 
 
 def isBeforeYesterday(date, now):
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today = now.date()
     return today > date
 
 def callLineApi(replyText, replyToken):
