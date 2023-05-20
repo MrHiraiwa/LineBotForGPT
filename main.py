@@ -47,8 +47,7 @@ def login():
                 <input type="submit" value="Login">
             </form>
         '''
-
-@app.route('/settings', methods=['GET', 'POST'])
+    
 def settings():
     if request.method == 'POST':
         # Update settings
@@ -128,15 +127,6 @@ def callLineApi(replyText, replyToken):
         'messages': [{'type': 'text', 'text': replyText}]
     }
     requests.post(url, headers=headers, data=json.dumps(data))
-
-@app.route('/settings', methods=['GET', 'POST'])
-def settings():
-    if request.method == 'POST':
-        # Update settings
-        for key in REQUIRED_ENV_VARS:
-            value = request.form.get(key)
-            if value:
-                update_setting(key, value)
 
     # Fetch current settings
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
