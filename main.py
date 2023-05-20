@@ -9,6 +9,8 @@ from google.cloud import firestore
 import requests
 from flask import Flask, request
 from pytz import utc
+from flask import Flask, request, render_template
+
 
 app = Flask(__name__)
 
