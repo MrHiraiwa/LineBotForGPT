@@ -32,11 +32,36 @@ hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
 app.secret_key = SECRET_KEY
 
+import hashlib
+
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode('utf-8')).hexdigest()
+
+@app.route('/set_admin_password', methods=['GET', 'POST'])
+def set_admin_password():
+    existing_password = get_setting('ADMIN_PASSWORD')
+    if existing_password is not None:
+        abort(403)  # Abort if a password is already set
+    if request.method == 'POST':
+        password = request.form.get('password')
+        hashed_password = hash_password(password)
+        update_setting('ADMIN_PASSWORD', hashed_password)
+        return "Password set", 200
+    else:
+        return '''
+            <form method="post">
+                Set Password: <input type="password" name="password">
+                <input type="submit" value="Set Password">
+            </form>
+        '''
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         password = request.form.get('password')
-        if password == 'admin_password':  # Replace with your own password
+        hashed_password = hash_password(password)
+        admin_password = get_setting('ADMIN_PASSWORD')
+        if hashed_password == admin_password:
             session['is_admin'] = True
             return redirect(url_for('settings'))
         else:
