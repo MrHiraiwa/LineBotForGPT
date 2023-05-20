@@ -10,8 +10,25 @@
     }
     textarea {
       vertical-align: top;
+      overflow: hidden;
+    }
+    input[type="text"] {
+      margin-top: 10px; /* Adjust as needed */
     }
   </style>
+  <script>
+    function autoResizeTextarea() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    }
+    window.onload = function() {
+      var textareas = document.getElementsByTagName('textarea');
+      for (var i = 0; i < textareas.length; i++) {
+        textareas[i].addEventListener('input', autoResizeTextarea);
+        autoResizeTextarea.call(textareas[i]);  // Call the function to set initial height
+      }
+    }
+  </script>
 </head>
 <body>
   <h1>Settings</h1>
@@ -20,7 +37,7 @@
       <div>
         <label for="{{ key }}">{{ key }}</label>
         {% if key == "SYSTEM_PROMPT" %}
-        <textarea id="{{ key }}" name="{{ key }}" rows="4" cols="50">{{ value }}</textarea>
+        <textarea id="{{ key }}" name="{{ key }}">{{ value }}</textarea>
         {% elif key == "MAX_TOKEN_NUM" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="2000">
         {% else %}
