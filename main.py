@@ -41,6 +41,19 @@ def check_env_vars():
         return False
     return True
 
+def get_setting(key):
+    db = firestore.Client()
+    doc_ref = db.collection(u'settings').document(key)
+    doc = doc_ref.get()
+    if doc.exists:
+        return doc.to_dict().get('value')
+    else:
+        return None
+
+def update_setting(key, value):
+    db = firestore.Client()
+    doc_ref = db.collection(u'settings').document(key)
+    doc_ref.set({'value': value})
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
@@ -82,6 +95,19 @@ def callLineApi(replyText, replyToken):
         'messages': [{'type': 'text', 'text': replyText}]
     }
     requests.post(url, headers=headers, data=json.dumps(data))
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        # Update settings
+        for key in REQUIRED_ENV_VARS:
+            value = request.form.get(key)
+            if value:
+                update_setting(key, value)
+
+    # Fetch current settings
+    current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
+    return render_template('settings.html', settings=current_settings)
 
 @app.route('/', methods=['POST'])
 def lineBot():
