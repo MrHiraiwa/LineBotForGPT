@@ -25,6 +25,7 @@ OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SECRET_KEY = get_setting('SECRET_KEY')
+SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -63,8 +64,6 @@ def settings():
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
-
-SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 
 REQUIRED_ENV_VARS = [
     "OPENAI_APIKEY",
