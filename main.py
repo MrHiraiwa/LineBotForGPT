@@ -20,12 +20,23 @@ def get_setting(key):
     else:
         return None
 
-MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
-OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
-LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
-MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-SECRET_KEY = get_setting('SECRET_KEY')
-SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
+    def load_settings():
+    db = firestore.Client()
+    doc_ref = db.collection(u'settings').document('app_settings')
+    doc = doc_ref.get()
+    if doc.exists:
+        return doc.to_dict()
+    else:
+        return None
+
+SETTINGS = load_settings()
+
+MAX_TOKEN_NUM = int(SETTINGS.get('MAX_TOKEN_NUM', 2000))
+OPENAI_APIKEY = SETTINGS.get('OPENAI_APIKEY')
+LINE_ACCESS_TOKEN = SETTINGS.get('LINE_ACCESS_TOKEN')
+MAX_DAILY_USAGE = int(SETTINGS.get('MAX_DAILY_USAGE', 0))
+SECRET_KEY = SETTINGS.get('SECRET_KEY')
+SYSTEM_PROMPT = SETTINGS.get('SYSTEM_PROMPT')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -137,8 +148,8 @@ def check_env_vars():
 
 def update_setting(key, value):
     db = firestore.Client()
-    doc_ref = db.collection(u'settings').document(key)
-    doc_ref.set({'value': value})
+    doc_ref = db.collection(u'settings').document('app_settings')
+    doc_ref.update({key: value})
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
