@@ -9,7 +9,11 @@
     {% for key, value in settings.items() %}
       <div>
         <label for="{{ key }}">{{ key }}</label>
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+        {% if key == "SYSTEM_PROMPT" %}
+          <textarea id="{{ key }}" name="{{ key }}" rows="4" cols="50">{{ value }}</textarea>
+        {% else %}
+          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+        {% endif %}
       </div>
     {% endfor %}
     <input type="submit" value="Save">
