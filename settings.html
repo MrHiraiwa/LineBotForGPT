@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+  <title>Settings</title>
+</head>
+<body>
+  <h1>Settings</h1>
+  <form method="post">
+    {% for key, value in settings.items() %}
+      <div>
+        <label for="{{ key }}">{{ key }}</label>
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+      </div>
+    {% endfor %}
+    <input type="submit" value="Save">
+  </form>
+</body>
+</html>
