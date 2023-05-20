@@ -48,6 +48,7 @@ def login():
             </form>
         '''
     
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if request.method == 'POST':
         # Update settings
