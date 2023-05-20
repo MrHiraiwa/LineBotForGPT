@@ -50,9 +50,6 @@ def login():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    if not session.get('is_admin'):
-        abort(403)  # HTTP 403 Forbidden
-
     if request.method == 'POST':
         # Update settings
         for key in REQUIRED_ENV_VARS:
