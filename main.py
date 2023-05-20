@@ -18,16 +18,29 @@ def get_setting(key):
     if doc.exists:
         return doc.to_dict().get('value')
     else:
-        return None
+        # Create default setting if it doesn't exist
+        default_value = "your_default_value"  # Replace with your actual default value
+        doc_ref.set({'value': default_value})
+        return default_value
 
-    def load_settings():
+def load_settings():
     db = firestore.Client()
     doc_ref = db.collection(u'settings').document('app_settings')
     doc = doc_ref.get()
     if doc.exists:
         return doc.to_dict()
     else:
-        return None
+        # Create default settings if they don't exist
+        default_settings = {
+            'MAX_TOKEN_NUM': 2000,
+            'OPENAI_APIKEY': 'your_openai_apikey',  # Replace with your actual default value
+            'LINE_ACCESS_TOKEN': 'your_line_access_token',  # Replace with your actual default value
+            'MAX_DAILY_USAGE': 0,
+            'SECRET_KEY': 'your_secret_key',  # Replace with your actual default value
+            'SYSTEM_PROMPT': 'your_system_prompt'  # Replace with your actual default value
+        }
+        doc_ref.set(default_settings)
+        return default_settings
 
 SETTINGS = load_settings()
 
