@@ -57,10 +57,12 @@ def set_admin_password():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    admin_password = get_setting('ADMIN_PASSWORD')
+    if admin_password is None:
+        return redirect(url_for('set_admin_password'))
     if request.method == 'POST':
         password = request.form.get('password')
         hashed_password = hash_password(password)
-        admin_password = get_setting('ADMIN_PASSWORD')
         if hashed_password == admin_password:
             session['is_admin'] = True
             return redirect(url_for('settings'))
@@ -73,9 +75,35 @@ def login():
                 <input type="submit" value="Login">
             </form>
         '''
-    
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if 'is_admin' not in session or not session['is_admin']:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        hashed_current_password = hash_password(current_password)
+        admin_password = get_setting('ADMIN_PASSWORD')
+        if hashed_current_password == admin_password:
+            hashed_new_password = hash_password(new_password)
+            update_setting('ADMIN_PASSWORD', hashed_new_password)
+            return redirect(url_for('settings'))
+        else:
+            return "Invalid current password", 401
+    else:
+        return '''
+            <form method="post">
+                Current Password: <input type="password" name="current_password"><br>
+                New Password: <input type="password" name="new_password"><br>
+                <input type="submit" value="Reset Password">
+            </form>
+        '''
+
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    if 'is_admin' not in session or not session['is_admin']:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         # Update settings
         for key in REQUIRED_ENV_VARS:
@@ -85,7 +113,7 @@ def settings():
 
     # Fetch current settings
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
-    return render_template('settings.html', settings=current_settings)
+    return render_template('settings.html', settings=current_settings, reset_password_url=url_for('reset_password'))
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
