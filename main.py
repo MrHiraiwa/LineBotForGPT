@@ -12,13 +12,19 @@ from pytz import utc
 from flask import Flask, request, render_template
 
 def get_setting(key):
-    db = firestore.Client()
-    doc_ref = db.collection(u'settings').document(key)
-    doc = doc_ref.get()
-    if doc.exists:
-        return doc.to_dict().get('value')
-    else:
+    try:
+        db = firestore.Client()
+        doc_ref = db.collection(u'settings').document(key)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict().get('value')
+        else:
+            print(f"No document found with key: {key}")
+            return None
+    except Exception as e:
+        print(f"Error getting setting: {e}")
         return None
+
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
