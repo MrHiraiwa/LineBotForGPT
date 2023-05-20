@@ -5,35 +5,31 @@ from hashlib import md5
 import base64
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
-from google.cloud import firestore
 import requests
-from flask import Flask, request, render_template, session, redirect, url_for, abort
 from pytz import utc
 from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, redirect, url_for, abort
+from google.cloud import firestore
 
 def get_setting(key):
-    try:
-        db = firestore.Client()
-        doc_ref = db.collection(u'settings').document(key)
-        doc = doc_ref.get()
-        if doc.exists:
-            return doc.to_dict().get('value')
-        else:
-            print(f"No document found with key: {key}")
-            return None
-    except Exception as e:
-        print(f"Error getting setting: {e}")
+    db = firestore.Client()
+    doc_ref = db.collection(u'settings').document(key)
+    doc = doc_ref.get()
+    if doc.exists:
+        return doc.to_dict().get('value')
+    else:
         return None
-
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SECRET_KEY = get_setting('SECRET_KEY')
+
+app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
-app.secret_key = 'your-secret-key'  # Replace with your own secret key
+app.secret_key = SECRET_KEY
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
