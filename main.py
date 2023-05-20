@@ -13,19 +13,20 @@ from google.cloud import firestore
 
 def get_setting(key):
     db = firestore.Client()
-    doc_ref = db.collection(u'settings').document(key)
+    doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
     doc = doc_ref.get()
     if doc.exists:
-        return doc.to_dict().get('value')
+        return doc.to_dict().get(key)  # Get the value of the key
     else:
         # Create default setting if it doesn't exist
         default_value = "your_default_value"  # Replace with your actual default value
-        doc_ref.set({'value': default_value})
+        doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
-def load_settings():
+def update_setting(key, value):
     db = firestore.Client()
-    doc_ref = db.collection(u'settings').document('app_settings')
+    doc_ref = db.collection(u'settings').document('app_settings')  # Use 'app_settings' instead of key
+    doc_ref.update({key: value})  # Update the key with the new value
     doc = doc_ref.get()
     if doc.exists:
         return doc.to_dict()
