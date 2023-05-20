@@ -7,7 +7,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from google.cloud import firestore
 import requests
-from flask import Flask, request
+from flask import Flask, request, render_template, session, redirect, url_for, abort
 from pytz import utc
 from flask import Flask, request, render_template
 
@@ -27,7 +27,40 @@ MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SECRET_KEY = get_setting('SECRET_KEY')
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
-app = Flask(__name__)
+app.secret_key = 'your-secret-key'  # Replace with your own secret key
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == 'admin_password':  # Replace with your own password
+            session['is_admin'] = True
+            return redirect(url_for('settings'))
+        else:
+            return "Invalid password", 401
+    else:
+        return '''
+            <form method="post">
+                Password: <input type="password" name="password">
+                <input type="submit" value="Login">
+            </form>
+        '''
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if not session.get('is_admin'):
+        abort(403)  # HTTP 403 Forbidden
+
+    if request.method == 'POST':
+        # Update settings
+        for key in REQUIRED_ENV_VARS:
+            value = request.form.get(key)
+            if value:
+                update_setting(key, value)
+
+    # Fetch current settings
+    current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
+    return render_template('settings.html', settings=current_settings)
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
