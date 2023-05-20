@@ -43,14 +43,12 @@ def update_setting(key, value):
         doc_ref.set(default_settings)
         return default_settings
 
-SETTINGS = load_settings()
-
-MAX_TOKEN_NUM = int(SETTINGS.get('MAX_TOKEN_NUM', 2000))
-OPENAI_APIKEY = SETTINGS.get('OPENAI_APIKEY')
-LINE_ACCESS_TOKEN = SETTINGS.get('LINE_ACCESS_TOKEN')
-MAX_DAILY_USAGE = int(SETTINGS.get('MAX_DAILY_USAGE', 0))
-SECRET_KEY = SETTINGS.get('SECRET_KEY')
-SYSTEM_PROMPT = SETTINGS.get('SYSTEM_PROMPT')
+MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
+OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
+LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
+MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
+SECRET_KEY = get_setting('SECRET_KEY')
+SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
