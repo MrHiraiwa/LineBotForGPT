@@ -11,35 +11,34 @@ from flask import Flask, request
 from pytz import utc
 from flask import Flask, request, render_template
 
-
-app = Flask(__name__)
-
-OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
-LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
-MAX_DAILY_USAGE = int(os.getenv('MAX_DAILY_USAGE'))
-MAX_TOKEN_NUM = 2000
-SECRET_KEY = os.getenv('SECRET_KEY')
-hash_object = SHA256.new(data=SECRET_KEY.encode('utf-8'))
+MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
+OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
+LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
+MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
+SECRET_KEY = get_setting('SECRET_KEY')
+hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
+app = Flask(__name__)
 
 errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
-SYSTEM_PROMPT = os.getenv('SYSTEM_PROMPT')
+SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 
 REQUIRED_ENV_VARS = [
     "OPENAI_APIKEY",
     "LINE_ACCESS_TOKEN",
     "MAX_DAILY_USAGE",
     "SECRET_KEY",
-    "SYSTEM_PROMPT"
+    "SYSTEM_PROMPT",
+    "MAX_TOKEN_NUM"
 ]
 
 def check_env_vars():
-    missing_vars = [var for var in REQUIRED_ENV_VARS if os.getenv(var) is None]
+    missing_vars = [var for var in REQUIRED_ENV_VARS if get_setting(var) is None]
     if missing_vars:
         missing_vars_str = ", ".join(missing_vars)
-        print(f"Missing required environment variables: {missing_vars_str}")
+        print(f"Missing required settings in Firestore: {missing_vars_str}")
         return False
     return True
 
