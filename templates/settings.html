@@ -2,6 +2,16 @@
 <html>
 <head>
   <title>Settings</title>
+  <style>
+    label {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 10px; /* Adjust as needed */
+    }
+    textarea {
+      vertical-align: top;
+    }
+  </style>
 </head>
 <body>
   <h1>Settings</h1>
@@ -10,9 +20,11 @@
       <div>
         <label for="{{ key }}">{{ key }}</label>
         {% if key == "SYSTEM_PROMPT" %}
-          <textarea id="{{ key }}" name="{{ key }}" rows="4" cols="50">{{ value }}</textarea>
+        <textarea id="{{ key }}" name="{{ key }}" rows="4" cols="50">{{ value }}</textarea>
+        {% elif key == "MAX_TOKEN_NUM" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="2000">
         {% else %}
-          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
         {% endif %}
       </div>
     {% endfor %}
