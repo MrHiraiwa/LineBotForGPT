@@ -24,7 +24,14 @@ def get_setting(key):
     if doc.exists:
         return doc.to_dict().get(key)  # Get the value of the key
     else:
+        # Create default setting if it doesn't exist
+        if key in ['MAX_TOKEN_NUM', 'MAX_DAILY_USAGE']:
+            default_value = 2000  # Default value for integer settings
+        else:
+            default_value = ""  # Replace with your actual default value
+        doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
+
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
