@@ -228,15 +228,16 @@ def callLineApi(replyText, replyToken):
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
-    if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
-        return 'OK', 200
-    if not check_env_vars():
-        return 'OK', 200
-    
-    event = request.json['events'][0]
-    replyToken = event['replyToken']
-    userId = event['source']['userId']
-    nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
+        if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
+            return 'OK', 200
+        if not check_env_vars():
+            return 'OK', 200
+
+        # 以下のコードが修正されました
+        event = request.json['events'][0]
+        replyToken = event['replyToken']
+        userId = event['source']['userId']
+        nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
 
     db = firestore.Client()
     doc_ref = db.collection(u'users').document(userId)
@@ -308,9 +309,8 @@ def lineBot():
         callLineApi(botReply, replyToken)
         return 'OK'
 
-    # Begin the transaction
-    return update_in_transaction(db.transaction(), doc_ref)
-    
+        # Begin the transaction
+        return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
         print(f"Error in lineBot: {e}")
         raise
