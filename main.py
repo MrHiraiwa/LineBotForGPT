@@ -309,8 +309,8 @@ def lineBot():
             callLineApi(botReply, replyToken)
             return 'OK'
 
-            # Begin the transaction
-            return update_in_transaction(db.transaction(), doc_ref)
+        # Begin the transaction
+        return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
         print(f"Error in lineBot: {e}")
         raise
