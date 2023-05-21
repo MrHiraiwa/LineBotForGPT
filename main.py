@@ -17,15 +17,13 @@ except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
 
+    
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
     doc = doc_ref.get()
     if doc.exists:
         return doc.to_dict().get(key)  # Get the value of the key
     else:
-        # Create default setting if it doesn't exist
-        default_value = "your_default_value"  # Replace with your actual default value
-        doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
