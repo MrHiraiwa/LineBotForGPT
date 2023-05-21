@@ -20,9 +20,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 hash_object = SHA256.new(data=SECRET_KEY.encode('utf-8'))
 hashed_secret_key = hash_object.digest()
 
-errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
-
+ERROR_MESSAGE = os.getenv('ERROR_MESSAGE')
 SYSTEM_PROMPT = os.getenv('SYSTEM_PROMPT')
 
 REQUIRED_ENV_VARS = [
@@ -31,6 +30,7 @@ REQUIRED_ENV_VARS = [
     "MAX_DAILY_USAGE",
     "SECRET_KEY",
     "SYSTEM_PROMPT"
+    "ERROR_MESSAGE"
 ]
 
 def check_env_vars():
@@ -151,7 +151,7 @@ def lineBot():
         # Error handling
         if 'error' in response_json:
             print(f"OpenAI error: {response_json['error']}")
-            callLineApi(errorMessage, replyToken)
+            callLineApi(ERROR_MESSAGE, replyToken)
             return 'OK'  # Return OK to prevent LINE bot from retrying
 
         botReply = response_json['choices'][0]['message']['content'].strip()
