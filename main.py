@@ -230,8 +230,8 @@ def lineBot():
     try:
         if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
             return 'OK', 200
-        if not check_env_vars():
-            return 'OK', 200
+        #if not check_env_vars():
+            #return 'OK', 200
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
