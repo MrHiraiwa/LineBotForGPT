@@ -79,6 +79,9 @@ def set_admin_password():
 
         secret_key = request.form.get('secret_key')
         update_setting('SECRET_KEY', secret_key)
+
+        # Update the Flask app's secret key
+        app.secret_key = secret_key
         
         return redirect(url_for('login'))
     else:
@@ -89,6 +92,7 @@ def set_admin_password():
                 <input type="submit" value="Set Password and Secret Key">
             </form>
         '''
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
