@@ -28,26 +28,26 @@ def get_setting(key):
         doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
-def update_setting(key, value):
-    db = firestore.Client()
-    doc_ref = db.collection(u'settings').document('app_settings')  # Use 'app_settings' instead of key
-    doc_ref.update({key: value})  # Update the key with the new value
-    doc = doc_ref.get()
-    if doc.exists:
-        return doc.to_dict()
-    else:
-        # Create default settings if they don't exist
-        default_settings = {
-            'MAX_TOKEN_NUM': 2000,
-            'OPENAI_APIKEY': '',  # Replace with your actual default value
-            'LINE_ACCESS_TOKEN': '',  # Replace with your actual default value
-            'MAX_DAILY_USAGE': 1000,
-            'SECRET_KEY': 'secret',  # Replace with your actual default value
-            'SYSTEM_PROMPT': 'あなたは有能なAIアシスタントです。', # Replace with your actual default value
-            'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'  # Replace with your actual default value
-        }
-        doc_ref.set(default_settings)
-        return default_settings
+#def update_setting(key, value):
+#    db = firestore.Client()
+#    doc_ref = db.collection(u'settings').document('app_settings')  # Use 'app_settings' instead of key
+#    doc_ref.update({key: value})  # Update the key with the new value
+#    doc = doc_ref.get()
+#    if doc.exists:
+#        return doc.to_dict()
+#    else:
+#        # Create default settings if they don't exist
+#        default_settings = {
+#            'MAX_TOKEN_NUM': 2000,
+#            'OPENAI_APIKEY': '',  # Replace with your actual default value
+#            'LINE_ACCESS_TOKEN': '',  # Replace with your actual default value
+#            'MAX_DAILY_USAGE': 1000,
+#            'SECRET_KEY': 'secret',  # Replace with your actual default value
+#            'SYSTEM_PROMPT': 'あなたは有能なAIアシスタントです。', # Replace with your actual default value
+#            'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'  # Replace with your actual default value
+#        }
+#        doc_ref.set(default_settings)
+#        return default_settings
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
