@@ -212,6 +212,8 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
+        line_profile = json.loads(get_profile(userId).text)
+        display_name = line_profile['displayName']
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -248,7 +250,7 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            user['messages'].append({'role': 'user', 'content': userMessage})
+            user['messages'].append({'role': 'user', 'content': display_name + ": " + userMessage})
         
             # Remove old logs if the total characters exceed 2000 before sending to the API.
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
@@ -286,5 +288,17 @@ def lineBot():
         # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
+        
+    import requests
+
+def get_profile(userId):
+    url = 'https://api.line.me/v2/bot/profile/' + userId
+    headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Authorization": "Bearer " + LINE_ACCESS_TOKEN,
+    }
+    response = requests.get(url, headers=headers)
+    return response
+
         print(f"Error in lineBot: {e}")
         raise
