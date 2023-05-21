@@ -39,10 +39,10 @@ def update_setting(key, value):
         # Create default settings if they don't exist
         default_settings = {
             'MAX_TOKEN_NUM': 2000,
-            'OPENAI_APIKEY': 'your_openai_apikey',  # Replace with your actual default value
-            'LINE_ACCESS_TOKEN': 'your_line_access_token',  # Replace with your actual default value
-            'MAX_DAILY_USAGE': 0,
-            'SECRET_KEY': 'your_secret_key',  # Replace with your actual default value
+            'OPENAI_APIKEY': '',  # Replace with your actual default value
+            'LINE_ACCESS_TOKEN': '',  # Replace with your actual default value
+            'MAX_DAILY_USAGE': 1000,
+            'SECRET_KEY': 'secret',  # Replace with your actual default value
             'SYSTEM_PROMPT': 'あなたは有能なAIアシスタントです。', # Replace with your actual default value
             'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'  # Replace with your actual default value
         }
