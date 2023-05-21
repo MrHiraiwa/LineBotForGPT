@@ -289,6 +289,7 @@ def lineBot():
         return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
         print(f"Error in lineBot: {e}")
+        callLineApi(ERROR_MESSAGE, replyToken)
         raise
 
 def get_profile(userId):
