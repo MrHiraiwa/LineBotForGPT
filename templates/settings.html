@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <title>Settings</title>
+  <style>
+  label {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 10px;
+    width: 200px;  /* Add this line */
+  }
+    textarea {
+      vertical-align: top;
+      overflow: hidden;
+      width: 90%; /* Add this line */
+    }
+    input[type="text"] {
+      margin-top: 10px; /* Adjust as needed */
+      width: 90%; /* You may want to set this as well */
+    }
+  </style>
+  <script>
+    function autoResizeTextarea() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    }
+    window.onload = function() {
+      var textareas = document.getElementsByTagName('textarea');
+      for (var i = 0; i < textareas.length; i++) {
+        textareas[i].addEventListener('input', autoResizeTextarea);
+        autoResizeTextarea.call(textareas[i]);  // Call the function to set initial height
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Settings</h1>
+  <form method="post">
+    {% for key, value in settings.items() %}
+      <div>
+        <label for="{{ key }}">{{ key }}</label>
+        {% if key == "SYSTEM_PROMPT" %}
+        <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'あなたは有能なAIアシスタントです。' }}</textarea>
+        {% elif key == "MAX_TOKEN_NUM" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '2000' }}">
+        {% elif key == "MAX_DAILY_USAGE" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '1000' }}">
+        {% elif key == "ERROR_MESSAGE" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。' }}">
+        {% else %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      </div>
+    {% endfor %}
+    <input type="submit" value="Save">
+  </form>
+  <a href="{{ reset_password_url }}">Reset Password</a>  <!-- This is the added link for password reset -->
+</body>
+</html>
