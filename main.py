@@ -10,13 +10,12 @@ from pytz import utc
 from flask import Flask, request, render_template
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
-import traceback
 
 try:
     db = firestore.Client()
 except Exception as e:
-    print("Error occurred:", e)
-    traceback.print_exc()
+    print(f"Error creating Firestore client: {e}")
+    raise
 
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
