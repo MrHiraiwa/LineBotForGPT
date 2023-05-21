@@ -167,14 +167,6 @@ REQUIRED_ENV_VARS = [
     "ERROR_MESSAGE"
 ]
 
-def check_env_vars():
-    missing_vars = [var for var in REQUIRED_ENV_VARS if get_setting(var) is None]
-    if missing_vars:
-        missing_vars_str = ", ".join(missing_vars)
-        print(f"Missing required settings in Firestore: {missing_vars_str}")
-        return False
-    return True
-
 def update_setting(key, value):
     db = firestore.Client()
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -230,8 +222,6 @@ def lineBot():
     try:
         if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
             return 'OK', 200
-        #if not check_env_vars():
-            #return 'OK', 200
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
