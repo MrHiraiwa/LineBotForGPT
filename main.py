@@ -217,6 +217,7 @@ def callLineApi(replyText, replyToken):
     return render_template('settings.html', settings=current_settings)
 
 @app.route('/', methods=['GET', 'POST'])
+def some_function():
     return 'OK', 200
 
 @app.route('/webhook', methods=['POST'])
