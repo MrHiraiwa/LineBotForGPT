@@ -258,17 +258,19 @@ def lineBot():
 
             messages = user['messages']
 
+            
             response = requests.post(
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
+                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages},
+                timeout=10  # 10 seconds timeout for example
             )
-        
+
             response_json = response.json()
 
             # Error handling
-            if 'error' in response_json:
-                print(f"OpenAI error: {response_json['error']}")
+            if response.status_code != 200 or 'error' in response_json:
+                print(f"OpenAI error: {response_json.get('error', 'No response from API')}")
                 callLineApi(ERROR_MESSAGE, replyToken)
                 return 'OK'  # Return OK to prevent LINE bot from retrying
 
