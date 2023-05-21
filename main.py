@@ -219,7 +219,7 @@ def callLineApi(replyText, replyToken):
 @app.route('/', methods=['POST'])
     return 'OK', 200
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/webhook', methods=['GET', 'POST'])
 def lineBot():
     try:
 
