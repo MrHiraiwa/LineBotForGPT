@@ -217,7 +217,7 @@ def callLineApi(replyText, replyToken):
     return render_template('settings.html', settings=current_settings)
 
 @app.route('/', methods=['POST'])
-    #return 'OK', 200
+    return 'OK', 200
 
 @app.route('/webhook', methods=['POST'])
 def lineBot():
