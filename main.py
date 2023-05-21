@@ -217,10 +217,11 @@ def callLineApi(replyText, replyToken):
     return render_template('settings.html', settings=current_settings)
 
 @app.route('/', methods=['POST'])
+    #return 'OK', 200
+
+@app.route('/webhook', methods=['POST'])
 def lineBot():
     try:
-        #if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
-            #return 'OK', 200
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
