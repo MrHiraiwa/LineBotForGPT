@@ -11,6 +11,8 @@ from flask import Flask, request, render_template
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/your/service-account-file.json"
+
 def get_setting(key):
     db = firestore.Client()
     doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
