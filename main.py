@@ -288,8 +288,6 @@ def lineBot():
         # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
-        
-    import requests
 
 def get_profile(userId):
     url = 'https://api.line.me/v2/bot/profile/' + userId
