@@ -151,6 +151,7 @@ def lineBot():
         # Error handling
         if 'error' in response_json:
             print(f"OpenAI error: {response_json['error']}")
+            callLineApi(errorMessage, replyToken)
             return 'OK'  # Return OK to prevent LINE bot from retrying
 
         botReply = response_json['choices'][0]['message']['content'].strip()
