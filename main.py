@@ -7,7 +7,6 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
 from pytz import utc
-from flask import Flask, request, render_template
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
 
