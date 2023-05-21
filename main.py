@@ -76,14 +76,20 @@ def set_admin_password():
         password = request.form.get('password')
         hashed_password = hash_password(password)
         update_setting('ADMIN_PASSWORD', hashed_password)
-        return "Password set", 200
+
+        secret_key = request.form.get('secret_key')
+        update_setting('SECRET_KEY', secret_key)
+        
+        return redirect(url_for('login'))
     else:
         return '''
             <form method="post">
-                Set Password: <input type="password" name="password">
-                <input type="submit" value="Set Password">
+                Set Password: <input type="password" name="password"><br>
+                Set Secret Key: <input type="text" name="secret_key"><br>
+                <input type="submit" value="Set Password and Secret Key">
             </form>
         '''
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
