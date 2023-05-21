@@ -38,7 +38,8 @@ def update_setting(key, value):
             'LINE_ACCESS_TOKEN': 'your_line_access_token',  # Replace with your actual default value
             'MAX_DAILY_USAGE': 0,
             'SECRET_KEY': 'your_secret_key',  # Replace with your actual default value
-            'SYSTEM_PROMPT': 'your_system_prompt'  # Replace with your actual default value
+            'SYSTEM_PROMPT': 'あなたは有能なAIアシスタントです。'  # Replace with your actual default value
+            'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'  # Replace with your actual default value
         }
         doc_ref.set(default_settings)
         return default_settings
@@ -49,6 +50,7 @@ LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SECRET_KEY = get_setting('SECRET_KEY')
 SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
+ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -147,7 +149,8 @@ REQUIRED_ENV_VARS = [
     "MAX_DAILY_USAGE",
     "SECRET_KEY",
     "SYSTEM_PROMPT",
-    "MAX_TOKEN_NUM"
+    "MAX_TOKEN_NUM",
+    "ERROR_MESSAGE"
 ]
 
 def check_env_vars():
@@ -276,6 +279,7 @@ def lineBot():
         # Error handling
         if 'error' in response_json:
             print(f"OpenAI error: {response_json['error']}")
+            callLineApi(ERROR_MESSAGE, replyToken)
             return 'OK'  # Return OK to prevent LINE bot from retrying
 
         botReply = response_json['choices'][0]['message']['content'].strip()
