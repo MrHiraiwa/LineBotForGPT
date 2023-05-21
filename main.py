@@ -31,6 +31,9 @@ def get_setting(key):
         doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
+def update_setting(key, value):
+    doc_ref = db.collection(u'settings').document('app_settings')
+    doc_ref.update({key: value})
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
@@ -148,10 +151,6 @@ REQUIRED_ENV_VARS = [
     "MAX_TOKEN_NUM",
     "ERROR_MESSAGE"
 ]
-
-def update_setting(key, value):
-    doc_ref = db.collection(u'settings').document('app_settings')
-    doc_ref.update({key: value})
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
