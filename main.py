@@ -227,6 +227,7 @@ def callLineApi(replyText, replyToken):
 
 @app.route('/', methods=['POST'])
 def lineBot():
+    try:
     if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
         return 'OK', 200
     if not check_env_vars():
@@ -310,3 +311,6 @@ def lineBot():
     # Begin the transaction
     return update_in_transaction(db.transaction(), doc_ref)
     
+    except Exception as e:
+        print(f"Error in lineBot: {e}")
+        raise
