@@ -149,7 +149,7 @@ def settings():
         for key in REQUIRED_ENV_VARS:
             value = request.form.get(key)
             if value:
-                update_setting1(key, value)
+                update_setting(key, value)
 
     # Fetch current settings
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
