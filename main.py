@@ -297,5 +297,6 @@ def get_profile(userId):
         "Content-Type": "application/json; charset=UTF-8",
         "Authorization": "Bearer " + LINE_ACCESS_TOKEN,
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
     return response
+
