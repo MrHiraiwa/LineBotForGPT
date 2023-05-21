@@ -17,6 +17,7 @@ except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
 
+    
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
     doc = doc_ref.get()
@@ -24,30 +25,13 @@ def get_setting(key):
         return doc.to_dict().get(key)  # Get the value of the key
     else:
         # Create default setting if it doesn't exist
-        default_value = "your_default_value"  # Replace with your actual default value
+        if key in ['MAX_TOKEN_NUM', 'MAX_DAILY_USAGE']:
+            default_value = 2000  # Default value for integer settings
+        else:
+            default_value = ""  # Replace with your actual default value
         doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
-def update_setting(key, value):
-    db = firestore.Client()
-    doc_ref = db.collection(u'settings').document('app_settings')  # Use 'app_settings' instead of key
-    doc_ref.update({key: value})  # Update the key with the new value
-    doc = doc_ref.get()
-    if doc.exists:
-        return doc.to_dict()
-    else:
-        # Create default settings if they don't exist
-        default_settings = {
-            'MAX_TOKEN_NUM': 2000,
-            'OPENAI_APIKEY': '',  # Replace with your actual default value
-            'LINE_ACCESS_TOKEN': '',  # Replace with your actual default value
-            'MAX_DAILY_USAGE': 1000,
-            'SECRET_KEY': 'secret',  # Replace with your actual default value
-            'SYSTEM_PROMPT': 'あなたは有能なAIアシスタントです。', # Replace with your actual default value
-            'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'  # Replace with your actual default value
-        }
-        doc_ref.set(default_settings)
-        return default_settings
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
@@ -167,7 +151,6 @@ REQUIRED_ENV_VARS = [
 ]
 
 def update_setting(key, value):
-    db = firestore.Client()
     doc_ref = db.collection(u'settings').document('app_settings')
     doc_ref.update({key: value})
 
@@ -216,11 +199,13 @@ def callLineApi(replyText, replyToken):
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=current_settings)
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
+def some_function():
+    return 'OK', 200
+
+@app.route('/webhook', methods=['POST'])
 def lineBot():
     try:
-        #if not request.json or 'events' not in request.json or len(request.json['events']) == 0:
-            #return 'OK', 200
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
