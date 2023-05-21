@@ -155,7 +155,6 @@ def settings():
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=current_settings, reset_password_url=url_for('reset_password'))
 
-errorMessage = '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。'
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 REQUIRED_ENV_VARS = [
