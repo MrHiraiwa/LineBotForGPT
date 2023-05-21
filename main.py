@@ -146,7 +146,6 @@ REQUIRED_ENV_VARS = [
 ]
 
 def update_setting(key, value):
-    db = firestore.Client()
     doc_ref = db.collection(u'settings').document('app_settings')
     doc_ref.update({key: value})
 
