@@ -43,6 +43,12 @@
         <textarea id="{{ key }}" name="{{ key }}">{{ value }}</textarea>
         {% elif key == "MAX_TOKEN_NUM" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="2000">
+        {% elif key == "MAX_DAILY_USAGE" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="1000">
+        {% elif key == "ERROR_MESSAGE" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="現在アクセスが集中しているため、しばらくしてからもう一度お試しください。">
+        {% elif key == "SYSTEM_PROMPT" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="あなたは有能なAIアシスタントです。">
         {% else %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
         {% endif %}
