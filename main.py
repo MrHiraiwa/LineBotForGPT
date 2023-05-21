@@ -299,6 +299,3 @@ def get_profile(userId):
     }
     response = requests.get(url, headers=headers)
     return response
-
-        print(f"Error in lineBot: {e}")
-        raise
