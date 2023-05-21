@@ -239,78 +239,78 @@ def lineBot():
         userId = event['source']['userId']
         nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
 
-    db = firestore.Client()
-    doc_ref = db.collection(u'users').document(userId)
+        db = firestore.Client()
+        doc_ref = db.collection(u'users').document(userId)
 
-    # Start a Firestore transaction
-    @firestore.transactional
-    def update_in_transaction(transaction, doc_ref):
-        doc = doc_ref.get(transaction=transaction)
+        # Start a Firestore transaction
+        @firestore.transactional
+        def update_in_transaction(transaction, doc_ref):
+            doc = doc_ref.get(transaction=transaction)
         
-        dailyUsage = 0
-        userMessage = event['message'].get('text')
+            dailyUsage = 0
+            userMessage = event['message'].get('text')
         
-        if doc.exists:
-            user = doc.to_dict()
-            dailyUsage = user.get('dailyUsage', 0)
-            user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
-            if (nowDate - user['updatedDateString']) > timedelta(days=1):
-                dailyUsage = 0
-        else:
-            user = {
-                'userId': userId,
-                'messages': [],
-                'updatedDateString': nowDate,
-                'dailyUsage': 0
-            }
+            if doc.exists:
+                user = doc.to_dict()
+                dailyUsage = user.get('dailyUsage', 0)
+                user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
+                if (nowDate - user['updatedDateString']) > timedelta(days=1):
+                    dailyUsage = 0
+            else:
+                user = {
+                    'userId': userId,
+                    'messages': [],
+                    'updatedDateString': nowDate,
+                    'dailyUsage': 0
+                }
 
-        if not userMessage:
-            return 'OK'
-        elif userMessage.strip() in ["忘れて", "わすれて"]:
-            user['messages'] = []
+            if not userMessage:
+                return 'OK'
+            elif userMessage.strip() in ["忘れて", "わすれて"]:
+                user['messages'] = []
+                user['updatedDateString'] = nowDate
+                callLineApi('記憶を消去しました。', replyToken)
+            elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
+                callLineApi(countMaxMessage, replyToken)
+                return 'OK'
+
+            user['messages'].append({'role': 'user', 'content': userMessage})
+        
+            # Remove old logs if the total characters exceed 2000 before sending to the API.
+            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
+            while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
+                removed_message = user['messages'].pop(0)  # Remove the oldest message
+                total_chars -= len(removed_message['content'])
+
+            messages = user['messages']
+
+            response = requests.post(
+                'https://api.openai.com/v1/chat/completions',
+                headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
+                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
+            )
+        
+            response_json = response.json()
+
+            # Error handling
+            if 'error' in response_json:
+                print(f"OpenAI error: {response_json['error']}")
+                callLineApi(ERROR_MESSAGE, replyToken)
+                return 'OK'  # Return OK to prevent LINE bot from retrying
+
+            botReply = response_json['choices'][0]['message']['content'].strip()
+
+            user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
-            callLineApi('記憶を消去しました。', replyToken)
-        elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
-            callLineApi(countMaxMessage, replyToken)
+            user['dailyUsage'] += 1
+
+            transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+
+            callLineApi(botReply, replyToken)
             return 'OK'
 
-        user['messages'].append({'role': 'user', 'content': userMessage})
-        
-        # Remove old logs if the total characters exceed 2000 before sending to the API.
-        total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
-        while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
-            removed_message = user['messages'].pop(0)  # Remove the oldest message
-            total_chars -= len(removed_message['content'])
-
-        messages = user['messages']
-
-        response = requests.post(
-            'https://api.openai.com/v1/chat/completions',
-            headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-            json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
-        )
-        
-        response_json = response.json()
-
-        # Error handling
-        if 'error' in response_json:
-            print(f"OpenAI error: {response_json['error']}")
-            callLineApi(ERROR_MESSAGE, replyToken)
-            return 'OK'  # Return OK to prevent LINE bot from retrying
-
-        botReply = response_json['choices'][0]['message']['content'].strip()
-
-        user['messages'].append({'role': 'assistant', 'content': botReply})
-        user['updatedDateString'] = nowDate
-        user['dailyUsage'] += 1
-
-        transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
-
-        callLineApi(botReply, replyToken)
-        return 'OK'
-
-        # Begin the transaction
-        return update_in_transaction(db.transaction(), doc_ref)
+            # Begin the transaction
+            return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
         print(f"Error in lineBot: {e}")
         raise
