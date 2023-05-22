@@ -200,6 +200,8 @@ def callLineApi(replyText, replyToken):
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
+        if 'events' not in request.json or not request.json['events']:
+            return 'No events in the request', 200  # Return a 200 HTTP status code
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
@@ -283,7 +285,6 @@ def lineBot():
 
         # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
-
     except KeyError:
         return 'Not a valid JSON', 200  # Return a 200 HTTP status code
     except Exception as e:
