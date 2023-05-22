@@ -52,6 +52,15 @@ hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
 app.secret_key = SECRET_KEY
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == ADMIN_PASSWORD:
+            session['is_admin'] = True
+            return redirect(url_for('settings'))
+    return render_template('login.html')
+
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if 'is_admin' not in session or not session['is_admin']:
