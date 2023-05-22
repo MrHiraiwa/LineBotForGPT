@@ -152,7 +152,7 @@ def callLineApi(replyText, replyToken):
     return render_template('settings.html', settings=current_settings)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/webhook', methods=['POST'])
 def lineBot():
     try:
         if 'events' not in request.json or not request.json['events']:
