@@ -210,7 +210,8 @@ def lineBot():
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
 
-        # 以下のコードが修正されました
+        nowDate = datetime.utcnow().replace(tzinfo=utc)
+        nowDate = nowDate.astimezone(jst)
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
