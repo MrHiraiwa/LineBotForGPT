@@ -46,6 +46,7 @@ MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 BOT_NAME = get_setting('BOT_NAME')
+FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -83,7 +84,8 @@ REQUIRED_ENV_VARS = [
     "BOT_NAME",
     "SYSTEM_PROMPT",
     "MAX_TOKEN_NUM",
-    "ERROR_MESSAGE"
+    "ERROR_MESSAGE",
+    "FORGET_MESSAGE"
 ]
 
 def systemRole():
@@ -180,7 +182,7 @@ def lineBot():
             elif userMessage.strip() in ["忘れて", "わすれて"]:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
-                callLineApi('記憶を消去しました。', replyToken)
+                callLineApi(FORGET_MESSAGE, replyToken)
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
