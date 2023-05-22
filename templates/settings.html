@@ -42,7 +42,7 @@
         {% if key == "SYSTEM_PROMPT" %}
         <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'あなたは有能なAIアシスタントです。' }}</textarea>
         {% if key == "BOT_NAME" %}
-        <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'AIアシスタントです' }}</textarea>
+        <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'AIアシスタント' }}</textarea>
         {% elif key == "MAX_TOKEN_NUM" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '2000' }}">
         {% elif key == "MAX_DAILY_USAGE" and value == None %}
