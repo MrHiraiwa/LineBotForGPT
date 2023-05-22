@@ -6,9 +6,14 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
-from pytz import utc
+from pytz import utc, timezone
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
+
+jst = timezone('Asia/Tokyo')
+nowDate = datetime.utcnow().replace(tzinfo=utc)
+nowDate = nowDate.astimezone(jst)
+
 
 try:
     db = firestore.Client()
