@@ -41,7 +41,7 @@
         <label for="{{ key }}">{{ key }}</label>
         {% if key == "SYSTEM_PROMPT" %}
         <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'あなたは有能なAIアシスタントです。' }}</textarea>
-        {% if key == "BOT_NAME" %}
+        {% elif key == "BOT_NAME" %}
         <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'AIアシスタント' }}</textarea>
         {% elif key == "MAX_TOKEN_NUM" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '2000' }}">
