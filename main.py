@@ -103,7 +103,7 @@ REQUIRED_ENV_VARS = [
     "MAX_TOKEN_NUM",
     "ERROR_MESSAGE",
     "FORGET_MESSAGE",
-    "FORGET_KEYWORDS
+    "FORGET_KEYWORDS"
 ]
 
 def systemRole():
