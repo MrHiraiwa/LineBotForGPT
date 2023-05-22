@@ -87,6 +87,8 @@
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '1000' }}">
         {% elif key == "ERROR_MESSAGE" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。' }}">
+        {% elif key == "FORGET_MESSAGE" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '記憶を消去しました。' }}">
         {% else %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
         {% endif %}
