@@ -47,11 +47,28 @@ SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 BOT_NAME = get_setting('BOT_NAME')
 FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
+FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
 hashed_secret_key = hash_object.digest()
 app.secret_key = SECRET_KEY
+
+@app.route('/reset_logs', methods=['POST'])
+def reset_logs():
+    if 'is_admin' not in session or not session['is_admin']:
+        return redirect(url_for('login'))
+    else:
+        try:
+            users_ref = db.collection(u'users')
+            users = users_ref.stream()
+            for user in users:
+                user_ref = users_ref.document(user.id)
+                user_ref.update({'messages': []})
+            return 'All user logs reset successfully', 200
+        except Exception as e:
+            print(f"Error resetting user logs: {e}")
+            return 'Error resetting user logs', 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -85,7 +102,8 @@ REQUIRED_ENV_VARS = [
     "SYSTEM_PROMPT",
     "MAX_TOKEN_NUM",
     "ERROR_MESSAGE",
-    "FORGET_MESSAGE"
+    "FORGET_MESSAGE",
+    "FORGET_KEYWORDS"
 ]
 
 def systemRole():
@@ -179,7 +197,7 @@ def lineBot():
 
             if not userMessage:
                 return 'OK'
-            elif userMessage.strip() in ["忘れて", "わすれて"]:
+            elif userMessage.strip() in FORGET_KEYWORDS:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken)
