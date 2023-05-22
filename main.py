@@ -203,6 +203,7 @@ def callLineApi(replyText, replyToken):
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=current_settings)
 
+
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
@@ -212,7 +213,7 @@ def lineBot():
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
-        nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
+        nowDate = datetime.now(jst)  # 現在の日本時間を取得
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
@@ -221,7 +222,7 @@ def lineBot():
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
 
-        # Start a Firestore transaction
+      # Start a Firestore transaction
         @firestore.transactional
         def update_in_transaction(transaction, doc_ref):
             doc = doc_ref.get(transaction=transaction)
@@ -233,7 +234,12 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
-                if (nowDate - user['updatedDateString']) > timedelta(days=1):
+                updatedDateString = user['updatedDateString']
+                updatedDate = datetime.strptime(updatedDateString, '%Y-%m-%d %H:%M:%S')  # 文字列からdatetimeオブジェクトへ
+                updatedDate = updatedDate.replace(tzinfo=pytz.UTC)  # Firestoreの時間はUTCなので、その情報を付加
+                updatedDate = updatedDate.astimezone(jst)  # 日本時間に変換
+                
+                if (nowDate - updatedDate) > timedelta(days=1):
                     dailyUsage = 0
             else:
                 user = {
