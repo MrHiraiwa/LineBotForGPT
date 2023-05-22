@@ -147,7 +147,7 @@ def lineBot():
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
-        nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S')
+        nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S %Z%z')
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
