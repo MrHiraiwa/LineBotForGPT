@@ -283,6 +283,8 @@ def lineBot():
 
         # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
+    except KeyError:
+        return 'Not a valid JSON', 200  # Return a 200 HTTP status code
     except Exception as e:
         print(f"Error in lineBot: {e}")
         callLineApi(ERROR_MESSAGE, replyToken)
