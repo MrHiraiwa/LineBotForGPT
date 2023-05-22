@@ -232,4 +232,3 @@ def get_profile(userId):
     }
     response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
     return response
-
