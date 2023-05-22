@@ -163,9 +163,7 @@ def lineBot():
                 dailyUsage = user.get('dailyUsage', 0)
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
-                updatedDate = datetime.strptime(updatedDateString, '%Y-%m-%d %H:%M:%S')  # 文字列からdatetimeオブジェクトへ
-                updatedDate = updatedDate.replace(tzinfo=pytz.UTC)  # Firestoreの時間はUTCなので、その情報を付加
-                updatedDate = updatedDate.astimezone(jst)  # 日本時間に変換
+                updatedDate = user['updatedDateString'].astimezone(jst)
                 
                 if (nowDate - updatedDate) > timedelta(days=1):
                     dailyUsage = 0
