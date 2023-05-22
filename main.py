@@ -42,6 +42,7 @@ MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 SECRET_KEY = get_setting('SECRET_KEY')
 SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
+BOT_NAME = get_setting('BOT_NAME')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -149,7 +150,8 @@ REQUIRED_ENV_VARS = [
     "MAX_DAILY_USAGE",
     "SYSTEM_PROMPT",
     "MAX_TOKEN_NUM",
-    "ERROR_MESSAGE"
+    "ERROR_MESSAGE",
+    "BOT_NAME"
 ]
 
 def systemRole():
