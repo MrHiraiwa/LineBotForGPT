@@ -148,10 +148,10 @@ REQUIRED_ENV_VARS = [
     "OPENAI_APIKEY",
     "LINE_ACCESS_TOKEN",
     "MAX_DAILY_USAGE",
+    "BOT_NAME",
     "SYSTEM_PROMPT",
     "MAX_TOKEN_NUM",
-    "ERROR_MESSAGE",
-    "BOT_NAME"
+    "ERROR_MESSAGE"
 ]
 
 def systemRole():
