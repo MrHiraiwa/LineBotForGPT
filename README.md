@@ -7,8 +7,7 @@
 以下のステップに従ってセットアップしてください：
 
 1. Google Cloud Runでデプロイします：Google Cloud Consoleでプロジェクトを作成しCloud Run APIを有効にし、本レポジトリを指定してデプロイします。
-デプロイの際は以下の環境変数を設定する必要があります
-
+デプロイの際は以下の環境変数を設定する必要があります。
 OPENAI_APIKEY: OpenAI APIのAPIキー。
 LINE_ACCESS_TOKEN: LINE Messaging APIのアクセストークン。
 SECRET_KEY: メッセージの暗号化と復号化に使用される秘密鍵。
