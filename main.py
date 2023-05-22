@@ -208,8 +208,8 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
-        #line_profile = json.loads(get_profile(userId).text)
-        #display_name = line_profile['displayName']
+        line_profile = json.loads(get_profile(userId).text)
+        display_name = line_profile['displayName']
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
