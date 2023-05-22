@@ -2,21 +2,59 @@
 <html>
 <head>
   <title>Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-  label {
-    display: inline-block;
-    vertical-align: top;
-    margin-top: 10px;
-    width: 200px;  /* Add this line */
-  }
-    textarea {
-      vertical-align: top;
-      overflow: hidden;
-      width: 90%; /* Add this line */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
     }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    textarea,
     input[type="text"] {
-      margin-top: 10px; /* Adjust as needed */
-      width: 90%; /* You may want to set this as well */
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #666666;
+      text-decoration: none;
     }
   </style>
   <script>
