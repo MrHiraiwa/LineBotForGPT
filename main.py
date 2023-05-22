@@ -200,7 +200,7 @@ def lineBot():
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
                 json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages},
-                timeout=10  # 10 seconds timeout for example
+                timeout=20  # 10 seconds timeout for example
             )
 
             response_json = response.json()
