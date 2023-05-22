@@ -6,12 +6,12 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
-from pytz import utc, timezone
+from pytz import utc
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
 
-jst = timezone('Asia/Tokyo')
-nowDate = datetime.utcnow().replace(tzinfo=utc)
+jst = pytz.timezone('Asia/Tokyo')
+nowDate = datetime.now(pytz.utc)
 nowDate = nowDate.astimezone(jst)
 
 
@@ -209,10 +209,7 @@ def lineBot():
     try:
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
-
-        jst = timezone('Asia/Tokyo')
-        nowDate = datetime.utcnow().replace(tzinfo=utc)
-        nowDate = nowDate.astimezone(jst)
+        
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
