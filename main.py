@@ -7,7 +7,6 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
 from pytz import utc
-from flask import Flask, request, render_template
 from flask import Flask, request, render_template, session, redirect, url_for, abort
 from google.cloud import firestore
 
@@ -32,6 +31,9 @@ def get_setting(key):
         doc_ref.set({key: default_value})  # Set the key with the default value
         return default_value
 
+def update_setting(key, value):
+    doc_ref = db.collection(u'settings').document('app_settings')
+    doc_ref.update({key: value})
 
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
@@ -150,10 +152,6 @@ REQUIRED_ENV_VARS = [
     "ERROR_MESSAGE"
 ]
 
-def update_setting(key, value):
-    doc_ref = db.collection(u'settings').document('app_settings')
-    doc_ref.update({key: value})
-
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
 
@@ -199,11 +197,7 @@ def callLineApi(replyText, replyToken):
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=current_settings)
 
-@app.route('/', methods=['GET', 'POST'])
-def some_function():
-    return 'OK', 200
-
-@app.route('/webhook', methods=['POST'])
+@app.route('/', methods=['POST'])
 def lineBot():
     try:
 
@@ -212,6 +206,8 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
+        #line_profile = json.loads(get_profile(userId).text)
+        #display_name = line_profile['displayName']
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -258,17 +254,19 @@ def lineBot():
 
             messages = user['messages']
 
+            
             response = requests.post(
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages}
+                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages},
+                timeout=10  # 10 seconds timeout for example
             )
-        
+
             response_json = response.json()
 
             # Error handling
-            if 'error' in response_json:
-                print(f"OpenAI error: {response_json['error']}")
+            if response.status_code != 200 or 'error' in response_json:
+                print(f"OpenAI error: {response_json.get('error', 'No response from API')}")
                 callLineApi(ERROR_MESSAGE, replyToken)
                 return 'OK'  # Return OK to prevent LINE bot from retrying
 
@@ -287,4 +285,15 @@ def lineBot():
         return update_in_transaction(db.transaction(), doc_ref)
     except Exception as e:
         print(f"Error in lineBot: {e}")
+        callLineApi(ERROR_MESSAGE, replyToken)
         raise
+
+def get_profile(userId):
+    url = 'https://api.line.me/v2/bot/profile/' + userId
+    headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Authorization": "Bearer " + LINE_ACCESS_TOKEN,
+    }
+    response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
+    return response
+
