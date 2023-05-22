@@ -212,6 +212,7 @@ def lineBot():
         nowDate = datetime.utcnow().replace(tzinfo=utc)  # Explicitly set timezone to UTC
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
+        act_as = BOT_NAME + "として返信して。\n"
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -248,7 +249,7 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
+            user['messages'].append({'role': 'user', 'content': act_as + display_name + ":" + userMessage})
         
             # Remove old logs if the total characters exceed 2000 before sending to the API.
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
