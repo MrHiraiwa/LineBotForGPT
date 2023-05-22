@@ -47,6 +47,7 @@ SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 BOT_NAME = get_setting('BOT_NAME')
 FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
+FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS') or ["忘れて", "わすれて"]
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -101,7 +102,8 @@ REQUIRED_ENV_VARS = [
     "SYSTEM_PROMPT",
     "MAX_TOKEN_NUM",
     "ERROR_MESSAGE",
-    "FORGET_MESSAGE"
+    "FORGET_MESSAGE",
+    "FORGET_KEYWORDS
 ]
 
 def systemRole():
@@ -195,7 +197,7 @@ def lineBot():
 
             if not userMessage:
                 return 'OK'
-            elif userMessage.strip() in ["忘れて", "わすれて"]:
+            elif userMessage.strip() in FORGET_KEYWORDS:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken)
