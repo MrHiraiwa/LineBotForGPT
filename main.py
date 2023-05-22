@@ -213,6 +213,7 @@ def lineBot():
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
+        nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S')
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -249,7 +250,7 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            user['messages'].append({'role': 'user', 'content': nowDate + " " + act_as + display_name + ":" + userMessage})
+            user['messages'].append({'role': 'user', 'content': nowDateStr + " " + act_as + display_name + ":" + userMessage})
         
             # Remove old logs if the total characters exceed 2000 before sending to the API.
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
