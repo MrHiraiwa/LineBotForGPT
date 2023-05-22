@@ -200,6 +200,8 @@ def callLineApi(replyText, replyToken):
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
+        if 'events' not in request.json or not request.json['events']:
+            return 'No events in the request', 200  # Return a 200 HTTP status code
 
         # 以下のコードが修正されました
         event = request.json['events'][0]
