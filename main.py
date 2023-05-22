@@ -12,6 +12,7 @@ from google.cloud import firestore
 
 jst = pytz.timezone('Asia/Tokyo')
 nowDate = datetime.now(jst)
+updatedDate = user['updatedDateString'].astimezone(jst)
 
 try:
     db = firestore.Client()
