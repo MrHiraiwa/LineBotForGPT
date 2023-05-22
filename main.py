@@ -47,7 +47,7 @@ SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 BOT_NAME = get_setting('BOT_NAME')
 FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
-FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS') or ["忘れて", "わすれて"]
+FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
