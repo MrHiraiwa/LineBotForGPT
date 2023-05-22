@@ -210,6 +210,7 @@ def lineBot():
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
 
+        jst = timezone('Asia/Tokyo')
         nowDate = datetime.utcnow().replace(tzinfo=utc)
         nowDate = nowDate.astimezone(jst)
         event = request.json['events'][0]
