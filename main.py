@@ -246,7 +246,7 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            user['messages'].append({'role': 'user', 'content': userMessage})
+            user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
         
             # Remove old logs if the total characters exceed 2000 before sending to the API.
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
