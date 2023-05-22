@@ -12,7 +12,6 @@ from google.cloud import firestore
 
 jst = pytz.timezone('Asia/Tokyo')
 nowDate = datetime.now(jst)
-updatedDate = user['updatedDateString'].astimezone(jst)
 
 try:
     db = firestore.Client()
@@ -20,30 +19,30 @@ except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
 
-    
 def get_setting(key):
-    doc_ref = db.collection(u'settings').document('app_settings')  # Changed to 'app_settings'
+    doc_ref = db.collection(u'settings').document('app_settings')
     doc = doc_ref.get()
     if doc.exists:
-        return doc.to_dict().get(key)  # Get the value of the key
+        return doc.to_dict().get(key)
     else:
-        # Create default setting if it doesn't exist
         if key in ['MAX_TOKEN_NUM', 'MAX_DAILY_USAGE']:
-            default_value = 2000  # Default value for integer settings
+            default_value = 2000
         else:
-            default_value = ""  # Replace with your actual default value
-        doc_ref.set({key: default_value})  # Set the key with the default value
+            default_value = ""
+        doc_ref.set({key: default_value})
         return default_value
 
 def update_setting(key, value):
     doc_ref = db.collection(u'settings').document('app_settings')
     doc_ref.update({key: value})
 
+OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
+LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
+SECRET_KEY = os.getenv('SECRET_KEY')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # Read from environment variables
+
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
-OPENAI_APIKEY = get_setting('OPENAI_APIKEY')
-LINE_ACCESS_TOKEN = get_setting('LINE_ACCESS_TOKEN')
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-SECRET_KEY = get_setting('SECRET_KEY')
 SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
 BOT_NAME = get_setting('BOT_NAME')
@@ -149,8 +148,6 @@ def settings():
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 REQUIRED_ENV_VARS = [
-    "OPENAI_APIKEY",
-    "LINE_ACCESS_TOKEN",
     "MAX_DAILY_USAGE",
     "BOT_NAME",
     "SYSTEM_PROMPT",
