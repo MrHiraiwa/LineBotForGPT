@@ -209,7 +209,7 @@ def lineBot():
                 return 'OK'
             
             if any(word in userMessage for word in NG_KEYWORDS):
-                ng_message = NG_MESSAGE
+                ng_message = NG_MESSAGE + "\n"
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken)
