@@ -155,6 +155,14 @@ def callLineApi(replyText, replyToken):
     current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=current_settings)
 
+from flask import flash
+
+@app.route('/your_route', methods=['POST'])
+def your_handler_function():
+    # Your saving logic here...
+
+    flash('Settings have been saved successfully.')
+    return redirect(url_for('your_template'))
 
 @app.route('/', methods=['POST'])
 def lineBot():
