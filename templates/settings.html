@@ -64,7 +64,7 @@
 }
 
   </style>
-  <script>
+<script>
     const defaultSettings = {{ default_settings | tojson | safe }};
 
     function resetToDefaults() {
@@ -77,19 +77,15 @@
     }
 
     window.onload = function() {
-    var textareas = document.getElementsByTagName('textarea');
-    for (var i = 0; i < textareas.length; i++) {
-      textareas[i].addEventListener('input', autoResizeTextarea);
-      autoResizeTextarea.call(textareas[i]);  // Call the function to set initial height
-    }
-
-    var resetButton = document.getElementById('resetButton');
-      resetButton.addEventListener('click', resetToDefaults);
+      var resetButton = document.getElementById('resetButton');
+      resetButton.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent the form from being submitted
+        resetToDefaults();
+      });
     };
-</script>
+  </script>
 </head>
 <body>
-    <!-- Display flash messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <div class="flash-message">
@@ -101,19 +97,14 @@
   <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
-      {% for key, value in settings.items() %}
+      {% for key in REQUIRED_ENV_VARS %}
         <div>
           <label for="{{ key }}">{{ key }}</label>
-          {% if key == "SYSTEM_PROMPT" %}
-          <textarea id="{{ key }}" name="{{ key }}">{{ value }}</textarea>
-          {% else %}
-          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
-          {% endif %}
+          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
         </div>
       {% endfor %}
     <input type="submit" value="Save">
-    <input id="resetButton" type="button" value="Reset to Default" style="width: 100%; padding: 10px; margin-top: 20px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 3px; cursor: pointer;">
-
+    <input id="resetButton" type="button" value="Reset to Default">
   </form>
   <form action="{{ url_for('reset_logs') }}" method="post">
     <input type="submit" value="Reset All User Logs">
