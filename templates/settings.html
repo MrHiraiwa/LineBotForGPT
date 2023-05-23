@@ -72,6 +72,16 @@
   </script>
 </head>
 <body>
+    <!-- Display flash messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-message">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
     {% for key, value in settings.items() %}
