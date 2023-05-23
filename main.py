@@ -136,19 +136,6 @@ def settings():
 
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
-REQUIRED_ENV_VARS = [
-    "BOT_NAME",
-    "SYSTEM_PROMPT",
-    "MAX_DAILY_USAGE",
-    "MAX_TOKEN_NUM",
-    "NG_KEYWORDS",
-    "NG_MESSAGE",
-    "ERROR_MESSAGE",
-    "FORGET_KEYWORDS",
-    "FORGET_MESSAGE",
-    "GPT_MODEL"
-]
-
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
 
