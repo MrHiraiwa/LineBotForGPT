@@ -18,6 +18,7 @@ try:
 except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
+    
 def reload_settings():
     global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, NG_KEYWORDS, NG_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
@@ -184,7 +185,7 @@ def lineBot():
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
-        nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z')
+        nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
