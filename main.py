@@ -176,11 +176,8 @@ def callLineApi(replyText, replyToken):
         'messages': [{'type': 'text', 'text': replyText}]
     }
     requests.post(url, headers=headers, data=json.dumps(data))
-
-    # Fetch current settings
-    current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
-    return render_template('settings.html', settings=current_settings)
-
+    return 'OK'
+    
 from flask import flash
 
 @app.route('/your_route', methods=['POST'])
