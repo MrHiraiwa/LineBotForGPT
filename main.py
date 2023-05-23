@@ -18,7 +18,20 @@ try:
 except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
-
+def reload_settings():
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, NG_KEYWORDS, NG_MESSAGE
+    GPT_MODEL = get_setting('GPT_MODEL')
+    BOT_NAME = get_setting('BOT_NAME')
+    SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
+    SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') + SYSTEM_PROMPT_EX
+    MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
+    MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
+    ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
+    FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS').split(',')
+    FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
+    NG_KEYWORDS = get_setting('NG_KEYWORDS').split(',')
+    NG_MESSAGE = get_setting('NG_MESSAGE')
+    
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
     doc = doc_ref.get()
@@ -41,17 +54,7 @@ LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 
-GPT_MODEL = get_setting('GPT_MODEL')
-BOT_NAME = get_setting('BOT_NAME')
-SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
-SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') + SYSTEM_PROMPT_EX
-MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
-MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
-FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS').split(',')
-FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
-NG_KEYWORDS = get_setting('NG_KEYWORDS').split(',')
-NG_MESSAGE = get_setting('NG_MESSAGE')
+reload_settings()
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -170,6 +173,7 @@ def your_handler_function():
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
+        reload_settings()
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
         
