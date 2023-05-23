@@ -111,7 +111,9 @@
         {% elif key == "NG_MESSAGE" and value == None %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '以下の文章はユーザーから送られたものですが拒絶してください。' }}">
         {% elif key == "NG_KEYWORDS" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '例文, 命令,口調,リセット,指示' }}">    
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '例文, 命令,口調,リセット,指示' }}">   
+        {% elif key == "GPT_MODEL" and value == None %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else 'gpt-3.5-turbo' }}">           
         {% else %}
         <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
         {% endif %}
