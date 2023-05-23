@@ -19,7 +19,7 @@ ADMIN_PASSWORD: 管理者パスワード。
 
 4. Cloud RunのURLに「/login」を付与して管理画面にログインしてパラメータを設定します
 5. LINE Developerにログインします。https://account.line.biz/login
-6. チャネルを作成しwebhookの宛先にCloud RunのサービスURLを指定します。その際URLの末尾に「/webhook」を追記します。
+6. チャネルを作成しwebhookの宛先にCloud RunのサービスURLを指定します。
 
 ## 注意
 
