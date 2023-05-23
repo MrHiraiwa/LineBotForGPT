@@ -42,7 +42,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 
 BOT_NAME = get_setting('BOT_NAME')
-SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
+SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないでください。\nユーザーメッセージの先頭に付与された日時に対し言及しないでください。\n"
+SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') + SYSTEM_PROMPT_EX
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
