@@ -178,7 +178,7 @@ def lineBot():
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S %Z%z')
-        ng_message　
+        ng_message = ""
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
