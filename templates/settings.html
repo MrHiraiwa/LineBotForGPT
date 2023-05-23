@@ -98,15 +98,10 @@
       </div>
     {% endfor %}
     <input type="submit" value="Save">
-  </form>
-  <form method="post">
-    <!-- Your form elements go here -->
-    <input type="submit" value="Save">
-    <input type="reset" value="Reset to Default">
+    <input type="reset" value="Reset to Default" style="width: 100%; padding: 10px; margin-top: 20px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 3px; cursor: pointer;">
   </form>
   <form action="{{ url_for('reset_logs') }}" method="post">
     <input type="submit" value="Reset All User Logs">
   </form>
-
 </body>
 </html>
