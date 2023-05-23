@@ -99,9 +99,14 @@
     {% endfor %}
     <input type="submit" value="Save">
   </form>
+  <form method="post">
+    <!-- Your form elements go here -->
+    <input type="submit" value="Save">
+    <input type="reset" value="Reset to Default">
+  </form>
   <form action="{{ url_for('reset_logs') }}" method="post">
     <input type="submit" value="Reset All User Logs">
-</form>
+  </form>
 
 </body>
 </html>
