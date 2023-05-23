@@ -152,7 +152,7 @@ def callLineApi(replyText, replyToken):
     return render_template('settings.html', settings=current_settings)
 
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/', methods=['POST'])
 def lineBot():
     try:
         if 'events' not in request.json or not request.json['events']:
@@ -207,23 +207,30 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            user['messages'].append({'role': 'user', 'content': nowDateStr + " " + act_as + display_name + ":" + userMessage})
-        
-            # Remove old logs if the total characters exceed 2000 before sending to the API.
-            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in user['messages']])
+            temp_message = nowDateStr + " " + act_as + display_name + ":" + userMessage
+            temp_messages = user['messages'].copy()
+            temp_messages.append({'role': 'user', 'content': temp_message})
+
+
+     
+            
+
+            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 removed_message = user['messages'].pop(0)  # Remove the oldest message
                 total_chars -= len(removed_message['content'])
 
             messages = user['messages']
 
-            
             response = requests.post(
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + messages},
-                timeout=20  # 10 seconds timeout for example
+                json={'model': 'gpt-3.5-turbo', 'messages': [systemRole()] + temp_messages},
+                timeout=20 
             )
+            
+
+            user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
 
             response_json = response.json()
 
