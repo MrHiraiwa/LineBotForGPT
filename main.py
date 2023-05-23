@@ -41,13 +41,15 @@ LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 
+BOT_NAME = get_setting('BOT_NAME')
+SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
 MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT')
 ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
-BOT_NAME = get_setting('BOT_NAME')
-FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
 FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
+FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
+FORGET_KEYWORDS = get_setting('NG_KEYWORDS')
+FORGET_MESSAGE = get_setting('NG_MESSAGE')
 
 app = Flask(__name__)
 hash_object = SHA256.new(data=(SECRET_KEY or '').encode('utf-8'))
@@ -97,13 +99,15 @@ def settings():
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 REQUIRED_ENV_VARS = [
-    "MAX_DAILY_USAGE",
     "BOT_NAME",
     "SYSTEM_PROMPT",
+    "MAX_DAILY_USAGE",
     "MAX_TOKEN_NUM",
+    "NG_KEYWORDS",
+    "NG_MESSAGE",
     "ERROR_MESSAGE",
-    "FORGET_MESSAGE",
-    "FORGET_KEYWORDS"
+    "FORGET_KEYWORDS",
+    "FORGET_MESSAGE"
 ]
 
 def systemRole():
@@ -166,6 +170,7 @@ def lineBot():
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S %Z%z')
+        ng_message　
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -203,11 +208,14 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 return 'OK'
             
+            if any(word in userMessage for word in NG_KEYWORDS):
+                ng_message = NG_MESSAGE
+            
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken)
                 return 'OK'
 
-            temp_message = nowDateStr + " " + act_as + display_name + ":" + userMessage
+            temp_message = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
             temp_messages = user['messages'].copy()
             temp_messages.append({'role': 'user', 'content': temp_message})
 
