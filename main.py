@@ -178,7 +178,6 @@ def lineBot():
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y-%m-%d %H:%M:%S %Z%z')
-        ng_message = ""
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -187,7 +186,7 @@ def lineBot():
         @firestore.transactional
         def update_in_transaction(transaction, doc_ref):
             doc = doc_ref.get(transaction=transaction)
-        
+            ng_message = ""
             dailyUsage = 0
             userMessage = event['message'].get('text')
             print(f"User message: {userMessage}")
