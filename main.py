@@ -9,6 +9,7 @@ import requests
 import pytz
 from flask import Flask, request, render_template, session, redirect, url_for
 from google.cloud import firestore
+from web import get_search_results, get_contents, summarize_contents
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -367,3 +368,24 @@ def create_quick_reply(quick_reply):
                 "label": '🗺️地図で検索',
             }
         }
+    
+@app.route("/search", methods=["POST"])
+def search():
+    question = request.json.get("question")
+    search_result = get_search_results(question, 3)
+
+    links = [item["link"] for item in search_result.get("items", [])]
+    contents = get_contents(links)
+    summary = summarize_contents(contents, question)
+
+    if not summary:
+        summary = "URLをあなたが見つけたかのようにリアクションして。\n"
+
+    return jsonify({
+        "userMessage": summary,
+        "links": links
+    })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
