@@ -7,7 +7,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
 import pytz
-from flask import Flask, request, render_template, session, redirect, url_for
+from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 from google.cloud import firestore
 from web import get_search_results, get_contents, summarize_contents
 
@@ -369,8 +369,21 @@ def create_quick_reply(quick_reply):
             }
         }
 
-    
-@app.route("/search", methods=["POST"])
+@app.route("/search-form", methods=["GET", "POST"])
+def search_form():
+    if request.method == 'POST':
+        question = request.form.get('question')
+        results = search(question)
+        return render_template('search-results.html', results=results)
+    return render_template('search-form.html')
+
+@app.route("/search-api", methods=["POST"])
+def search_api():
+    data = request.get_json()
+    if not data or "question" not in data:
+        return jsonify({"error": "Missing 'question' parameter"}), 400
+    return search(data["question"])
+
 def search():
     question = request.json.get("question")
     search_result = get_search_results(question, 3)
