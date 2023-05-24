@@ -242,7 +242,13 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            if message_type == 'image':
+            if userMessage.strip() in f"😱{bot_name}の記憶を消去"
+                user['messages'] = []
+                user['updatedDateString'] = nowDate
+                callLineApi(FORGET_MESSAGE, replyToken)
+                transaction.set(doc_ref, {**user, 'messages': []})
+                return 'OK'
+            elif message_type == 'image':
                 userMessage = "画像が送信されました。"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
