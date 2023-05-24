@@ -210,6 +210,7 @@ def lineBot():
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
+        exec_functions　= False
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -240,11 +241,6 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-            if message_type is None:
-                print("Message type is None.")
-            else:
-                print(f"Received type: {message_type}")
-
             if userMessage.strip() in FORGET_KEYWORDS:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
@@ -276,7 +272,7 @@ def lineBot():
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
             
             if sourceType == "group" or sourceType == "room":
-                if BotName in userMessage or exec_functions == True:
+                if BOT_NAME in userMessage or exec_functions == True:
                     pass
                 else:
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
