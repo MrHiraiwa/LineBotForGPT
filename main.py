@@ -255,8 +255,7 @@ def lineBot():
             print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
             if message_type == 'sticker':
                 print("はようごけ")
-                keywords = event.message.keywords
-                #keywords = event.get('message', {}).get('keywords', "")
+                keywords = event.get('message', {}).get('keywords', "")
                 print(f"Received keywords: {keywords}")
                 if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
