@@ -219,7 +219,7 @@ def lineBot():
             doc = doc_ref.get(transaction=transaction)
             ng_message = ""
             dailyUsage = 0
-            userMessage = event['message'].get('text')
+            userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
             print(f"Received event: {event}")
             
@@ -252,9 +252,7 @@ def lineBot():
                 return 'OK'
             
             if message_type == 'sticker':
-                print("はようごけ")
                 keywords = event.get('message', {}).get('keywords', "")
-                print(f"Received keywords: {keywords}")
                 if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
                 else:
