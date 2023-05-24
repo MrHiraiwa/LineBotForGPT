@@ -123,12 +123,10 @@ def login():
 def settings():
     if 'is_admin' not in session or not session['is_admin']:
         return redirect(url_for('login'))
-
-    # Fetch current settings
+    
     current_settings = {key: get_setting(key) or DEFAULT_ENV_VARS.get(key, '') for key in REQUIRED_ENV_VARS}
 
     if request.method == 'POST':
-        # Update settings
         for key in REQUIRED_ENV_VARS:
             value = request.form.get(key)
             if value:
@@ -189,7 +187,6 @@ from flask import flash
 
 @app.route('/your_route', methods=['POST'])
 def your_handler_function():
-    # Your saving logic here...
 
     flash('Settings have been saved successfully.')
     return redirect(url_for('your_template'))
@@ -205,7 +202,7 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         sourceType =  event['source']['type']
-        nowDate = datetime.now(jst)  # 現在の日本時間を取得
+        nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
@@ -215,7 +212,6 @@ def lineBot():
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
 
-      # Start a Firestore transaction
         @firestore.transactional
         def update_in_transaction(transaction, doc_ref):
             doc = doc_ref.get(transaction=transaction)
@@ -279,7 +275,7 @@ def lineBot():
                     return 'OK'
             
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
-                removed_message = user['messages'].pop(0)  # Remove the oldest message
+                removed_message = user['messages'].pop(0) 
                 total_chars -= len(removed_message['content'])
 
             messages = user['messages']
@@ -296,11 +292,10 @@ def lineBot():
 
             response_json = response.json()
 
-            # Error handling
             if response.status_code != 200 or 'error' in response_json:
                 print(f"OpenAI error: {response_json.get('error', 'No response from API')}")
                 callLineApi(ERROR_MESSAGE, replyToken)
-                return 'OK'  # Return OK to prevent LINE bot from retrying
+                return 'OK' 
 
             botReply = response_json['choices'][0]['message']['content'].strip()
 
@@ -313,10 +308,9 @@ def lineBot():
             callLineApi(botReply, replyToken)
             return 'OK'
 
-        # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
     except KeyError:
-        return 'Not a valid JSON', 200  # Return a 200 HTTP status code
+        return 'Not a valid JSON', 200 
     except Exception as e:
         print(f"Error in lineBot: {e}")
         callLineApi(ERROR_MESSAGE, replyToken)
