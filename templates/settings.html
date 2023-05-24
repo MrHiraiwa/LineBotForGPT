@@ -99,7 +99,7 @@ input[type="button"] {
   <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
-      {% for key in REQUIRED_ENV_VARS %}
+      {% for key in required_env_vars %}
         <div>
           <label for="{{ key }}">{{ key }}</label>
           <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
