@@ -252,14 +252,15 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-           
+            
             if message_type.strip() == "sticker":
-                keywords = event.get('message', {}).get('keywords')
+                keywords = event.get('message', {}).get('keywords', "")
                 print(f"Received keywords: {keywords}")
                 if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
                 else:
-                    userMessage = STICKER_MESSAGE + "\n" + event['message'].get('keywords')
+                    userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
+                    
             if any(word in userMessage for word in NG_KEYWORDS):
                 ng_message = NG_MESSAGE + "\n"
             
