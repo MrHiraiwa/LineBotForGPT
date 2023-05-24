@@ -240,13 +240,14 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-            if userMessage.strip() in FORGET_KEYWORDS:
+                
+            if userMessage.strip() in f"😱{bot_name}の記憶を消去"
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            if message_type == 'image':
+            elif message_type == 'image':
                 userMessage = "画像が送信されました。"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
@@ -256,7 +257,14 @@ def lineBot():
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
                 userMessage = "位置情報が送信されました。"
-                    
+            
+            if userMessage.strip() in FORGET_KEYWORDS and exec_functions == True:
+                be_quick_reply = f"😱{bot_name}の記憶を消去"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+            if len(quick_reply) == 0:
+                quick_reply = ""
+                
             if any(word in userMessage for word in NG_KEYWORDS):
                 ng_message = NG_MESSAGE + "\n"
             
@@ -332,3 +340,32 @@ def get_profile(userId):
     }
     response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
     return response
+
+def create_quick_reply(quick_reply):
+    if '🌐インターネットで「' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🌐インターネットで検索',
+                "text": quick_reply
+            }
+        }
+    elif f'😱{BOT_NAME}の記憶を消去' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": f'😱{BOT_NAME}の記憶を消去',
+                "text": quick_reply
+            }
+        }
+    elif '🗺️地図で検索' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "location",
+                "label": '🗺️地図で検索',
+            }
+        }
+
