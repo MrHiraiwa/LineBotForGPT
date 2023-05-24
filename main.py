@@ -128,7 +128,7 @@ def settings():
             if value:
                 update_setting(key, value)
         return redirect(url_for('settings'))
-
+    print(current_settings)
     return render_template('settings.html', settings=current_settings, default_settings=DEFAULT_ENV_VARS)
 
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
