@@ -134,7 +134,6 @@ def settings():
             if value:
                 update_setting(key, value)
         return redirect(url_for('settings'))
-    print(current_settings)
     return render_template(
     'settings.html', 
     settings=current_settings, 
