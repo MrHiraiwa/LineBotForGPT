@@ -248,11 +248,12 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            if message_type == "sticker"
+            if message_type == "sticker":
                 keywords = event['message'].get('keywords')
-                if keywords == ""
+                if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
-                userMessage = STICKER_MESSAGE + "\n" + event['message'].get('keywords')
+                else:
+                    userMessage = STICKER_MESSAGE + "\n" + event['message'].get('keywords')
             if any(word in userMessage for word in NG_KEYWORDS):
                 ng_message = NG_MESSAGE + "\n"
             
@@ -263,11 +264,7 @@ def lineBot():
             temp_message = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
             temp_messages = user['messages'].copy()
             temp_messages.append({'role': 'user', 'content': temp_message})
-
-
-     
             
-
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 removed_message = user['messages'].pop(0)  # Remove the oldest message
