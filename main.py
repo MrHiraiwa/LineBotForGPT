@@ -245,7 +245,7 @@ def lineBot():
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
-                callLineApi(FORGET_MESSAGE, replyToken, {'items': quick_reply})
+                callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             elif message_type == 'image':
