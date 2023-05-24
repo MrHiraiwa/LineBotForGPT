@@ -221,6 +221,7 @@ def lineBot():
             ng_message = ""
             dailyUsage = 0
             userMessage = event['message'].get('text')
+            message_type = event['message'].get('type')
         
             if doc.exists:
                 user = doc.to_dict()
