@@ -1,9 +1,6 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
 
 def get_search_results(query, num, start_index=0):
     google_api_key = os.getenv("GOOGLE_API_KEY")
@@ -59,24 +56,3 @@ def summarize_contents(contents, question):
 
     return ''.join(extract_texts)[:2500]
 
-
-@app.route("/search", methods=["POST"])
-def search():
-    question = request.json.get("question")
-    search_result = get_search_results(question, 3)
-
-    links = [item["link"] for item in search_result.get("items", [])]
-    contents = get_contents(links)
-    summary = summarize_contents(contents, question)
-
-    if not summary:
-        summary = "URLをあなたが見つけたかのようにリアクションして。\n"
-
-    return jsonify({
-        "userMessage": summary,
-        "links": links
-    })
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
