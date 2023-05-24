@@ -119,10 +119,7 @@ def settings():
         return redirect(url_for('login'))
 
     # Fetch current settings
-    current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
-    for key, value in DEFAULT_ENV_VARS.items():
-        if current_settings.get(key) is None:
-            current_settings[key] = value
+    current_settings = {key: get_setting(key) or DEFAULT_ENV_VARS.get(key, '') for key in REQUIRED_ENV_VARS}
 
     if request.method == 'POST':
         # Update settings
