@@ -222,7 +222,7 @@ def lineBot():
             userMessage = event['message'].get('text')
             message_type = event.get('message', {}).get('type')
             print(f"Received event: {event}")
-        
+            
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
@@ -248,8 +248,10 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
+            print(f"Received type: {message_type}")
             if message_type == "sticker":
                 keywords = event['message'].get('keywords')
+                print(f"Received keywords: {keywords}")
                 if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
                 else:
