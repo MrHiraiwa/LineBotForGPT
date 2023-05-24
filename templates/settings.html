@@ -77,6 +77,11 @@ input[type="button"] {
         }
       }
     }
+  function adjustHeight(elem) {
+    elem.style.height = "1px";
+    elem.style.height = (elem.scrollHeight)+"px";
+   }
+
 
     window.onload = function() {
       var resetButton = document.getElementById('resetButton');
@@ -99,12 +104,17 @@ input[type="button"] {
   <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
-      {% for key in required_env_vars %}
-        <div>
-          <label for="{{ key }}">{{ key }}</label>
-          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
-        </div>
-      {% endfor %}
+    {% for key in required_env_vars %}
+<div>
+  <label for="{{ key }}">{{ key }}</label>
+  {% if key == "SYSTEM_PROMPT" %}
+  <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% else %}
+  <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
+  {% endif %}
+</div>
+{% endfor %}
+      
     <input type="submit" value="Save">
     <input id="resetButton" type="button" value="Reset to Default">
   </form>
