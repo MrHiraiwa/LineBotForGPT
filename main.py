@@ -243,7 +243,7 @@ def lineBot():
                 print("Message type is None.")
             else:
                 print(f"Received type: {message_type}")
-
+            print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
             if not userMessage:
                 return 'OK'
             elif userMessage.strip() in FORGET_KEYWORDS:
