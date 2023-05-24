@@ -261,7 +261,7 @@ def lineBot():
                 userMessage = "位置情報が送信されました。"
                 
             if userMessage.strip() in FORGET_KEYWORDS:
-                be_quick_reply = f"😱{bot_name}の記憶を消去"
+                be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
             if len(quick_reply) == 0:
