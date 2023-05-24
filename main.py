@@ -239,6 +239,10 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
+            if message_type is None:
+                print("Message type is None.")
+            else:
+                print(f"Received type: {message_type}")
 
             if not userMessage:
                 return 'OK'
@@ -248,7 +252,7 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            print(f"Received type: {message_type}")
+           
             if message_type == "sticker":
                 keywords = event['message'].get('keywords')
                 print(f"Received keywords: {keywords}")
