@@ -221,7 +221,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text')
             message_type = event.get('message', {}).get('type')
-
+            print(f"Received event: {event}")
         
             if doc.exists:
                 user = doc.to_dict()
