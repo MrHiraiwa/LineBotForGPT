@@ -38,16 +38,18 @@
       resize: vertical;
     }
 
-    input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #4CAF50;
-      color: #ffffff;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
+    input[type="submit"],
+input[type="button"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #4CAF50;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
 
     a {
       display: block;
@@ -56,49 +58,55 @@
       color: #666666;
       text-decoration: none;
     }
+    @media (min-width: 700px) {
+  form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
   </style>
-  <script>
-    function autoResizeTextarea() {
-      this.style.height = 'auto';
-      this.style.height = this.scrollHeight + 'px';
-    }
-    window.onload = function() {
-      var textareas = document.getElementsByTagName('textarea');
-      for (var i = 0; i < textareas.length; i++) {
-        textareas[i].addEventListener('input', autoResizeTextarea);
-        autoResizeTextarea.call(textareas[i]);  // Call the function to set initial height
+<script>
+    const defaultSettings = {{ default_settings | tojson | safe }};
+
+    function resetToDefaults() {
+      for (const key in defaultSettings) {
+        const inputElem = document.getElementById(key);
+        if (inputElem) {
+          inputElem.value = defaultSettings[key];
+        }
       }
     }
+
+    window.onload = function() {
+      var resetButton = document.getElementById('resetButton');
+      resetButton.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent the form from being submitted
+        resetToDefaults();
+      });
+    };
   </script>
 </head>
 <body>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-message">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
-    {% for key, value in settings.items() %}
-      <div>
-        <label for="{{ key }}">{{ key }}</label>
-        {% if key == "SYSTEM_PROMPT" %}
-        <textarea id="{{ key }}" name="{{ key }}">{{ value if value is not none else 'あなたは有能なAIアシスタントです。' }}</textarea>
-        {% elif key == "BOT_NAME" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else 'AIアシスタント' }}">
-        {% elif key == "MAX_TOKEN_NUM" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '2000' }}">
-        {% elif key == "MAX_DAILY_USAGE" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '1000' }}">
-        {% elif key == "ERROR_MESSAGE" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。' }}">
-        {% elif key == "FORGET_MESSAGE" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '記憶を消去しました。' }}">
-        {% elif key == "FORGET_KEYWORDS" and value == None %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value if value is not none else '忘れて,わすれて' }}">
-    
-        {% else %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
-        {% endif %}
-      </div>
-    {% endfor %}
+      {% for key in required_env_vars %}
+        <div>
+          <label for="{{ key }}">{{ key }}</label>
+          <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
+        </div>
+      {% endfor %}
     <input type="submit" value="Save">
-    <input type="reset" value="Reset to Default" style="width: 100%; padding: 10px; margin-top: 20px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 3px; cursor: pointer;">
+    <input id="resetButton" type="button" value="Reset to Default">
   </form>
   <form action="{{ url_for('reset_logs') }}" method="post">
     <input type="submit" value="Reset All User Logs">
