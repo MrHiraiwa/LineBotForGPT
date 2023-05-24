@@ -82,14 +82,18 @@ input[type="button"] {
     elem.style.height = (elem.scrollHeight)+"px";
    }
 
+  window.onload = function() {
+  var resetButton = document.getElementById('resetButton');
+  resetButton.addEventListener('click', function(e) {
+    e.preventDefault(); // Prevent the form from being submitted
+    resetToDefaults();
+  });
 
-    window.onload = function() {
-      var resetButton = document.getElementById('resetButton');
-      resetButton.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent the form from being submitted
-        resetToDefaults();
-      });
-    };
+  var systemPromptElem = document.getElementById("SYSTEM_PROMPT");
+  if (systemPromptElem) {
+    adjustHeight(systemPromptElem);
+  }
+};
   </script>
 </head>
 <body>
