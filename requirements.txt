@@ -5,3 +5,4 @@ pycryptodome==3.17.0
 google-cloud-firestore==2.11.1
 requests==2.30.0
 pytz==2023.3
+beautifulsoup4==4.12.2
