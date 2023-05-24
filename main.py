@@ -243,16 +243,14 @@ def lineBot():
                 print("Message type is None.")
             else:
                 print(f"Received type: {message_type}")
-            print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
-            if not userMessage:
-                return 'OK'
-            elif userMessage.strip() in FORGET_KEYWORDS:
+
+            if userMessage.strip() in FORGET_KEYWORDS:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
+            
             if message_type == 'sticker':
                 print("はようごけ")
                 keywords = event.get('message', {}).get('keywords', "")
