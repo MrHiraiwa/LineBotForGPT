@@ -384,8 +384,7 @@ def search_api():
         return jsonify({"error": "Missing 'question' parameter"}), 400
     return search(data["question"])
 
-def search():
-    question = request.json.get("question")
+def search(question)
     search_result = get_search_results(question, 3)
 
     links = [item["link"] for item in search_result.get("items", [])]
