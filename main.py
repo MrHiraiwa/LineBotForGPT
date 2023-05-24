@@ -253,7 +253,7 @@ def lineBot():
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             
-            if message_type == "sticker":
+            if message_type == 'sticker':
                 print("はようごけ")
                 keywords = event.message.keywords
                 #keywords = event.get('message', {}).get('keywords', "")
