@@ -170,17 +170,23 @@ def isBeforeYesterday(date, now):
     today = now.date()
     return today > date
 
-def callLineApi(replyText, replyToken):
+def callLineApi(reply_text, reply_token, quick_reply):
     url = 'https://api.line.me/v2/bot/message/reply'
+    message = {
+        'type': 'text',
+        'text': reply_text
+    }
+    if quick_reply and 'items' in quick_reply and len(quick_reply['items']) > 0:
+        message['quickReply'] = quick_reply
     headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ' + LINE_ACCESS_TOKEN,
     }
-    data = {
-        'replyToken': replyToken,
-        'messages': [{'type': 'text', 'text': replyText}]
+    payload = {
+        'replyToken': reply_token,
+        'messages': [message]
     }
-    requests.post(url, headers=headers, data=json.dumps(data))
+    requests.post(url, headers=headers, data=json.dumps(payload))
     return 'OK'
     
 from flask import flash
@@ -236,10 +242,10 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-            if userMessage.strip() in f"😱{bot_name}の記憶を消去"
+            if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
-                callLineApi(FORGET_MESSAGE, replyToken)
+                callLineApi(FORGET_MESSAGE, replyToken, {'items': quick_reply})
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             elif message_type == 'image':
@@ -264,9 +270,9 @@ def lineBot():
                 ng_message = NG_MESSAGE + "\n"
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
-                callLineApi(countMaxMessage, replyToken)
+                callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
                 return 'OK'
-
+            
             temp_message = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
             temp_messages = user['messages'].copy()
             temp_messages.append({'role': 'user', 'content': temp_message})
@@ -301,7 +307,7 @@ def lineBot():
 
             if response.status_code != 200 or 'error' in response_json:
                 print(f"OpenAI error: {response_json.get('error', 'No response from API')}")
-                callLineApi(ERROR_MESSAGE, replyToken)
+                callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK' 
 
             botReply = response_json['choices'][0]['message']['content'].strip()
@@ -312,7 +318,7 @@ def lineBot():
 
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
 
-            callLineApi(botReply, replyToken)
+            callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
 
         return update_in_transaction(db.transaction(), doc_ref)
@@ -320,7 +326,7 @@ def lineBot():
         return 'Not a valid JSON', 200 
     except Exception as e:
         print(f"Error in lineBot: {e}")
-        callLineApi(ERROR_MESSAGE, replyToken)
+        callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
         raise
     finally:
         return 'OK'
