@@ -220,8 +220,7 @@ def lineBot():
             ng_message = ""
             dailyUsage = 0
             userMessage = event['message'].get('text')
-            #message_type = event.get('message', {}).get('type')
-            message_type = event.message.type
+            message_type = event.get('message', {}).get('type')
             print(f"Received event: {event}")
             
             if doc.exists:
