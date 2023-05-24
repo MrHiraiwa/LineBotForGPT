@@ -204,6 +204,7 @@ def lineBot():
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
+        sourceType =  event['source']['type']
         nowDate = datetime.now(jst)  # 現在の日本時間を取得
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
@@ -250,13 +251,16 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            
-            if message_type == 'sticker':
+            if message_type == 'image':
+                userMessage = "画像が送信されました。"
+            elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
                     userMessage = FAIL_STICKER_MESSAGE
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
+            elif message_type == 'location':
+                userMessage = "位置情報が送信されました。"
                     
             if any(word in userMessage for word in NG_KEYWORDS):
                 ng_message = NG_MESSAGE + "\n"
@@ -270,6 +274,15 @@ def lineBot():
             temp_messages.append({'role': 'user', 'content': temp_message})
             
             total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
+            
+            if sourceType == "group" or sourceType == "room":
+                if BotName in userMessage or exec_functions == True:
+                    pass
+                else:
+                    user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
+                    transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                    return
+            
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 removed_message = user['messages'].pop(0)  # Remove the oldest message
                 total_chars -= len(removed_message['content'])
