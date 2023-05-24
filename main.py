@@ -225,6 +225,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
+            quick_reply = ""
             
             if doc.exists:
                 user = doc.to_dict()
