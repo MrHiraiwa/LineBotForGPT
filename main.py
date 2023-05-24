@@ -9,6 +9,7 @@ import requests
 import pytz
 from flask import Flask, request, render_template, session, redirect, url_for
 from google.cloud import firestore
+from web import get_search_results, get_contents, summarize_contents
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -123,12 +124,10 @@ def login():
 def settings():
     if 'is_admin' not in session or not session['is_admin']:
         return redirect(url_for('login'))
-
-    # Fetch current settings
+    
     current_settings = {key: get_setting(key) or DEFAULT_ENV_VARS.get(key, '') for key in REQUIRED_ENV_VARS}
 
     if request.method == 'POST':
-        # Update settings
         for key in REQUIRED_ENV_VARS:
             value = request.form.get(key)
             if value:
@@ -172,24 +171,29 @@ def isBeforeYesterday(date, now):
     today = now.date()
     return today > date
 
-def callLineApi(replyText, replyToken):
+def callLineApi(reply_text, reply_token, quick_reply):
     url = 'https://api.line.me/v2/bot/message/reply'
+    message = {
+        'type': 'text',
+        'text': reply_text
+    }
+    if quick_reply and 'items' in quick_reply and len(quick_reply['items']) > 0:
+        message['quickReply'] = quick_reply
     headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ' + LINE_ACCESS_TOKEN,
     }
-    data = {
-        'replyToken': replyToken,
-        'messages': [{'type': 'text', 'text': replyText}]
+    payload = {
+        'replyToken': reply_token,
+        'messages': [message]
     }
-    requests.post(url, headers=headers, data=json.dumps(data))
+    requests.post(url, headers=headers, data=json.dumps(payload))
     return 'OK'
     
 from flask import flash
 
 @app.route('/your_route', methods=['POST'])
 def your_handler_function():
-    # Your saving logic here...
 
     flash('Settings have been saved successfully.')
     return redirect(url_for('your_template'))
@@ -205,7 +209,7 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         sourceType =  event['source']['type']
-        nowDate = datetime.now(jst)  # 現在の日本時間を取得
+        nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
@@ -215,7 +219,6 @@ def lineBot():
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
 
-      # Start a Firestore transaction
         @firestore.transactional
         def update_in_transaction(transaction, doc_ref):
             doc = doc_ref.get(transaction=transaction)
@@ -223,6 +226,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
+            quick_reply = []
             
             if doc.exists:
                 user = doc.to_dict()
@@ -240,11 +244,10 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-                
-            if userMessage.strip() in f"😱{bot_name}の記憶を消去"
+            if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
-                callLineApi(FORGET_MESSAGE, replyToken)
+                callLineApi(FORGET_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             elif message_type == 'image':
@@ -257,9 +260,9 @@ def lineBot():
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
                 userMessage = "位置情報が送信されました。"
-            
-            if userMessage.strip() in FORGET_KEYWORDS and exec_functions == True:
-                be_quick_reply = f"😱{bot_name}の記憶を消去"
+                
+            if userMessage.strip() in FORGET_KEYWORDS:
+                be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
             if len(quick_reply) == 0:
@@ -269,9 +272,9 @@ def lineBot():
                 ng_message = NG_MESSAGE + "\n"
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
-                callLineApi(countMaxMessage, replyToken)
+                callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
                 return 'OK'
-
+            
             temp_message = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
             temp_messages = user['messages'].copy()
             temp_messages.append({'role': 'user', 'content': temp_message})
@@ -287,7 +290,7 @@ def lineBot():
                     return 'OK'
             
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
-                removed_message = user['messages'].pop(0)  # Remove the oldest message
+                removed_message = user['messages'].pop(0) 
                 total_chars -= len(removed_message['content'])
 
             messages = user['messages']
@@ -296,19 +299,17 @@ def lineBot():
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
                 json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages},
-                timeout=20 
+                timeout=40 
             )
             
-
             user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
 
             response_json = response.json()
 
-            # Error handling
             if response.status_code != 200 or 'error' in response_json:
                 print(f"OpenAI error: {response_json.get('error', 'No response from API')}")
-                callLineApi(ERROR_MESSAGE, replyToken)
-                return 'OK'  # Return OK to prevent LINE bot from retrying
+                callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
+                return 'OK' 
 
             botReply = response_json['choices'][0]['message']['content'].strip()
 
@@ -318,16 +319,15 @@ def lineBot():
 
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
 
-            callLineApi(botReply, replyToken)
+            callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
 
-        # Begin the transaction
         return update_in_transaction(db.transaction(), doc_ref)
     except KeyError:
-        return 'Not a valid JSON', 200  # Return a 200 HTTP status code
+        return 'Not a valid JSON', 200 
     except Exception as e:
         print(f"Error in lineBot: {e}")
-        callLineApi(ERROR_MESSAGE, replyToken)
+        callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
         raise
     finally:
         return 'OK'
@@ -369,3 +369,24 @@ def create_quick_reply(quick_reply):
             }
         }
 
+    
+@app.route("/search", methods=["POST"])
+def search():
+    question = request.json.get("question")
+    search_result = get_search_results(question, 3)
+
+    links = [item["link"] for item in search_result.get("items", [])]
+    contents = get_contents(links)
+    summary = summarize_contents(contents, question)
+
+    if not summary:
+        summary = "URLをあなたが見つけたかのようにリアクションして。\n"
+
+    return jsonify({
+        "userMessage": summary,
+        "links": links
+    })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
