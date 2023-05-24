@@ -368,6 +368,7 @@ def create_quick_reply(quick_reply):
                 "label": '🗺️地図で検索',
             }
         }
+
     
 @app.route("/search", methods=["POST"])
 def search():
