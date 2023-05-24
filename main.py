@@ -252,7 +252,7 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken)
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-                print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
+            print(f"Checking if message_type is sticker: {message_type == 'sticker'}")
             if message_type == 'sticker':
                 print("はようごけ")
                 keywords = event.message.keywords
