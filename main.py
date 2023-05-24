@@ -223,7 +223,6 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
-            print(f"Received event: {event}")
             
             if doc.exists:
                 user = doc.to_dict()
@@ -277,7 +276,7 @@ def lineBot():
                 else:
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
                     transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
-                    return
+                    return 'OK'
             
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 removed_message = user['messages'].pop(0)  # Remove the oldest message
@@ -322,6 +321,8 @@ def lineBot():
         print(f"Error in lineBot: {e}")
         callLineApi(ERROR_MESSAGE, replyToken)
         raise
+    finally:
+        return 'OK'
 
 def get_profile(userId):
     url = 'https://api.line.me/v2/bot/profile/' + userId
