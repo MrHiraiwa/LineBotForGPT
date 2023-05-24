@@ -83,16 +83,19 @@ def login():
 def settings():
     if 'is_admin' not in session or not session['is_admin']:
         return redirect(url_for('login'))
+
+    # Fetch current settings
+    current_settings = {key: get_setting(key) or DEFAULT_ENV_VARS.get(key, '') for key in REQUIRED_ENV_VARS}
+
     if request.method == 'POST':
         # Update settings
         for key in REQUIRED_ENV_VARS:
             value = request.form.get(key)
             if value:
                 update_setting(key, value)
+        return redirect(url_for('settings'))
 
-    # Fetch current settings
-    current_settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
-    return render_template('settings.html', settings=current_settings)
+    return render_template('settings.html', settings=current_settings, default_settings=DEFAULT_ENV_VARS)
 
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
