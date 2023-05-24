@@ -368,7 +368,7 @@ def create_quick_reply(quick_reply):
                 "label": '🗺️地図で検索',
             }
         }
-
+    
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
     if request.method == 'POST':
@@ -382,9 +382,10 @@ def search_api():
     data = request.get_json()
     if not data or "question" not in data:
         return jsonify({"error": "Missing 'question' parameter"}), 400
-    return search(data["question"])
+    search_result = search(data["question"])
+    return jsonify(search_result)
 
-def search(question)
+def search(question):
     search_result = get_search_results(question, 3)
 
     links = [item["link"] for item in search_result.get("items", [])]
@@ -394,11 +395,10 @@ def search(question)
     if not summary:
         summary = "URLをあなたが見つけたかのようにリアクションして。\n"
 
-    return jsonify({
+    return {
         "userMessage": summary,
         "links": links
-    })
-
+    }
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
