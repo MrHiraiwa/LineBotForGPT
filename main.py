@@ -23,6 +23,7 @@ REQUIRED_ENV_VARS = [
     "FORGET_KEYWORDS",
     "FORGET_MESSAGE",
     "SEARCH_KEYWORDS",
+    "SEARCH_GUIDE_MESSAGE",
     "SEARCH_MESSAGE",
     "FAIL_SEARCH_MESSAGE",
     "STICKER_MESSAGE",
@@ -42,6 +43,7 @@ DEFAULT_ENV_VARS = {
     'NG_KEYWORDS': '例文,命令,口調,リセット,指示',
     'SEARCH_KEYWORDS': '検索,調べて,教えて,知ってる,どうやって',
     'SEARCH_MESSAGE': 'URLをあなたが見つけたかのようにリアクションして。',
+    'SEARCH_GUIDE_MESSAGE1': 'ユーザーに「画面下の「インターネットで検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。',
     'FAIL_SEARCH_MESSAGE': '検索結果が見つかりませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
@@ -58,7 +60,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
@@ -77,6 +79,7 @@ def reload_settings():
         SEARCH_KEYWORDS = SEARCH_KEYWORDS.split(',')
     else:
         SEARCH_KEYWORDS = []
+    SEARCH_GUIDE_MESSAGE = get_setting('SEARCH_GUIDE_MESSAGE')
     SEARCH_MESSAGE = get_setting('SEARCH_MESSAGE')
     FAIL_SEARCH_MESSAGE = get_setting('FAIL_SEARCH_MESSAGE') 
     NG_KEYWORDS = get_setting('NG_KEYWORDS')
@@ -286,10 +289,11 @@ def lineBot():
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
-                be_quick_reply = userMessage.strip
+                be_quick_reply = userMessage.strip()
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
+                userMessage = SEARCH_GUIDE_MESSAGE + userMessage
                 
             if userMessage.strip() in FORGET_KEYWORDS:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
