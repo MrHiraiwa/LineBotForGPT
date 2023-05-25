@@ -10,6 +10,8 @@ import pytz
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 from google.cloud import firestore
 import re
+import tiktoken
+from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
 
 REQUIRED_ENV_VARS = [
@@ -256,7 +258,8 @@ def lineBot():
             quick_reply = []
             links = ""
             exec_functions = False
-            
+            encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
+                
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
