@@ -231,8 +231,6 @@ def your_handler_function():
 
 @app.route('/', methods=['POST'])
 
-app.register_blueprint(vision, url_prefix='/vision')
-
 def lineBot():
     try:
         reload_settings()
@@ -439,7 +437,9 @@ def remove_specific_character(text, characters_to_remove):
     for char in characters_to_remove:
         text = text.replace(char, '')
     return text
-       
+
+app.register_blueprint(vision, url_prefix='/vision')
+
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
     if request.method == 'POST':
