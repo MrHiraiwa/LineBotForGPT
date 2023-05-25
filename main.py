@@ -293,6 +293,7 @@ def lineBot():
                 image = get_image(image_url) 
                 vision_results = analyze_image(image)
                 user_Message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
+                print(f"image_url: {image_url} vision_results: {vision_results} user_Message: {user_Message}")
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
