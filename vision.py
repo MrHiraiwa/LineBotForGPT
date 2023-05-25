@@ -47,6 +47,10 @@ def vision_results_to_string(vision_results):
     result_string += "\nObjects: " + ', '.join([ann['name'] for ann in object_annotations]) if object_annotations else "None"
     return result_string
 
+def get_image(image_url):
+    response = requests.get(image_url)
+    return response.content
+
 @vision.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -66,3 +70,4 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
+
