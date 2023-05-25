@@ -315,6 +315,9 @@ def lineBot():
                 vision_results = analyze_image(image)
                 vision_results = vision_results_to_string(vision_results)
                 userMessage = OCR_MESSAGE + str(vision_results)
+            elif message_type == 'audio':
+                exec_functions = True
+                userMessage = "マイクのテスト中"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -322,8 +325,7 @@ def lineBot():
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
-                exec_functions = True
-                
+                exec_functions = True 
                 
                 userMessage = "地図検索で何も見つからなかったと言ってください。"
                 maps_search = ""
