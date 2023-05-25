@@ -106,11 +106,12 @@ def reload_settings():
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
     OCR_MESSAGE = get_setting('OCR_MESSAGE')
-    NG_KEYWORDS = get_setting('NG_KEYWORDS')
+    MAPS_KEYWORDS = get_setting('MAPS_KEYWORDS')
     if MAPS_KEYWORDS:
         MAPS_KEYWORDS = MAPS_KEYWORDS.split(',')
     else:
         MAPS_KEYWORDS = []
+    MAPS_FILTER_KEYWORDS = get_setting('MAPS_FILTER_KEYWORDS')
     if MAPS_FILTER_KEYWORDS:
         MAPS_FILTER_KEYWORDS = MAPS_FILTER_KEYWORDS.split(',')
     else:
