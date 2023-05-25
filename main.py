@@ -243,6 +243,7 @@ def lineBot():
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
         exec_functions = False
+        links = ""
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -279,6 +280,7 @@ def lineBot():
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             elif message_type == 'image':
+                exec_functions = True
                 userMessage = "画像が送信されました。"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
@@ -287,7 +289,19 @@ def lineBot():
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
+                exec_functions = True
                 userMessage = "位置情報が送信されました。"
+            elif 
+                exec_functions = True
+                userMessage = remove_specific_character(userMessage, '」を検索')
+                userMessage = remove_specific_character(userMessage, '🌐インターネットで「')
+                userMessage = remove_specific_character(userMessage, BOT_NAME)
+                userMessage = replace_hiragana_with_spaces(userMessage)
+                userMessage = userMessage.strip()
+                result = search(userMessage)
+                userMessage = result['userMessage']
+                links = result['links']
+                links = "\n❗参考\n" + "\n".join(links)
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -356,6 +370,8 @@ def lineBot():
             user['dailyUsage'] += 1
 
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+            
+            botReply = botReply + links
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
