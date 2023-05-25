@@ -322,7 +322,10 @@ def lineBot():
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
                 exec_functions = True
-                userMessage = "位置情報が送信されました。"
+                
+                
+                userMessage = "地図検索で何も見つからなかったと言ってください。"
+                maps_search = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
                 userMessage = remove_specific_character(userMessage, '」を検索')
@@ -345,15 +348,13 @@ def lineBot():
                 headMessage = SEARCH_GUIDE_MESSAGE
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
-                be_quick_reply = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
-                be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
-                be_quick_reply = be_quick_reply.strip() 
-                
+                maps_search = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search = replace_hiragana_with_spaces(maps_search)
+                maps_search = maps_search.strip()
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = MAPS_GUIDE_MESSAGE
-
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
@@ -413,6 +414,7 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
+            user['maps_search'] = maps_search
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
