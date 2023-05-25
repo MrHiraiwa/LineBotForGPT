@@ -43,7 +43,7 @@ def vision_results_to_string(vision_results):
     result_string += "Labels: " + ', '.join([ann['description'] for ann in label_annotations]) if label_annotations else "None"
     result_string += "\nText: " + ', '.join([ann['description'] for ann in text_annotations]) if text_annotations else "None"
     result_string += "\nLandmarks: " + ', '.join([ann['description'] for ann in landmark_annotations]) if landmark_annotations else "None"
-    result_string += "\nFaces: " + str(len(face_annotations))
+    result_string += "\nFaces: " + str(len(face_annotations)) if face_annotations else "None"
     result_string += "\nObjects: " + ', '.join([ann['name'] for ann in object_annotations]) if object_annotations else "None"
     return result_string
 
