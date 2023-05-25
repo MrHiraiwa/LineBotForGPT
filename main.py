@@ -283,6 +283,7 @@ def lineBot():
             links = ""
             headMessage = ""
             exec_functions = False
+            exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
                 
             if doc.exists:
@@ -317,6 +318,7 @@ def lineBot():
                 userMessage = OCR_MESSAGE + str(vision_results)
             elif message_type == 'audio':
                 exec_functions = True
+                exec_audio = True
                 userMessage = "マイクのテスト中"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
@@ -422,6 +424,9 @@ def lineBot():
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
+            
+            if exec_audio == True:
+                return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
