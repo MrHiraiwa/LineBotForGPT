@@ -13,6 +13,7 @@ import re
 import tiktoken
 from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
+from vision import vision
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -229,6 +230,9 @@ def your_handler_function():
     return redirect(url_for('your_template'))
 
 @app.route('/', methods=['POST'])
+
+app.register_blueprint(vision, url_prefix='/vision')
+
 def lineBot():
     try:
         reload_settings()
