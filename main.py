@@ -341,7 +341,6 @@ def lineBot():
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 user['messages'].pop(0)
                 total_chars = len(SYSTEM_PROMPT) + len(temp_messages) + sum([len(msg['content']) for msg in user['messages']])
-                print(total_chars)
                 
             temp_messages_final = user['messages'].copy()
             temp_messages_final.append({'role': 'user', 'content': temp_messages}) 
