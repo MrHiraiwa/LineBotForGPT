@@ -306,7 +306,7 @@ def lineBot():
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
-                be_quick_reply = userMessage.strip()
+                be_quick_reply = be_quick_reply.strip() 
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
