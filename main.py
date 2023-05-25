@@ -70,8 +70,7 @@ def reload_settings():
     global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
-    SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
-    SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') + SYSTEM_PROMPT_EX
+    SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
@@ -293,7 +292,7 @@ def lineBot():
                 image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
                 image = get_image(image_url) 
                 vision_results = analyze_image(image)
-                user_message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
+                user_Message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
