@@ -12,13 +12,16 @@ def get_search_results(query, num, start_index=0):
         "cx": google_cse_id,
         "q": query,
         "num": num,
-        "start": start_index
+        "start": start_index,
+        "hl": "ja",  # User interface language
+        "cr": "countryJP"  # Search results from a certain country
     }
 
     response = requests.get(base_url, params=params)
     response.raise_for_status()
 
     return response.json()
+
 
 
 def get_contents(links):
