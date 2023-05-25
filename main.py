@@ -70,10 +70,9 @@ def reload_settings():
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
-    FORGET_KEYWORDS = get_setting('FORGET')
+    FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
     if FORGET_KEYWORDS:
         FORGET_KEYWORDS = FORGET_KEYWORDS.split(',')
-        print(FORGET_KEYWORDS)
     else:
         FORGET_KEYWORDS = []
     FORGET_GUIDE_MESSAGE = get_setting('FORGET_GUIDE_MESSAGE')
@@ -254,7 +253,6 @@ def lineBot():
             ng_message = ""
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
-            print(f"User message: {userMessage}")
             message_type = event.get('message', {}).get('type')
             quick_reply = []
             
@@ -300,7 +298,6 @@ def lineBot():
                 quick_reply.append(be_quick_reply)
                 userMessage = SEARCH_GUIDE_MESSAGE + userMessage
             
-            print(any(word in userMessage for word in FORGET_KEYWORDS))
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
