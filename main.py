@@ -102,6 +102,8 @@ def reload_settings():
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
     OCR_MESSAGE = get_setting('OCR_MESSAGE')
+    MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
+    MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
