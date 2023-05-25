@@ -56,6 +56,8 @@ DEFAULT_ENV_VARS = {
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
+    'MAPS_GUIDE_MESSAGE': '',
+    'MAPS_MESSAGE': '',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
