@@ -64,5 +64,5 @@ def summarize_contents(contents, question):
                 m = trimmed_content
             extract_texts.append(m)
 
-    return ''.join(extract_texts)[:00]
+    return ''.join(extract_texts)[:100]
 
