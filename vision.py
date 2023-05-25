@@ -50,7 +50,7 @@ def upload_file():
         if file:
             image_bytes = file.read()
             vision_results = analyze_image(image_bytes)
-            result_string = vision_results_to_string(vision_results)
+            result_string = str(vision_results)
             return jsonify(result=result_string)
 
     return '''
