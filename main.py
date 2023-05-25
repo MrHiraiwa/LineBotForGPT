@@ -393,10 +393,10 @@ def search(question):
     summary = summarize_contents(contents, question)
 
     if not summary:
-        summary = "URLをあなたが見つけたかのようにリアクションして。\n"
+        summary = "検索結果が見つかりませんでした。"
 
     return {
-        "userMessage": summary,
+        "userMessage": "URLをあなたが見つけたかのようにリアクションして。\n" + summary,
         "links": links
     }
 
