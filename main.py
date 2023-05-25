@@ -291,7 +291,7 @@ def lineBot():
             elif message_type == 'location':
                 exec_functions = True
                 userMessage = "位置情報が送信されました。"
-            elif 
+            elif any(word in userMessage for word in "🌐インターネットで「")
                 exec_functions = True
                 userMessage = remove_specific_character(userMessage, '」を検索')
                 userMessage = remove_specific_character(userMessage, '🌐インターネットで「')
