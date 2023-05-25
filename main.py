@@ -375,6 +375,9 @@ def lineBot():
                 return 'OK' 
 
             botReply = response_json['choices'][0]['message']['content'].strip()
+            
+            date_pattern = r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} [A-Z]{3,4}"
+            botReply = re.sub(date_pattern, "", botReply).strip()
 
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
