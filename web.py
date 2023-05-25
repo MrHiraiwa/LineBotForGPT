@@ -23,7 +23,6 @@ def get_search_results(query, num, start_index=0):
     return response.json()
 
 
-
 def get_contents(links):
     contents = []
 
@@ -36,6 +35,11 @@ def get_contents(links):
             html = "<html></html>"
 
         soup = BeautifulSoup(html, "html.parser")
+
+        # Remove all 'a' tags
+        for a in soup.findAll('a'):
+            a.decompose()
+
         content = soup.select_one("article, .post, .content")
 
         if content is None or content.text.strip() == "":
@@ -46,6 +50,7 @@ def get_contents(links):
             contents.append(text)
 
     return contents
+
 
 def summarize_contents(contents, question):
     extract_texts = []
