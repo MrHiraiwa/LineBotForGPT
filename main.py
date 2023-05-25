@@ -286,7 +286,10 @@ def lineBot():
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
-                userMessage = "画像が送信されました。"
+                const imageURL = 'https://api-data.line.me/v2/bot/message/' + messageId + '/content';
+                const image = getImage(imageURL);
+                var visionResults = analyzeImage(image);
+                userMessage = OcrOrder + visionResultsToString(visionResults);
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
