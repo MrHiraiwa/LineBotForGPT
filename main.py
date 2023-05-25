@@ -331,8 +331,6 @@ def lineBot():
             temp_messages = user['messages'].copy()
             temp_messages.append({'role': 'user', 'content': temp_message})
             
-            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
-            
             if sourceType == "group" or sourceType == "room":
                 if BOT_NAME in userMessage or exec_functions == True:
                     pass
@@ -340,7 +338,8 @@ def lineBot():
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
                     transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                     return 'OK'
-            
+                
+            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 removed_message = user['messages'].pop(0) 
                 total_chars -= len(removed_message['content'])
