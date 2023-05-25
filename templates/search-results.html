@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+<h1>Search Results</h1>
+<p>{{ results.userMessage }}</p>
+<ul>
+{% for link in results.links %}
+    <li><a href="{{ link }}">{{ link }}</a></li>
+{% endfor %}
+</ul>
+</body>
+</html>
+
