@@ -280,7 +280,7 @@ def lineBot():
             message_id = event.get('message', {}).get('id')
             quick_reply = []
             links = ""
-            headMessage ""
+            headMessage = ""
             exec_functions = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
                 
