@@ -405,11 +405,11 @@ def replace_hiragana_with_spaces(text):
     return re.sub(hiragana_regex, ' ', text)
 
 # 特定文字削除
-def remove_specific_character(text, character_to_remove):
-    # Pythonのreモジュールでは特殊文字は自動的にエスケープされる
-    return text.replace(character_to_remove, '')
-    
-    
+def remove_specific_character(text, characters_to_remove):
+    for char in characters_to_remove:
+        text = text.replace(char, '')
+    return text
+       
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
     if request.method == 'POST':
