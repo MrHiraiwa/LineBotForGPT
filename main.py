@@ -13,7 +13,7 @@ import re
 import tiktoken
 from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
-from vision import vision
+from vision import vision, analyze_image, vision_results_to_string
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -287,6 +287,11 @@ def lineBot():
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
+                
+                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
+                image = get_image(image_url) 
+                vision_results = analyze_image(image)
+                user_message = OcrOrder + vision_results_to_string(vision_results)
                 const imageURL = 'https://api-data.line.me/v2/bot/message/' + messageId + '/content';
                 const image = getImage(imageURL);
                 var visionResults = analyzeImage(image);
