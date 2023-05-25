@@ -60,7 +60,7 @@ DEFAULT_ENV_VARS = {
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
-    'MAPS_GUIDE_MESSAGE': '',
+    'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
