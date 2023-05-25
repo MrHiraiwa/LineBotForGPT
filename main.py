@@ -337,7 +337,8 @@ def lineBot():
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
                     transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                     return 'OK'
-            
+                
+            temp_messages = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
             total_chars = len(encoding.encode(SYSTEM_PROMPT)) + len(encoding.encode(temp_messages)) + sum([len(encoding.encode(msg['content'])) for msg in user['messages']])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 user['messages'].pop(0)
