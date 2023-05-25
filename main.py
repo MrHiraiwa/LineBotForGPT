@@ -242,7 +242,6 @@ def lineBot():
         display_name = line_profile['displayName']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
-        exec_functions = False
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -256,6 +255,7 @@ def lineBot():
             message_type = event.get('message', {}).get('type')
             quick_reply = []
             links = ""
+            exec_functions = False
             
             if doc.exists:
                 user = doc.to_dict()
