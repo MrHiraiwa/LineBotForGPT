@@ -260,7 +260,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
-            messageId = event.get('message', {}).get('id')
+            message_id = event.get('message', {}).get('id')
             quick_reply = []
             links = ""
             exec_functions = False
@@ -290,7 +290,7 @@ def lineBot():
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
-                image_url = 'https://api-data.line.me/v2/bot/message/' + message_Id + '/content'
+                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
                 image = get_image(image_url) 
                 vision_results = analyze_image(image)
                 user_message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
