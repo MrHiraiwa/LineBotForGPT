@@ -295,7 +295,7 @@ def lineBot():
                 vision_string = vision_results_to_string(vision_results)
                 print(f"vision_string: {vision_string}")  # 追加
                 userMessage = OCR_MESSAGE + "\n" + vision_string
-                print(f"image_url: {image_url} vision_results: {vision_results} user_Message: {user_Message}")
+                print(f"image_url: {image_url} vision_results: {vision_results} user_Message: {userMessage}")
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
