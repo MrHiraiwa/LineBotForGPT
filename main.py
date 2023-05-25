@@ -351,7 +351,7 @@ def lineBot():
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
                 json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
-                timeout=40 
+                timeout=30 
             )
             
             user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
