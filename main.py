@@ -66,6 +66,7 @@ def reload_settings():
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
+    FORGET_KEYWORDS = get_setting('FORGET')
     if FORGET_KEYWORDS:
         FORGET_KEYWORDS = FORGET_KEYWORDS.split(',')
     else:
@@ -78,11 +79,11 @@ def reload_settings():
         SEARCH_KEYWORDS = []
     SEARCH_MESSAGE = get_setting('SEARCH_MESSAGE')
     FAIL_SEARCH_MESSAGE = get_setting('FAIL_SEARCH_MESSAGE') 
+    NG_KEYWORDS = get_setting('NG_KEYWORDS')
     if NG_KEYWORDS:
         NG_KEYWORDS = NG_KEYWORDS.split(',')
     else:
         NG_KEYWORDS = []
-    NG_KEYWORDS = get_setting('NG_KEYWORDS').split(',')
     NG_MESSAGE = get_setting('NG_MESSAGE')
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
