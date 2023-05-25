@@ -63,6 +63,5 @@ def summarize_contents(contents, question):
             else:
                 m = trimmed_content
             extract_texts.append(m)
-
     return ''.join(extract_texts)[:1000]
 
