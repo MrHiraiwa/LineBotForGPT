@@ -327,10 +327,6 @@ def lineBot():
                 callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
                 return 'OK'
             
-            temp_message = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
-            temp_messages = user['messages'].copy()
-            temp_messages.append({'role': 'user', 'content': temp_message})
-            
             if sourceType == "group" or sourceType == "room":
                 if BOT_NAME in userMessage or exec_functions == True:
                     pass
@@ -339,19 +335,23 @@ def lineBot():
                     transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                     return 'OK'
             
+            temp_messages = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage})
             
-            total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages]) + sum([len(msg['content']) for msg in user['messages']])
+            total_chars = len(SYSTEM_PROMPT) + len(temp_messages) + sum([len(msg['content']) for msg in user['messages']])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 user['messages'].pop(0)
-                total_chars = len(SYSTEM_PROMPT) + sum([len(msg['content']) for msg in temp_messages]) + sum([len(msg['content']) for msg in user['messages']])
+                total_chars = len(SYSTEM_PROMPT) + len(temp_messages) + sum([len(msg['content']) for msg in user['messages']])
                 print(total_chars)
-    
+                
+            temp_messages_final = user['messages'].copy()
+            temp_messages_final.append({'role': 'user', 'content': temp_messages}) 
+
             messages = user['messages']
 
             response = requests.post(
                 'https://api.openai.com/v1/chat/completions',
                 headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages},
+                json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
                 timeout=40 
             )
             
