@@ -339,6 +339,13 @@ def lineBot():
                     return 'OK'
             
             temp_messages = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
+            temp_messages_tokens = encoding.encode(temp_messages)
+            temp_messages_tokens_count = len(temp_messages_tokens)
+            SYSTEM_PROMPT_tokens = encoding.encode(SYSTEM_PROMPT)
+            SYSTEM_PROMPT_tokens_count = len(SYSTEM_PROMPT_tokens)
+            
+            print(f"{temp_messages_tokens_count=}")
+            print(f"{SYSTEM_PROMPT_tokens_count=}")
             
             total_chars = len(SYSTEM_PROMPT) + len(temp_messages) + sum([len(msg['content']) for msg in user['messages']])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
