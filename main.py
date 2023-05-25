@@ -13,6 +13,7 @@ import re
 import tiktoken
 from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
+from vision import vision, analyze_image, get_image, vision_results_to_string
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -31,6 +32,7 @@ REQUIRED_ENV_VARS = [
     "FAIL_SEARCH_MESSAGE",
     "STICKER_MESSAGE",
     "FAIL_STICKER_MESSAGE",
+    "OCR_MESSAGE",
     "GPT_MODEL"
 ]
 
@@ -51,6 +53,7 @@ DEFAULT_ENV_VARS = {
     'FAIL_SEARCH_MESSAGE': '検索結果が見つかりませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
+    'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -64,11 +67,10 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
-    SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
-    SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') + SYSTEM_PROMPT_EX
+    SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
@@ -95,6 +97,7 @@ def reload_settings():
     NG_MESSAGE = get_setting('NG_MESSAGE')
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
+    OCR_MESSAGE = get_setting('OCR_MESSAGE')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -229,6 +232,7 @@ def your_handler_function():
     return redirect(url_for('your_template'))
 
 @app.route('/', methods=['POST'])
+
 def lineBot():
     try:
         reload_settings()
@@ -255,6 +259,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
+            message_id = event.get('message', {}).get('id')
             quick_reply = []
             links = ""
             exec_functions = False
@@ -284,7 +289,11 @@ def lineBot():
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
-                userMessage = "画像が送信されました。"
+                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
+                image = get_image(image_url, LINE_ACCESS_TOKEN) 
+                vision_results = analyze_image(image)
+                vision_results = vision_results_to_string(vision_results)
+                userMessage = OCR_MESSAGE + str(vision_results)
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -366,6 +375,9 @@ def lineBot():
                 return 'OK' 
 
             botReply = response_json['choices'][0]['message']['content'].strip()
+            
+            date_pattern = r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} [A-Z]{3,4}"
+            botReply = re.sub(date_pattern, "", botReply).strip()
 
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
@@ -435,7 +447,9 @@ def remove_specific_character(text, characters_to_remove):
     for char in characters_to_remove:
         text = text.replace(char, '')
     return text
-       
+
+app.register_blueprint(vision, url_prefix='/vision')
+
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
     if request.method == 'POST':
