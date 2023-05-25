@@ -257,6 +257,7 @@ def lineBot():
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
+            messageId = event.get('message', {}).get('id')
             quick_reply = []
             links = ""
             exec_functions = False
