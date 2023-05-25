@@ -17,10 +17,15 @@
 ## 環境変数
 
 OPENAI_APIKEY: OpenAI APIのAPIキー。ChatGPTとWhisperで使用する。
+
 LINE_ACCESS_TOKEN: LINE Messaging APIのアクセストークン。
+
 SECRET_KEY: DBに保存するメッセージの暗号化と復号化に使用される秘密鍵。
+
 ADMIN_PASSWORD: 管理者パスワード。
+
 GOOGLE_API_KEY: GoogleのAPIキー。Web検索と地図検索、画像認識で使用する。
+
 GOOGLE_CAPI KEY　Custom Searchの検索エンジンID。Web検索で使用する。
 
 ## 注意
