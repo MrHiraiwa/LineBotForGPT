@@ -287,6 +287,7 @@ def lineBot():
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
+                maps_search = user.get('maps_search ', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
