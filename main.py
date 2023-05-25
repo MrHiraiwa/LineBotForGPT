@@ -290,7 +290,7 @@ def lineBot():
             elif message_type == 'image':
                 exec_functions = True
                 image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
-                image = get_image(image_url) 
+                image = get_image(image_url, LINE_ACCESS_TOKEN) 
                 vision_results = analyze_image(image)
                 user_Message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
                 print(f"image_url: {image_url} vision_results: {vision_results} user_Message: {user_Message}")
