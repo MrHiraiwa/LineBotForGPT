@@ -34,6 +34,7 @@ REQUIRED_ENV_VARS = [
     "FAIL_STICKER_MESSAGE",
     "OCR_MESSAGE",
     "MAPS_KEYWORDS",
+    "MAPS_FILTER_KEYWORDS",
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
     "GPT_MODEL"
@@ -57,7 +58,8 @@ DEFAULT_ENV_VARS = {
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
-    'MAPS_KEYWORDS': '',
+    'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
+    'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': '',
     'MAPS_MESSAGE': '',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -73,7 +75,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -109,6 +111,10 @@ def reload_settings():
         MAPS_KEYWORDS = MAPS_KEYWORDS.split(',')
     else:
         MAPS_KEYWORDS = []
+    if MAPS_FILTER_KEYWORDS:
+        MAPS_FILTER_KEYWORDS = MAPS_FILTER_KEYWORDS.split(',')
+    else:
+        MAPS_FILTER_KEYWORDS = []
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     
@@ -338,9 +344,10 @@ def lineBot():
                 headMessage = SEARCH_GUIDE_MESSAGE
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
-                be_quick_reply = remove_specific_character(userMessage, MAPS_KEYWORDS)
+                be_quick_reply = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
                 be_quick_reply = be_quick_reply.strip() 
+                
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
@@ -405,7 +412,6 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
-
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
