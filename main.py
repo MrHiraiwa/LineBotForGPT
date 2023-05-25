@@ -32,6 +32,7 @@ REQUIRED_ENV_VARS = [
     "FAIL_SEARCH_MESSAGE",
     "STICKER_MESSAGE",
     "FAIL_STICKER_MESSAGE",
+    "OCR_MESSAGE",
     "GPT_MODEL"
 ]
 
@@ -52,6 +53,7 @@ DEFAULT_ENV_VARS = {
     'FAIL_SEARCH_MESSAGE': '検索結果が見つかりませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
+    'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -65,7 +67,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
@@ -96,6 +98,7 @@ def reload_settings():
     NG_MESSAGE = get_setting('NG_MESSAGE')
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
+    OCR_MESSAGE = get_setting('OCR_MESSAGE')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -287,15 +290,10 @@ def lineBot():
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
-                
                 image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
                 image = get_image(image_url) 
                 vision_results = analyze_image(image)
-                user_message = OcrOrder + vision_results_to_string(vision_results)
-                const imageURL = 'https://api-data.line.me/v2/bot/message/' + messageId + '/content';
-                const image = getImage(imageURL);
-                var visionResults = analyzeImage(image);
-                userMessage = OcrOrder + visionResultsToString(visionResults);
+                user_message = OCR_MESSAGE + "\n" + vision_results_to_string(vision_results)
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
