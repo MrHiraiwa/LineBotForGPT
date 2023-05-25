@@ -9,6 +9,7 @@ import requests
 import pytz
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 from google.cloud import firestore
+import re
 from web import get_search_results, get_contents, summarize_contents
 
 REQUIRED_ENV_VARS = [
@@ -270,6 +271,14 @@ def lineBot():
             elif message_type == 'location':
                 userMessage = "位置情報が送信されました。"
                 
+            if any(word in userMessage for word in SEARCH_KEYWORDS):
+                be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
+                be_quick_reply = userMessage.strip
+                be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                
             if userMessage.strip() in FORGET_KEYWORDS:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
@@ -377,6 +386,17 @@ def create_quick_reply(quick_reply):
                 "label": '🗺️地図で検索',
             }
         }
+
+# ひらがなと句読点を削除
+def replace_hiragana_with_spaces(text):
+    hiragana_regex = r'[\u3040-\u309F。、！～？]'
+    return re.sub(hiragana_regex, ' ', text)
+
+# 特定文字削除
+def remove_specific_character(text, character_to_remove):
+    # Pythonのreモジュールでは特殊文字は自動的にエスケープされる
+    return text.replace(character_to_remove, '')
+    
     
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
