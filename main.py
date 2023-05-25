@@ -292,7 +292,7 @@ def lineBot():
                 image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
                 image = get_image(image_url, LINE_ACCESS_TOKEN) 
                 vision_results = analyze_image(image)
-                 vision_results = vision_results_to_string(vision_results)
+                vision_results = vision_results_to_string(vision_results)
                 userMessage = OCR_MESSAGE + str(vision_results)
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
