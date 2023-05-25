@@ -8,20 +8,20 @@
 
 1. Google Cloud Runでデプロイします：Google Cloud Consoleでプロジェクトを作成しCloud Run APIを有効にし、本レポジトリを指定してデプロイします。
 デプロイの際は以下の環境変数を設定する必要があります。
+2. 同じプロジェクト内でFirestoreを有効にします：左側のナビゲーションメニューで「Firestore」を選択し、Firestoreをプロジェクトで有効にします。
+3. データベースを作成します：Firestoreダッシュボードに移動し、「データベースの作成」をクリックします。「ネイティブ」モードを選択します。
+4. Cloud RunのURLに「/login」を付与して管理画面にログインしてパラメータを設定します
+5. LINE Developerにログインします。https://account.line.biz/login
+6. チャネルを作成しwebhookの宛先にCloud RunのサービスURLを指定します。
+
+## 環境変数
+
 OPENAI_APIKEY: OpenAI APIのAPIキー。ChatGPTとWhisperで使用する。
 LINE_ACCESS_TOKEN: LINE Messaging APIのアクセストークン。
 SECRET_KEY: DBに保存するメッセージの暗号化と復号化に使用される秘密鍵。
 ADMIN_PASSWORD: 管理者パスワード。
 GOOGLE_API_KEY: GoogleのAPIキー。Web検索と地図検索、画像認識で使用する。
 GOOGLE_CAPI KEY　Custom Searchの検索エンジンID。Web検索で使用する。
-
-2. 同じプロジェクト内でFirestoreを有効にします：左側のナビゲーションメニューで「Firestore」を選択し、Firestoreをプロジェクトで有効にします。
-
-3. データベースを作成します：Firestoreダッシュボードに移動し、「データベースの作成」をクリックします。「ネイティブ」モードを選択します。
-
-4. Cloud RunのURLに「/login」を付与して管理画面にログインしてパラメータを設定します
-5. LINE Developerにログインします。https://account.line.biz/login
-6. チャネルを作成しwebhookの宛先にCloud RunのサービスURLを指定します。
 
 ## 注意
 
