@@ -47,9 +47,16 @@ def vision_results_to_string(vision_results):
     result_string += "\nObjects: " + ', '.join([ann['name'] for ann in object_annotations]) if object_annotations else "None"
     return result_string
 
-def get_image(image_url):
-    response = requests.get(image_url)
+import requests
+
+def get_image(image_url, line_access_token):
+    headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Authorization": f"Bearer {line_access_token}",
+    }
+    response = requests.get(image_url, headers=headers)
     return response.content
+
 
 @vision.route('/upload', methods=['GET', 'POST'])
 def upload_file():
