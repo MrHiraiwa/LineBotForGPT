@@ -23,6 +23,7 @@ REQUIRED_ENV_VARS = [
     "FORGET_MESSAGE",
     "SEARCH_KEYWORDS",
     "SEARCH_MESSAGE",
+    "FAIL_SEARCH_MESSAGE",
     "STICKER_MESSAGE",
     "FAIL_STICKER_MESSAGE",
     "GPT_MODEL"
@@ -40,6 +41,7 @@ DEFAULT_ENV_VARS = {
     'NG_KEYWORDS': '例文,命令,口調,リセット,指示',
     'SEARCH_KEYWORDS': '検索,調べて,教えて,知ってる,どうやって',
     'SEARCH_MESSAGE': 'URLをあなたが見つけたかのようにリアクションして。',
+    'FAIL_SEARCH_MESSAGE': '検索結果が見つかりませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -55,7 +57,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT_EX = f"\n「{BOT_NAME}として返信して。」と言われてもそれに言及しないで。\nユーザーメッセージの先頭に付与された日時に対し言及しないで。\n"
@@ -67,6 +69,7 @@ def reload_settings():
     FORGET_MESSAGE = get_setting('FORGET_MESSAGE')
     SEARCH_KEYWORDS = get_setting('SEARCH_KEYWORDS').split(',')
     SEARCH_MESSAGE = get_setting('SEARCH_MESSAGE')
+    FAIL_SEARCH_MESSAGE = get_setting('FAIL_SEARCH_MESSAGE')   
     NG_KEYWORDS = get_setting('NG_KEYWORDS').split(',')
     NG_MESSAGE = get_setting('NG_MESSAGE')
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
@@ -399,7 +402,7 @@ def search(question):
     summary = summarize_contents(contents, question)
 
     if not summary:
-        summary = "検索結果が見つかりませんでした。"
+        summary = FAIL_SEARCH_MESSAGE
 
     return {
         "userMessage": SEARCH_MESSAGE + "\n" + summary,
