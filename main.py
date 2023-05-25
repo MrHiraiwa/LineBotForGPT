@@ -351,6 +351,7 @@ def lineBot():
                 headMessage = SEARCH_GUIDE_MESSAGE
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
+                userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
                 maps_search = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
                 maps_search = replace_hiragana_with_spaces(maps_search)
                 maps_search = maps_search.strip()
