@@ -283,7 +283,7 @@ def lineBot():
             elif message_type == 'location':
                 userMessage = "位置情報が送信されました。"
                 
-            if any(word in userMessage for word in SEARCH_KEYWORDS):
+            if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
                 be_quick_reply = userMessage.strip
