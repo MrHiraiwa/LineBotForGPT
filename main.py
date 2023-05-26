@@ -321,9 +321,7 @@ def lineBot():
                 print(f'message_type: {message_type}')
                 exec_functions = True
                 exec_audio = True
-                audio_bytes = get_audio(message_id)
-                print(f'audio_bytes: {audio_bytes}')
-                userMessage = speech_to_text(audio_bytes)
+                userMessage = get_audio(message_id)
                 print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
