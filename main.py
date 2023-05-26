@@ -414,7 +414,7 @@ def lineBot():
                 )
             except requests.exceptions.Timeout:
                 print("OpenAI API timed out")
-                callLineApi(TIMEOUT_MESSAGE, replyToken, {'items': quick_reply})
+                callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
             user['messages'].append({'role': 'user', 'content': headMessage + "\n" + display_name + ":" + userMessage})
