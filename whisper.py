@@ -10,24 +10,36 @@ LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 def speech_to_text(file):
     payload = {
         'model': 'whisper-1',
-        'temperature': 0,
-        'file': file
+        'temperature': 0
     }
 
     headers = {
         'Authorization': f'Bearer {OPENAI_APIKEY}'
     }
+    
+    files = {
+        'file': ('file', file)
+    }
 
-    response = requests.post(
-        "https://api.openai.com/v1/audio/transcriptions", 
-        headers=headers, 
-        files=payload
-    )
+    try:
+        response = requests.post(
+            "https://api.openai.com/v1/audio/transcriptions", 
+            headers=headers, 
+            data=payload,
+            files=files
+        )
+        response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xx
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+        print(f"Headers: {headers}")
+        print(f"Payload: {payload}")
+        return
 
     if response.status_code == 200:
         return response.json().get('text')
     else:
         return response.content
+
 
 def get_audio(message_id):
     url = f'https://api-data.line.me/v2/bot/message/{message_id}/content'
