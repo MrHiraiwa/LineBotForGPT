@@ -404,13 +404,18 @@ def lineBot():
             temp_messages_final.append({'role': 'user', 'content': temp_messages}) 
 
             messages = user['messages']
-
-            response = requests.post(
-                'https://api.openai.com/v1/chat/completions',
-                headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
-                timeout=30 
-            )
+            
+            try:
+                response = requests.post(
+                    'https://api.openai.com/v1/chat/completions',
+                    headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
+                    json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
+                    timeout=30  # Timeout after 30 seconds
+                )
+            except requests.exceptions.Timeout:
+                print("OpenAI API timed out")
+                callLineApi(TIMEOUT_MESSAGE, replyToken, {'items': quick_reply})
+                return 'OK'
             
             user['messages'].append({'role': 'user', 'content': headMessage + "\n" + display_name + ":" + userMessage})
 
