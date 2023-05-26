@@ -331,6 +331,7 @@ def lineBot():
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
+                print(f'message_type: {message_type}')
                 exec_functions = True 
                 latitude =  event.get('message', {}).get('latitude', "")
                 longitude = event.get('message', {}).get('longitude', "")
