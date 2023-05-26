@@ -35,3 +35,26 @@ def text_to_speech(text):
 
     return m4a_path
 
+def send_audio_to_line(audio_path, user_id):
+    url = 'https://api.line.me/v2/bot/message/push'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+    }
+    data = {
+        "to": user_id,
+        "messages":[
+            {
+                "type":"audio",
+                "originalContentUrl": audio_path,
+                "duration": 240000
+            }
+        ]
+    }
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        return True
+    else:
+        print(f"Failed to send audio: {response.content}")
+        return False
