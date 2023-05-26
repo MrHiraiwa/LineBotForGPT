@@ -339,7 +339,7 @@ def lineBot():
                 searchwords = remove_specific_character(searchwords, '🌐インターネットで「')
                 searchwords = remove_specific_character(searchwords, BOT_NAME)
                 searchwords = replace_hiragana_with_spaces(searchwords)
-                searchwords = userMessage.strip()
+                searchwords = searchwords.strip()
                 result = search(searchwords)
                 headMessage = result['searchwords']
                 links = result['links']
