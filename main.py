@@ -335,7 +335,7 @@ def lineBot():
                 exec_functions = True 
                 latitude =  event.get('message', {}).get('latitude', "")
                 longitude = event.get('message', {}).get('longitude', "")
-                search_keyword = user.get('maps_search ', "")
+                search_keyword = user.get('maps_search', "")
                 result = maps_search(latitude, longitude, search_keyword)
                 headMessage = result['message']
                 links = result['links']
