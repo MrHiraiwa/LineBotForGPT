@@ -16,6 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
+from voice import convert_audio_to_m4a
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
