@@ -16,7 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
-from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
+#from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -435,11 +435,10 @@ def lineBot():
             
             botReply = botReply + links
             
-            if exec_audio == True:
-                text_to_speech(botReply)
-                convert_audio_to_m4a(input_path, output_path)
-                
-                return 'OK'
+            #if exec_audio == True:
+                #text_to_speech(botReply)
+                #convert_audio_to_m4a(input_path, output_path)                
+                #return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
