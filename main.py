@@ -319,10 +319,8 @@ def lineBot():
                 headMessage = str(vision_results)
                 userMessage = OCR_MESSAGE
             elif message_type == 'audio':
-                print(f'message_type: {message_type}')
                 exec_audio = True
                 userMessage = get_audio(message_id)
-                print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -437,8 +435,9 @@ def lineBot():
             
             botReply = botReply + links
             
-            #if exec_audio == True:
-                #return 'OK'
+            if exec_audio == True:
+                text_to_speech(botReply)
+                return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
