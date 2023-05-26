@@ -315,7 +315,8 @@ def lineBot():
                 image = get_image(image_url, LINE_ACCESS_TOKEN) 
                 vision_results = analyze_image(image)
                 vision_results = vision_results_to_string(vision_results)
-                userMessage = OCR_MESSAGE + str(vision_results)
+                headMessage = str(vision_results)
+                userMessage = OCR_MESSAGE
             elif message_type == 'audio':
                 exec_functions = True
                 exec_audio = True
