@@ -406,7 +406,7 @@ def lineBot():
                 timeout=30 
             )
             
-            user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
+            user['messages'].append({'role': 'user', 'content': headMessage + "\n" + display_name + ":" + userMessage})
 
             response_json = response.json()
 
