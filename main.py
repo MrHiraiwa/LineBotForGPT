@@ -335,8 +335,8 @@ def lineBot():
                 latitude =  event.get('message', {}).get('latitude', "")
                 longitude = event.get('message', {}).get('longitude', "")
                 result = maps_search(latitude, longitude, maps_search)
-                headMessage = result['message']
-                links = result['links']
+                headMessage = str(result['message'])
+                links = str(result['links'])
                 userMessage = MAPS_MESSAGE
                 maps_search = ""
             elif "🌐インターネットで「" in userMessage:
