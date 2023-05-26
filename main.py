@@ -14,6 +14,7 @@ import tiktoken
 from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
+from maps import maps, maps_search
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
