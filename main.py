@@ -331,7 +331,6 @@ def lineBot():
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
-                print(f'message_type: {message_type}')
                 exec_functions = True 
                 latitude =  event.get('message', {}).get('latitude', "")
                 longitude = event.get('message', {}).get('longitude', "")
@@ -340,7 +339,6 @@ def lineBot():
                 links = result['links']
                 userMessage = MAPS_MESSAGE
                 maps_search_keywords = ""
-                print(f'headMessage: {headMessage} links: {links}userMessage: {userMessage}')
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
                 searchwords = remove_specific_character(userMessage, '」を検索')
