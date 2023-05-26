@@ -406,7 +406,7 @@ def lineBot():
                 response = requests.post(
                     'https://api.openai.com/v1/chat/completions',
                     headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                    json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
+                    json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final}, 'max_tokens': '256',
                     timeout=50
                 )
             except requests.exceptions.Timeout:
