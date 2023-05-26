@@ -320,9 +320,9 @@ def lineBot():
             elif message_type == 'audio':
                 exec_functions = True
                 exec_audio = True
-                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
-                image = get_image(image_url, LINE_ACCESS_TOKEN) 
-                userMessage = "マイクのテスト中"
+                audio_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
+                audio_bytes = get_audio(audio_url, LINE_ACCESS_TOKEN)      
+                userMessage = speechToText(audio_bytes, OPENAI_APIKEY)
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
