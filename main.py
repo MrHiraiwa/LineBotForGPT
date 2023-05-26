@@ -243,8 +243,6 @@ def callLineApi(reply_text, reply_token, quick_reply):
     }
     requests.post(url, headers=headers, data=json.dumps(payload))
     return 'OK'
-    
-from flask import flash
 
 @app.route('/your_route', methods=['POST'])
 def your_handler_function():
