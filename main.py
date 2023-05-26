@@ -344,6 +344,7 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
+                print(f'searchwords: {searchwords} headMessage: {headMessage} userMessage: {userMessage}')
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
