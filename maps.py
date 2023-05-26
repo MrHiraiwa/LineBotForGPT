@@ -1,4 +1,3 @@
-# maps.py
 from flask import Blueprint, request, jsonify
 import requests
 import json
