@@ -319,7 +319,6 @@ def lineBot():
                 userMessage = OCR_MESSAGE
             elif message_type == 'audio':
                 print(f'message_type: {message_type}')
-                exec_functions = True
                 exec_audio = True
                 userMessage = get_audio(message_id)
                 print(f'userMessage: {userMessage}')
