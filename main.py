@@ -15,7 +15,7 @@ from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
-from whisper import get_audio, speech_To_Text
+from whisper import get_audio, speech_to_text
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -323,7 +323,7 @@ def lineBot():
                 exec_audio = True
                 audio_bytes = get_audio(message_id)
                 print(f'audio_bytes: {audio_bytes}')
-                userMessage = speech_To_Text(audio_bytes)
+                userMessage = speech_to_text(audio_bytes)
                 print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
