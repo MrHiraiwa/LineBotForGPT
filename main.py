@@ -335,13 +335,13 @@ def lineBot():
                 maps_search = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
-                userMessage = remove_specific_character(userMessage, '」を検索')
-                userMessage = remove_specific_character(userMessage, '🌐インターネットで「')
-                userMessage = remove_specific_character(userMessage, BOT_NAME)
-                userMessage = replace_hiragana_with_spaces(userMessage)
-                userMessage = userMessage.strip()
-                result = search(userMessage)
-                userMessage = result['userMessage']
+                searchwords = remove_specific_character(userMessage, '」を検索')
+                searchwords = remove_specific_character(searchwords, '🌐インターネットで「')
+                searchwords = remove_specific_character(searchwords, BOT_NAME)
+                searchwords = replace_hiragana_with_spaces(searchwords)
+                searchwords = userMessage.strip()
+                result = search(searchwords)
+                headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
                 
