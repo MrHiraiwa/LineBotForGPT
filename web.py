@@ -29,6 +29,7 @@ def get_contents(links):
         try:
             response = requests.get(link, timeout=5)
             response.raise_for_status()
+            response.encoding = response.apparent_encoding  # add this line
             html = response.text
         except requests.RequestException:
             html = "<html></html>"
