@@ -14,6 +14,7 @@ import tiktoken
 from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
+from maps import maps, maps_search
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -61,7 +62,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
-    'MAPS_MESSAGE': '',
+    'MAPS_MESSAGE': '地図を検索して。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -331,8 +332,12 @@ def lineBot():
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
                 exec_functions = True 
-                
-                userMessage = "地図検索で何も見つからなかったと言ってください。"
+                latitude =  event.get('message', {}).get('latitude', "")
+                longitude = event.get('message', {}).get('longitude', "")
+                result = maps_search(latitude, longitude, maps_search)
+                headMessage = result['message']
+                links = result['links']
+                userMessage = MAPS_MESSAGE
                 maps_search = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
