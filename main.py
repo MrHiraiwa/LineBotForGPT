@@ -318,6 +318,7 @@ def lineBot():
                 headMessage = str(vision_results)
                 userMessage = OCR_MESSAGE
             elif message_type == 'audio':
+                print(f'message_type: {message_type}')
                 exec_functions = True
                 exec_audio = True
                 audio_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
