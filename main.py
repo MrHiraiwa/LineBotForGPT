@@ -33,6 +33,8 @@ REQUIRED_ENV_VARS = [
     "STICKER_MESSAGE",
     "FAIL_STICKER_MESSAGE",
     "OCR_MESSAGE",
+    "MAPS_KEYWORDS",
+    "MAPS_FILTER_KEYWORDS",
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
     "GPT_MODEL"
@@ -56,7 +58,10 @@ DEFAULT_ENV_VARS = {
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
-    'MAPS_GUIDE_MESSAGE': '',
+    'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
+    'MAPS_FILTER_KEYWORDS': '場所,スポット',
+    'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
+    'MAPS_MESSAGE': '',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -70,7 +75,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE    
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -101,6 +106,16 @@ def reload_settings():
     STICKER_MESSAGE = get_setting('STICKER_MESSAGE')
     FAIL_STICKER_MESSAGE = get_setting('FAIL_STICKER_MESSAGE')
     OCR_MESSAGE = get_setting('OCR_MESSAGE')
+    MAPS_KEYWORDS = get_setting('MAPS_KEYWORDS')
+    if MAPS_KEYWORDS:
+        MAPS_KEYWORDS = MAPS_KEYWORDS.split(',')
+    else:
+        MAPS_KEYWORDS = []
+    MAPS_FILTER_KEYWORDS = get_setting('MAPS_FILTER_KEYWORDS')
+    if MAPS_FILTER_KEYWORDS:
+        MAPS_FILTER_KEYWORDS = MAPS_FILTER_KEYWORDS.split(',')
+    else:
+        MAPS_FILTER_KEYWORDS = []
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     
@@ -260,19 +275,21 @@ def lineBot():
         @firestore.transactional
         def update_in_transaction(transaction, doc_ref):
             doc = doc_ref.get(transaction=transaction)
-            ng_message = ""
             dailyUsage = 0
             userMessage = event['message'].get('text', "")
             message_type = event.get('message', {}).get('type')
             message_id = event.get('message', {}).get('id')
             quick_reply = []
             links = ""
+            headMessage = ""
             exec_functions = False
+            exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
+                maps_search = user.get('maps_search ', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -299,6 +316,10 @@ def lineBot():
                 vision_results = analyze_image(image)
                 vision_results = vision_results_to_string(vision_results)
                 userMessage = OCR_MESSAGE + str(vision_results)
+            elif message_type == 'audio':
+                exec_functions = True
+                exec_audio = True
+                userMessage = "マイクのテスト中"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -306,8 +327,10 @@ def lineBot():
                 else:
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
-                exec_functions = True
-                userMessage = "位置情報が送信されました。"
+                exec_functions = True 
+                
+                userMessage = "地図検索で何も見つからなかったと言ってください。"
+                maps_search = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
                 userMessage = remove_specific_character(userMessage, '」を検索')
@@ -327,18 +350,28 @@ def lineBot():
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                userMessage = SEARCH_GUIDE_MESSAGE + userMessage
+                headMessage = SEARCH_GUIDE_MESSAGE
+            
+            if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
+                userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                maps_search = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search = replace_hiragana_with_spaces(maps_search)
+                maps_search = maps_search.strip()
+                be_quick_reply = "🗺️地図で検索"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = MAPS_GUIDE_MESSAGE
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                userMessage = FORGET_GUIDE_MESSAGE + userMessage
+                headMessage = FORGET_GUIDE_MESSAGE
             if len(quick_reply) == 0:
                 quick_reply = ""
                 
             if any(word in userMessage for word in NG_KEYWORDS):
-                ng_message = NG_MESSAGE + "\n"
+                headMessage = NG_MESSAGE 
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
@@ -352,7 +385,7 @@ def lineBot():
                     transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                     return 'OK'
                 
-            temp_messages = nowDateStr + " " + act_as + ng_message + display_name + ":" + userMessage
+            temp_messages = nowDateStr + " " + act_as + headMessage + "\n" + display_name + ":" + userMessage
             total_chars = len(encoding.encode(SYSTEM_PROMPT)) + len(encoding.encode(temp_messages)) + sum([len(encoding.encode(msg['content'])) for msg in user['messages']])
             while total_chars > MAX_TOKEN_NUM and len(user['messages']) > 0:
                 user['messages'].pop(0)
@@ -387,10 +420,13 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
-
+            user['maps_search'] = maps_search
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
+            
+            if exec_audio == True:
+                return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
