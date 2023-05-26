@@ -1,34 +1,33 @@
 import requests
 import json
 import os
-from tempfile import NamedTemporaryFile
+from io import BytesIO
 
 # Environment variables should be used to securely store the API keys
 OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
-def speech_to_text(file_path):
-    with open(file_path, 'rb') as f:
-        payload = {
-            'model': 'whisper-1',
-            'temperature': 0,
-            'file': f
-        }
+def speech_to_text(file):
+    payload = {
+        'model': 'whisper-1',
+        'temperature': 0,
+        'file': file
+    }
 
-        headers = {
-            'Authorization': f'Bearer {OPENAI_APIKEY}'
-        }
+    headers = {
+        'Authorization': f'Bearer {OPENAI_APIKEY}'
+    }
 
-        response = requests.post(
-            "https://api.openai.com/v1/audio/transcriptions", 
-            headers=headers, 
-            files=payload
-        )
+    response = requests.post(
+        "https://api.openai.com/v1/audio/transcriptions", 
+        headers=headers, 
+        files=payload
+    )
 
-        if response.status_code == 200:
-            return response.json().get('text')
-        else:
-            return response.content
+    if response.status_code == 200:
+        return response.json().get('text')
+    else:
+        return response.content
 
 def get_audio(message_id):
     url = f'https://api-data.line.me/v2/bot/message/{message_id}/content'
@@ -40,10 +39,8 @@ def get_audio(message_id):
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        # Save the audio file temporarily
-        with NamedTemporaryFile(suffix=".m4a", delete=False) as temp:
-            temp.write(response.content)
-            temp.flush()
+        # Create a temporary file in memory
+        temp = BytesIO(response.content)
 
         # Call the speech_to_text function with the temporary file
-        return speech_to_text(temp.name)
+        return speech_to_text(temp)
