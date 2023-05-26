@@ -44,7 +44,7 @@ REQUIRED_ENV_VARS = [
 DEFAULT_ENV_VARS = {
     'SYSTEM_PROMPT': 'あなたは有能な秘書です。',
     'BOT_NAME': '秘書',
-    'MAX_TOKEN_NUM': '4000',
+    'MAX_TOKEN_NUM': '00',
     'MAX_DAILY_USAGE': '1000',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
