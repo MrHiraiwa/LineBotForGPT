@@ -16,7 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
-from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
+#from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -64,7 +64,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
-    'MAPS_MESSAGE': '地図を検索して。',
+    'MAPS_MESSAGE': '地図検索を実行しました。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -319,10 +319,8 @@ def lineBot():
                 headMessage = str(vision_results)
                 userMessage = OCR_MESSAGE
             elif message_type == 'audio':
-                print(f'message_type: {message_type}')
                 exec_audio = True
                 userMessage = get_audio(message_id)
-                print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -357,7 +355,7 @@ def lineBot():
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = SEARCH_GUIDE_MESSAGE
+                headMessage = headMessage + SEARCH_GUIDE_MESSAGE
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -367,18 +365,18 @@ def lineBot():
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = MAPS_GUIDE_MESSAGE
+                headMessage = headMessage + MAPS_GUIDE_MESSAGE
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = FORGET_GUIDE_MESSAGE
+                headMessage = headMessage + FORGET_GUIDE_MESSAGE
             if len(quick_reply) == 0:
                 quick_reply = ""
                 
             if any(word in userMessage for word in NG_KEYWORDS):
-                headMessage = NG_MESSAGE 
+                headMessage = headMessage + NG_MESSAGE 
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
@@ -438,6 +436,8 @@ def lineBot():
             botReply = botReply + links
             
             #if exec_audio == True:
+                #text_to_speech(botReply)
+                #convert_audio_to_m4a(input_path, output_path)                
                 #return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
