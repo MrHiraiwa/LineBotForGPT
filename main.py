@@ -407,7 +407,7 @@ def lineBot():
                     'https://api.openai.com/v1/chat/completions',
                     headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
                     json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
-                    timeout=30  # Timeout after 30 seconds
+                    timeout=50
                 )
             except requests.exceptions.Timeout:
                 print("OpenAI API timed out")
