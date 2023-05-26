@@ -15,6 +15,8 @@ from tiktoken.core import Encoding
 from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
+from whisper import get_audio, speech_to_text
+from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -44,7 +46,7 @@ REQUIRED_ENV_VARS = [
 DEFAULT_ENV_VARS = {
     'SYSTEM_PROMPT': 'あなたは有能な秘書です。',
     'BOT_NAME': '秘書',
-    'MAX_TOKEN_NUM': '2000',
+    'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
@@ -62,7 +64,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
-    'MAPS_MESSAGE': '',
+    'MAPS_MESSAGE': '地図を検索して。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -243,8 +245,6 @@ def callLineApi(reply_text, reply_token, quick_reply):
     }
     requests.post(url, headers=headers, data=json.dumps(payload))
     return 'OK'
-    
-from flask import flash
 
 @app.route('/your_route', methods=['POST'])
 def your_handler_function():
@@ -290,7 +290,7 @@ def lineBot():
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
-                maps_search = user.get('maps_search ', "")
+                maps_search_keywords = user.get('maps_search_keywords', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -319,11 +319,10 @@ def lineBot():
                 headMessage = str(vision_results)
                 userMessage = OCR_MESSAGE
             elif message_type == 'audio':
-                exec_functions = True
+                print(f'message_type: {message_type}')
                 exec_audio = True
-                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
-                image = get_image(image_url, LINE_ACCESS_TOKEN) 
-                userMessage = "マイクのテスト中"
+                userMessage = get_audio(message_id)
+                print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
                 if keywords == "":
@@ -332,9 +331,13 @@ def lineBot():
                     userMessage = STICKER_MESSAGE + "\n" + ', '.join(keywords)
             elif message_type == 'location':
                 exec_functions = True 
-                
-                userMessage = "地図検索で何も見つからなかったと言ってください。"
-                maps_search = ""
+                latitude =  event.get('message', {}).get('latitude', "")
+                longitude = event.get('message', {}).get('longitude', "")
+                result = maps_search(latitude, longitude, maps_search_keywords)
+                headMessage = result['message']
+                links = result['links']
+                userMessage = MAPS_MESSAGE
+                maps_search_keywords = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
                 searchwords = remove_specific_character(userMessage, '」を検索')
@@ -358,9 +361,9 @@ def lineBot():
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                maps_search = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
-                maps_search = replace_hiragana_with_spaces(maps_search)
-                maps_search = maps_search.strip()
+                maps_search_keywords = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
+                maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
@@ -399,15 +402,20 @@ def lineBot():
             temp_messages_final.append({'role': 'user', 'content': temp_messages}) 
 
             messages = user['messages']
-
-            response = requests.post(
-                'https://api.openai.com/v1/chat/completions',
-                headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
-                json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
-                timeout=30 
-            )
             
-            user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
+            try:
+                response = requests.post(
+                    'https://api.openai.com/v1/chat/completions',
+                    headers={'Authorization': f'Bearer {OPENAI_APIKEY}'},
+                    json={'model': GPT_MODEL, 'messages': [systemRole()] + temp_messages_final},
+                    timeout=50
+                )
+            except requests.exceptions.Timeout:
+                print("OpenAI API timed out")
+                callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
+                return 'OK'
+            
+            user['messages'].append({'role': 'user', 'content': headMessage + "\n" + display_name + ":" + userMessage})
 
             response_json = response.json()
 
@@ -424,13 +432,13 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
-            user['maps_search'] = maps_search
+            user['maps_search_keywords'] = maps_search_keywords
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
             
-            if exec_audio == True:
-                return 'OK'
+            #if exec_audio == True:
+                #return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'

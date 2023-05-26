@@ -24,15 +24,19 @@ def get_search_results(query, num, start_index=0):
 
 def get_contents(links):
     contents = []
-
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36" ,
+    }
+    
     for link in links:
         try:
-            response = requests.get(link, timeout=5)
+            response = requests.get(link, headers=headers, timeout=5)  # Use headers
             response.raise_for_status()
+            response.encoding = response.apparent_encoding
             html = response.text
         except requests.RequestException:
             html = "<html></html>"
-
+            
         soup = BeautifulSoup(html, "html.parser")
 
         # Remove all 'a' tags
@@ -61,5 +65,5 @@ def summarize_contents(contents, question):
             else:
                 m = trimmed_content
             extract_texts.append(m)
-    return ''.join(extract_texts)[:1000]
+    return ''.join(extract_texts)[:1500]
 
