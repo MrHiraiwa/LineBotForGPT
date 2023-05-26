@@ -321,11 +321,9 @@ def lineBot():
                 print(f'message_type: {message_type}')
                 exec_functions = True
                 exec_audio = True
-                audio_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
-                print(f'audio_url: {audio_url}')
-                audio_bytes = get_audio(audio_url, LINE_ACCESS_TOKEN)
+                audio_bytes = get_audio(message_id)
                 print(f'audio_bytes: {audio_bytes}')
-                userMessage = speech_To_Text(audio_bytes, OPENAI_APIKEY)
+                userMessage = speech_To_Text(audio_bytes)
                 print(f'userMessage: {userMessage}')
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
