@@ -64,7 +64,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
-    'MAPS_MESSAGE': '地図を検索して。',
+    'MAPS_MESSAGE': '地図検索を実行しました。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -355,7 +355,7 @@ def lineBot():
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = SEARCH_GUIDE_MESSAGE
+                headMessage = headMessage + SEARCH_GUIDE_MESSAGE
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -365,18 +365,18 @@ def lineBot():
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = MAPS_GUIDE_MESSAGE
+                headMessage = headMessage + MAPS_GUIDE_MESSAGE
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = FORGET_GUIDE_MESSAGE
+                headMessage = headMessage + FORGET_GUIDE_MESSAGE
             if len(quick_reply) == 0:
                 quick_reply = ""
                 
             if any(word in userMessage for word in NG_KEYWORDS):
-                headMessage = NG_MESSAGE 
+                headMessage = headMessage + NG_MESSAGE 
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
