@@ -22,13 +22,12 @@ def get_search_results(query, num, start_index=0):
 
     return response.json()
 
-
 def get_contents(links):
     contents = []
 
     for link in links:
         try:
-            response = requests.get(link)
+            response = requests.get(link, timeout=5)
             response.raise_for_status()
             html = response.text
         except requests.RequestException:
@@ -50,7 +49,6 @@ def get_contents(links):
             contents.append(text)
 
     return contents
-
 
 def summarize_contents(contents, question):
     extract_texts = []

@@ -54,7 +54,7 @@ DEFAULT_ENV_VARS = {
     'SEARCH_KEYWORDS': '検索,調べて,教えて,知ってる,どうやって',
     'SEARCH_MESSAGE': 'URLをあなたが見つけたかのようにリアクションして。',
     'SEARCH_GUIDE_MESSAGE': 'ユーザーに「画面下の「インターネットで検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。',
-    'FAIL_SEARCH_MESSAGE': '検索結果が見つかりませんでした。',
+    'FAIL_SEARCH_MESSAGE': '検索結果を読み込めませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
@@ -315,10 +315,13 @@ def lineBot():
                 image = get_image(image_url, LINE_ACCESS_TOKEN) 
                 vision_results = analyze_image(image)
                 vision_results = vision_results_to_string(vision_results)
-                userMessage = OCR_MESSAGE + str(vision_results)
+                headMessage = str(vision_results)
+                userMessage = OCR_MESSAGE
             elif message_type == 'audio':
                 exec_functions = True
                 exec_audio = True
+                image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
+                image = get_image(image_url, LINE_ACCESS_TOKEN) 
                 userMessage = "マイクのテスト中"
             elif message_type == 'sticker':
                 keywords = event.get('message', {}).get('keywords', "")
@@ -333,13 +336,13 @@ def lineBot():
                 maps_search = ""
             elif "🌐インターネットで「" in userMessage:
                 exec_functions = True
-                userMessage = remove_specific_character(userMessage, '」を検索')
-                userMessage = remove_specific_character(userMessage, '🌐インターネットで「')
-                userMessage = remove_specific_character(userMessage, BOT_NAME)
-                userMessage = replace_hiragana_with_spaces(userMessage)
-                userMessage = userMessage.strip()
-                result = search(userMessage)
-                userMessage = result['userMessage']
+                searchwords = remove_specific_character(userMessage, '」を検索')
+                searchwords = remove_specific_character(searchwords, '🌐インターネットで「')
+                searchwords = remove_specific_character(searchwords, BOT_NAME)
+                searchwords = replace_hiragana_with_spaces(searchwords)
+                searchwords = searchwords.strip()
+                result = search(searchwords)
+                headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
                 
@@ -518,7 +521,7 @@ def search(question):
         summary = FAIL_SEARCH_MESSAGE
 
     return {
-        "userMessage": SEARCH_MESSAGE + "\n" + summary,
+        "searchwords": SEARCH_MESSAGE + "\n" + summary,
         "links": links
     }
 
