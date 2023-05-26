@@ -437,6 +437,8 @@ def lineBot():
             
             if exec_audio == True:
                 text_to_speech(botReply)
+                convert_audio_to_m4a(input_path, output_path)
+                
                 return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
