@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+import uuid
 
 def get_audio(audio_url, line_access_token):
     headers = {
@@ -12,16 +13,19 @@ def get_audio(audio_url, line_access_token):
 
 def speechToText(audio_bytes, OPENAI_APIKEY):
     try:
-        with open("temp_audio_file.m4a", "wb") as f:
+        # Generate a unique file name for each audio file
+        filename = f"temp_audio_file_{uuid.uuid4()}.m4a"
+        
+        with open(filename, "wb") as f:
             f.write(audio_bytes)
 
         # Upload the file to the Whisper API
-        with open("temp_audio_file.m4a", 'rb') as f:
+        with open(filename, 'rb') as f:
             formData = {
                 'model': 'whisper',
                 "temperature" : 0,
                 'language': 'ja',
-                'file': ('temp_audio_file.m4a', f, 'audio/m4a')
+                'file': (filename, f, 'audio/m4a')
             }
 
             headers = {
@@ -31,7 +35,7 @@ def speechToText(audio_bytes, OPENAI_APIKEY):
             response = requests.post('https://api.openai.com/v1/audio/transcriptions', headers=headers, files=formData)
 
         # Delete the temporary file
-        os.remove("temp_audio_file.m4a")
+        os.remove(filename)
 
         response_json = response.json()
         text = response_json.get('text', '')
@@ -39,4 +43,3 @@ def speechToText(audio_bytes, OPENAI_APIKEY):
     except Exception as error:
         print(str(error))
         return ''
-
