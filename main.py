@@ -436,8 +436,8 @@ def lineBot():
             
             botReply = botReply + links
             
-            if exec_audio == True:
-                return 'OK'
+            #if exec_audio == True:
+                #return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
