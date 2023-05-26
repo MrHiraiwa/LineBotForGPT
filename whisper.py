@@ -4,7 +4,7 @@ import os
 from tempfile import NamedTemporaryFile
 
 # Environment variables should be used to securely store the API keys
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
 def speech_to_text(file_path):
@@ -16,7 +16,7 @@ def speech_to_text(file_path):
         }
 
         headers = {
-            'Authorization': f'Bearer {OPENAI_API_KEY}'
+            'Authorization': f'Bearer {OPENAI_APIKEY}'
         }
 
         response = requests.post(
