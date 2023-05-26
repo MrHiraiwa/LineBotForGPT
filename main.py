@@ -290,7 +290,7 @@ def lineBot():
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
-                maps_search_keywords = user.get('maps_search', "")
+                maps_search_keywords = user.get('maps_search_keywords', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -364,9 +364,9 @@ def lineBot():
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                maps_search = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
-                maps_search = replace_hiragana_with_spaces(maps_search)
-                maps_search = maps_search.strip()
+                maps_search_keywords = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
+                maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
@@ -435,7 +435,7 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
-            user['maps_search'] = maps_search_keywords
+            user['maps_search_keywords'] = maps_search_keywords
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
