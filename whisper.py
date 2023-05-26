@@ -1,45 +1,49 @@
 import requests
-import os
 import json
-import uuid
+import os
+from tempfile import NamedTemporaryFile
 
-def get_audio(audio_url, line_access_token):
+# Environment variables should be used to securely store the API keys
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
+
+def speech_to_text(file_path):
+    with open(file_path, 'rb') as f:
+        payload = {
+            'model': 'whisper-1',
+            'temperature': 0,
+            'file': f
+        }
+
+        headers = {
+            'Authorization': f'Bearer {OPENAI_API_KEY}'
+        }
+
+        response = requests.post(
+            "https://api.openai.com/v1/audio/transcriptions", 
+            headers=headers, 
+            files=payload
+        )
+
+        if response.status_code == 200:
+            return response.json().get('text')
+        else:
+            return response.content
+
+def get_audio(message_id):
+    url = f'https://api-data.line.me/v2/bot/message/{message_id}/content'
+
     headers = {
-        "Content-Type": "application/json; charset=UTF-8",
-        "Authorization": f"Bearer {line_access_token}",
+        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}',
     }
-    response = requests.get(audio_url, headers=headers)
-    return response.content
 
-def speechToText(audio_bytes, OPENAI_APIKEY):
-    try:
-        # Generate a unique file name for each audio file
-        filename = f"temp_audio_file_{uuid.uuid4()}.m4a"
-        
-        with open(filename, "wb") as f:
-            f.write(audio_bytes)
+    response = requests.get(url, headers=headers)
 
-        # Upload the file to the Whisper API
-        with open(filename, 'rb') as f:
-            formData = {
-                'model': 'whisper',
-                "temperature" : 0,
-                'language': 'ja',
-                'file': (filename, f, 'audio/m4a')
-            }
+    if response.status_code == 200:
+        # Save the audio file temporarily
+        with NamedTemporaryFile(suffix=".m4a", delete=False) as temp:
+            temp.write(response.content)
+            temp.flush()
 
-            headers = {
-                'Authorization': f'Bearer {OPENAI_APIKEY}'
-            }
-
-            response = requests.post('https://api.openai.com/v1/audio/transcriptions', headers=headers, files=formData)
-
-        # Delete the temporary file
-        os.remove(filename)
-
-        response_json = response.json()
-        text = response_json.get('text', '')
-        return text
-    except Exception as error:
-        print(str(error))
-        return ''
+        # Call the speech_to_text function with the temporary file
+        return speech_to_text(temp.name)
