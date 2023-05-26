@@ -2,6 +2,8 @@ import requests
 import json
 import os
 from io import BytesIO
+from tempfile import NamedTemporaryFile
+
 
 # Environment variables should be used to securely store the API keys
 OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
