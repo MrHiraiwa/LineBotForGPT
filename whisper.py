@@ -16,7 +16,7 @@ def get_audio(message_id):
         'Authorization': f'Bearer {LINE_ACCESS_TOKEN}',
     }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=30)
 
     if response.status_code == 200:
         # Save the audio file temporarily
@@ -49,7 +49,8 @@ def speech_to_text(file_path):
             "https://api.openai.com/v1/audio/transcriptions", 
             headers=headers, 
             data=payload, 
-            files=files
+            files=files,
+            timeout=30
         )
 
         if response.status_code == 200:
