@@ -290,7 +290,7 @@ def lineBot():
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
-                maps_search = user.get('maps_search ', "")
+                maps_search_keywords = user.get('maps_search', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -335,8 +335,7 @@ def lineBot():
                 exec_functions = True 
                 latitude =  event.get('message', {}).get('latitude', "")
                 longitude = event.get('message', {}).get('longitude', "")
-                search_keyword = user.get('maps_search_keywords', "")
-                result = maps_search(latitude, longitude, search_keyword)
+                result = maps_search(latitude, longitude, maps_search_keywords)
                 headMessage = result['message']
                 links = result['links']
                 userMessage = MAPS_MESSAGE
@@ -436,7 +435,7 @@ def lineBot():
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
-            user['maps_search'] = maps_search
+            user['maps_search'] = maps_search_keywords
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
