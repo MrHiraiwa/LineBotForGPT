@@ -267,7 +267,7 @@ def your_handler_function():
 def lineBot():
     try:
         reload_settings()
-        set_bucket_lifecycle(BACKET_NAME)
+        set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
         
