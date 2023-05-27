@@ -440,9 +440,11 @@ def lineBot():
             botReply = botReply + links
             
             if exec_audio == True and VOICE_ON == True:
-                #text_to_speech(botReply)
-                #convert_audio_to_m4a(input_path, output_path)   
-                #send_audio_to_line(audio_path, user_id)
+                bucket_name = 'your-bucket-name'
+                blob_path = 'your-path/file.m4a'
+
+                public_url, local_path = text_to_speech(botReply, bucket_name, blob_path)
+                send_audio_to_line(public_url, userId, bucket_name, local_path)
                 return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
