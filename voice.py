@@ -140,3 +140,20 @@ def detect_language(text):
         return detect(text)
     except:
         return None
+    
+from google.cloud import storage
+
+def set_bucket_lifecycle(bucket_name):
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+
+    rule = {
+        'action': {'type': 'Delete'},
+        'condition': {'age': 7}  # The number of days after object creation
+    }
+    
+    bucket.lifecycle_rules = [rule]
+    bucket.patch()
+
+    print(f"Lifecycle rule set for bucket {bucket_name}.")
+
