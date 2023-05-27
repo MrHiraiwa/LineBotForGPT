@@ -22,6 +22,7 @@ REQUIRED_ENV_VARS = [
     "BOT_NAME",
     "SYSTEM_PROMPT",
     "MAX_DAILY_USAGE",
+    "MAX_DAILY_MESSAGE",
     "MAX_TOKEN_NUM",
     "NG_KEYWORDS",
     "NG_MESSAGE",
@@ -49,6 +50,7 @@ DEFAULT_ENV_VARS = {
     'BOT_NAME': '秘書',
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
+    'MAX_DAILY_MESSAGE': '1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
     'FORGET_GUIDE_MESSAGE': 'ユーザーからあなたの記憶の削除が命令されました。別れの挨拶をしてください。',
@@ -80,12 +82,13 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
+    MAX_DAILY_MESSAGE = get_setting('MAX_DAILY_MESSAGE')
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
     FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
     if FORGET_KEYWORDS:
@@ -146,7 +149,6 @@ OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
-countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 reload_settings()
 
@@ -381,7 +383,7 @@ def lineBot():
                 headMessage = headMessage + NG_MESSAGE 
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
-                callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
+                callLineApi(MAX_DAILY_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
             if sourceType == "group" or sourceType == "room":
