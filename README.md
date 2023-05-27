@@ -7,7 +7,8 @@
 
 - Web設定: パラメーターをWeb画面で設定可能です。コードを変更する必要はありません。
 - ボット会話: 設定したキャラクター性でChatGPTと会話できます。グループチャットにも対応します。
-- Web検索: Google Custom Searchを用いてWeb検索が行えます。
+- Web検索: Google Custom Search APIを用いてWeb検索が行えます。
+- 地図検索: Google Place APIを用いて地図検索が行なえます。
 - 画像認識: Cloud Visionを用いて画像認識が行なえます。
 
 ## セットアップ
@@ -15,7 +16,7 @@
 1. Google Cloud Runでデプロイします：Google Cloud Consoleでプロジェクトを作成しCloud Run APIを有効にし、本レポジトリを指定してデプロイします。 デプロイの際は以下の環境変数を設定する必要があります。
 2. 同じプロジェクト内でFirestoreを有効にします：左側のナビゲーションメニューで「Firestore」を選択し、Firestoreをプロジェクトで有効にします。
 3. データベースを作成します：Firestoreダッシュボードに移動し、「データベースの作成」をクリックします。「ネイティブ」モードを選択します。
-4. Custom Search、Cloud Visionの両APIを有効にします。
+4. Custom Search、Cloud Vision、PlaceのAPIを有効にします。
 5. Cloud RunのURLに「/login」を付与して管理画面にログインし、パラメータを設定します
 6. LINE Developerにログインします：https://account.line.biz/login
 7. チャネルを作成し、webhookの宛先にCloud RunのサービスURLを指定します。
