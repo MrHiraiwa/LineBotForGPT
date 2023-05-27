@@ -1,8 +1,20 @@
 import os
 from tempfile import NamedTemporaryFile
 import requests
-from google.cloud import texttospeech
+from google.cloud import texttospeech, storage
 import subprocess
+
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+    
+    # Construct public url
+    public_url = f"https://storage.googleapis.com/{bucket_name}/{destination_blob_name}"
+    return public_url
 
 def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, output_path]
@@ -33,7 +45,15 @@ def text_to_speech(text):
         m4a_path = temp.name.replace(".mp3", ".m4a")
         convert_audio_to_m4a(temp.name, m4a_path)
 
-    return m4a_path
+        # Upload the file to GCS
+        bucket_name = 'your-bucket-name'  # Replace with your bucket name
+        destination_blob_name = 'your-path/' + os.path.basename(m4a_path)  # Replace 'your-path' with the desired path within the bucket
+        public_url = upload_blob(bucket_name, m4a_path, destination_blob_name)
+        
+        # Remove the local file after upload
+        os.remove(m4a_path)
+
+    return public_url
 
 def send_audio_to_line(audio_path, user_id):
     url = 'https://api.line.me/v2/bot/message/push'
@@ -52,7 +72,6 @@ def send_audio_to_line(audio_path, user_id):
         ]
     }
     response = requests.post(url, headers=headers, json=data)
-
     if response.status_code == 200:
         return True
     else:
