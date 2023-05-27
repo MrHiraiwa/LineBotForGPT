@@ -46,7 +46,6 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
-
     # Save the audio file temporarily
     with NamedTemporaryFile(suffix=".mp3", delete=False) as temp:
         temp.write(response.audio_content)
@@ -55,31 +54,28 @@ def text_to_speech(text, bucket_name, destination_blob_name):
         m4a_path = temp.name.replace(".mp3", ".m4a")
         convert_audio_to_m4a(temp.name, m4a_path)
 
+        # Get the duration of the local file before uploading
+        duration = get_duration(m4a_path)
+
         # Upload the m4a file
         public_url = upload_blob(bucket_name, m4a_path, destination_blob_name)
         
-        # Return the public url and local path of the file
-        return public_url, m4a_path
+        # Return the public url, local path of the file, and duration
+        return public_url, m4a_path, duration
 
-def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
+def send_audio_to_line(audio_path, user_id, duration):
     url = 'https://api.line.me/v2/bot/message/push'
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
     }
 
-    # Get the duration of the local file before uploading
-    duration = get_duration(audio_path)
-
-    # Now upload the blob
-    public_url = upload_blob(bucket_name, audio_path, blob_path)
-
     data = {
         "to": user_id,
         "messages":[
             {
                 "type":"audio",
-                "originalContentUrl": public_url,
+                "originalContentUrl": audio_path,
                 "duration": duration
             }
         ]
@@ -87,7 +83,7 @@ def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        delete_blob(bucket_name, blob_path)
+        print(f"Audio successfully sent to user {user_id}")
         return True
     else:
         print(f"Failed to send audio: {response.content}")
