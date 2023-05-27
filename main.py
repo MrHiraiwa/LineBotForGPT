@@ -43,6 +43,7 @@ REQUIRED_ENV_VARS = [
     "MAPS_MESSAGE",
     "VOICE_ON",
     "BACKET_NAME",
+    "FILE_AGE",
     "GPT_MODEL"
 ]
 
@@ -71,6 +72,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
+    'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -130,6 +132,7 @@ def reload_settings():
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
     BACKET_NAME = get_setting('BACKET_NAME')
+    FILE_AGE = get_setting('FILE_AGE')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
