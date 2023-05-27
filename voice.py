@@ -6,6 +6,11 @@ import subprocess
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
+try:
+    storage_client = storage.Client.create_anonymous_client()
+except Exception as e:
+    print(f"Error creating storage client: {e}")
+
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
     storage_client = storage.Client()
