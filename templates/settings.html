@@ -114,9 +114,9 @@ input[type="button"] {
   <label for="{{ key }}">{{ key }}</label>
   {% if key == "SYSTEM_PROMPT" %}
     <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% elif key == "VOICE_ON" %}
-    <input type="hidden" id="{{ key }}_hidden" name="VOICE_ON" value="False">
-    <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON") %} checked {% endif %} value="True">
+{% elif key == "VOICE_ON" %}
+  <input type="hidden" id="{{ key }}_hidden" name="VOICE_ON" value="False">
+  <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON") == "True" %} checked {% endif %} value="True">
   {% else %}
     <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
   {% endif %}
