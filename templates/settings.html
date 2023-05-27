@@ -113,13 +113,12 @@ input[type="button"] {
 <div>
   <label for="{{ key }}">{{ key }}</label>
   {% if key == "SYSTEM_PROMPT" %}
-  <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
   {% else %}
-  <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
+    <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
   {% endif %}
 </div>
 {% endfor %}
-      
     <input type="submit" value="Save">
     <input id="resetButton" type="button" value="Reset to Default">
   </form>

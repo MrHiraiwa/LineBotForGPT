@@ -22,6 +22,7 @@ REQUIRED_ENV_VARS = [
     "BOT_NAME",
     "SYSTEM_PROMPT",
     "MAX_DAILY_USAGE",
+    "MAX_DAILY_MESSAGE",
     "MAX_TOKEN_NUM",
     "NG_KEYWORDS",
     "NG_MESSAGE",
@@ -40,6 +41,7 @@ REQUIRED_ENV_VARS = [
     "MAPS_FILTER_KEYWORDS",
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
+    "VOICE_ON",
     "GPT_MODEL"
 ]
 
@@ -48,6 +50,7 @@ DEFAULT_ENV_VARS = {
     'BOT_NAME': '秘書',
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
+    'MAX_DAILY_MESSAGE': '1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
     'FORGET_GUIDE_MESSAGE': 'ユーザーからあなたの記憶の削除が命令されました。別れの挨拶をしてください。',
@@ -65,6 +68,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
+    'VOICE_ON': 'False',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -78,12 +82,13 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
+    MAX_DAILY_MESSAGE = get_setting('MAX_DAILY_MESSAGE')
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
     FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
     if FORGET_KEYWORDS:
@@ -121,6 +126,7 @@ def reload_settings():
         MAPS_FILTER_KEYWORDS = []
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
+    VOICE_ON = get_setting('VOICE_ON')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -195,8 +201,6 @@ def settings():
     default_settings=DEFAULT_ENV_VARS, 
     required_env_vars=REQUIRED_ENV_VARS
     )
-
-countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
 def systemRole():
     return { "role": "system", "content": SYSTEM_PROMPT }
@@ -379,7 +383,7 @@ def lineBot():
                 headMessage = headMessage + NG_MESSAGE 
             
             elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
-                callLineApi(countMaxMessage, replyToken, {'items': quick_reply})
+                callLineApi(MAX_DAILY_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
             if sourceType == "group" or sourceType == "room":
@@ -435,10 +439,10 @@ def lineBot():
             
             botReply = botReply + links
             
-            #if exec_audio == True:
-                #text_to_speech(botReply)
-                #convert_audio_to_m4a(input_path, output_path)                
-                #return 'OK'
+            if exec_audio == True and VOICE_ON == True:
+                text_to_speech(botReply)
+                convert_audio_to_m4a(input_path, output_path)                
+                return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
