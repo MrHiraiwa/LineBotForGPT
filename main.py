@@ -16,7 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
-from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line
+from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -42,6 +42,7 @@ REQUIRED_ENV_VARS = [
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
     "VOICE_ON",
+    "BACKET_NAME",
     "GPT_MODEL"
 ]
 
@@ -69,6 +70,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
+    'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -82,7 +84,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -127,6 +129,7 @@ def reload_settings():
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
+    BACKET_NAME = get_setting('BACKET_NAME')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -440,11 +443,14 @@ def lineBot():
             botReply = botReply + links
             
             if exec_audio == True and VOICE_ON == 'True':
-                bucket_name = 'your-bucket-name'
-                blob_path = 'your-path/file.m4a'
+                blob_path = f'{userId}/file.m4a'
+                # Call functions
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                success = send_audio_to_line(public_url, userId, duration)
 
-                public_url, local_path = text_to_speech(botReply, bucket_name, blob_path)
-                send_audio_to_line(public_url, userId, bucket_name, local_path)
+                # After sending the audio, delete the local file
+                if success:
+                    delete_local_file(local_path)
                 return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
