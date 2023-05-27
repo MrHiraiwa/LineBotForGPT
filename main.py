@@ -66,7 +66,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
-    'VOICE_ON': 'True',
+    'VOICE_ON': 'False',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
