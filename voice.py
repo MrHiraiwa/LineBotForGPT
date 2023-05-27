@@ -4,6 +4,7 @@ import requests
 from google.cloud import texttospeech, storage
 import subprocess
 from pydub.utils import mediainfo
+from langdetect import detect
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
@@ -109,3 +110,8 @@ def get_duration(file_path):
     else:
         return int(float(duration)) * 1000  # Convert to milliseconds
 
+def detect_language(text):
+    try:
+        return detect(text)
+    except:
+        return None
