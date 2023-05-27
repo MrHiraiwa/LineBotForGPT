@@ -55,10 +55,11 @@ def text_to_speech(text, bucket_name, destination_blob_name):
         m4a_path = temp.name.replace(".mp3", ".m4a")
         convert_audio_to_m4a(temp.name, m4a_path)
 
-        # Return the local path of the file
-    return m4a_path
-
-# Then, in your send_audio_to_line function:
+        # Upload the m4a file
+        public_url = upload_blob(bucket_name, m4a_path, destination_blob_name)
+        
+        # Return the public url and local path of the file
+        return public_url, m4a_path
 
 def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
     url = 'https://api.line.me/v2/bot/message/push'
