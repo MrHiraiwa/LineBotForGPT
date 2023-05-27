@@ -443,7 +443,7 @@ def lineBot():
             botReply = botReply + links
             
             if exec_audio == True and VOICE_ON == 'True':
-                blob_path = f'{userId}/file.m4a'
+                blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
                 public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
                 success = send_audio_to_line(public_url, userId, duration)
