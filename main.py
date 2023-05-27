@@ -40,6 +40,7 @@ REQUIRED_ENV_VARS = [
     "MAPS_FILTER_KEYWORDS",
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
+    "VOICE_ON",
     "GPT_MODEL"
 ]
 
@@ -65,6 +66,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
+    'VOICE_ON': 'True',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -78,7 +80,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -121,6 +123,7 @@ def reload_settings():
         MAPS_FILTER_KEYWORDS = []
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
+    VOICE_ON = get_setting('VOICE_ON')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -435,10 +438,10 @@ def lineBot():
             
             botReply = botReply + links
             
-            #if exec_audio == True:
-                #text_to_speech(botReply)
-                #convert_audio_to_m4a(input_path, output_path)                
-                #return 'OK'
+            if exec_audio == True and VOICE_ON == True:
+                text_to_speech(botReply)
+                convert_audio_to_m4a(input_path, output_path)                
+                return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
