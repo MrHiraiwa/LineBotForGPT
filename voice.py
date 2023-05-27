@@ -6,22 +6,23 @@ import subprocess
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
-try:
-    storage_client = storage.Client.create_anonymous_client()
-except Exception as e:
-    print(f"Error creating storage client: {e}")
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_filename(source_file_name)
+        blob.upload_from_filename(source_file_name)
     
-    # Construct public url
-    public_url = f"https://storage.googleapis.com/{bucket_name}/{destination_blob_name}"
-    return public_url
+        # Construct public url
+        public_url = f"https://storage.googleapis.com/{bucket_name}/{destination_blob_name}"
+        print(f"Successfully uploaded file to {public_url}")
+        return public_url
+    except Exception as e:
+        print(f"Failed to upload file: {e}")
+        raise
 
 def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, output_path]
