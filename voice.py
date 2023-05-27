@@ -99,3 +99,9 @@ def delete_blob(bucket_name, blob_name):
     blob.delete()
     print(f"Blob {blob_name} deleted.")
 
+def get_duration(file_path):
+    info = mediainfo(file_path)
+    print(f"mediainfo: {info}")
+    duration = int(float(info['duration'])) * 1000  # Convert to milliseconds
+    return duration
+
