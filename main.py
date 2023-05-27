@@ -16,7 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
-from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file
+from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -43,6 +43,7 @@ REQUIRED_ENV_VARS = [
     "MAPS_MESSAGE",
     "VOICE_ON",
     "BACKET_NAME",
+    "FILE_AGE",
     "GPT_MODEL"
 ]
 
@@ -71,6 +72,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
+    'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
@@ -84,7 +86,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -130,6 +132,7 @@ def reload_settings():
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
     BACKET_NAME = get_setting('BACKET_NAME')
+    FILE_AGE = get_setting('FILE_AGE')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -264,6 +267,8 @@ def your_handler_function():
 def lineBot():
     try:
         reload_settings()
+        if VOICE_ON == 'True':
+            set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
         
@@ -443,7 +448,7 @@ def lineBot():
             botReply = botReply + links
             
             if exec_audio == True and VOICE_ON == 'True':
-                blob_path = f'{userId}/file.m4a'
+                blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
                 public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
                 success = send_audio_to_line(public_url, userId, duration)
