@@ -36,9 +36,28 @@ def convert_audio_to_m4a(input_path, output_path):
 def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
+    
+    detected_lang = detect_language(text)
+
+    if detected_lang == 'ja':
+        language_code = "ja-JP"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'en':
+        language_code = "en-US"
+        ssml_gender = texttospeech.SsmlVoiceGender.MALE
+    elif detected_lang == 'zh-cn':
+        language_code = "zh-CN"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'ko':
+        language_code = "ko-KR"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    else:
+        language_code = "ja-JP"  # Default to Japanese if language detection fails
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+
     voice = texttospeech.VoiceSelectionParams(
-        language_code="ja-JP",
-        ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+        language_code=language_code,
+        ssml_gender=ssml_gender
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3
