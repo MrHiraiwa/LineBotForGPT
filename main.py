@@ -439,7 +439,7 @@ def lineBot():
             
             botReply = botReply + links
             
-            if exec_audio == True and VOICE_ON == True:
+            if exec_audio == True and VOICE_ON == 'True':
                 bucket_name = 'your-bucket-name'
                 blob_path = 'your-path/file.m4a'
 
