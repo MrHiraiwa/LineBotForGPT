@@ -113,7 +113,7 @@ def delete_local_file(file_path):
     if os.path.isfile(file_path):
         os.remove(file_path)
         #print(f"Local file {file_path} deleted.")
-    else:
+    #else:
         #print(f"No local file found at {file_path}.")    
 
 def delete_blob(bucket_name, blob_name):
