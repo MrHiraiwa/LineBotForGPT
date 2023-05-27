@@ -117,6 +117,8 @@ input[type="button"] {
 {% elif key == "VOICE_ON" %}
   <input type="hidden" id="{{ key }}_hidden" name="VOICE_ON" value="False">
   <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON") == "True" %} checked {% endif %} value="True">
+  <input type="hidden" name="_VOICE_ON" value="False">
+
   {% else %}
     <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
   {% endif %}
