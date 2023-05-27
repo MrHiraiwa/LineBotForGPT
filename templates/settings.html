@@ -110,17 +110,18 @@ input[type="button"] {
   <h1>Settings</h1>
   <form method="post">
     {% for key in required_env_vars %}
-    <div>
-      <label for="{{ key }}">{{ key }}</label>
-      {% if key == "SYSTEM_PROMPT" %}
-        <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-      {% elif key == "VOICE_ON" %}
-        <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON", "False") == "True" %} checked {% endif %}>
-      {% else %}
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
-      {% endif %}
-    </div>
-    {% endfor %}
+<div>
+  <label for="{{ key }}">{{ key }}</label>
+  {% if key == "SYSTEM_PROMPT" %}
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% elif key == "VOICE_ON" %}
+    <input type="hidden" id="{{ key }}_hidden" name="VOICE_ON" value="False">
+    <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON", "False") == "True" %} checked {% endif %} value="True">
+  {% else %}
+    <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
+  {% endif %}
+</div>
+{% endfor %}
     <input type="submit" value="Save">
     <input id="resetButton" type="button" value="Reset to Default">
   </form>
