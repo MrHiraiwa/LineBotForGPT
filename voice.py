@@ -89,6 +89,14 @@ def send_audio_to_line(audio_path, user_id, duration):
         print(f"Failed to send audio: {response.content}")
         return False
 
+def delete_local_file(file_path):
+    """Deletes a local file."""
+    if os.path.isfile(file_path):
+        os.remove(file_path)
+        print(f"Local file {file_path} deleted.")
+    else:
+        print(f"No local file found at {file_path}.")    
+
 def delete_blob(bucket_name, blob_name):
     """Deletes a blob from the bucket."""
     storage_client = storage.Client()
