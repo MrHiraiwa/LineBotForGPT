@@ -4,6 +4,8 @@ import requests
 from google.cloud import texttospeech, storage
 import subprocess
 
+LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
+
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
     storage_client = storage.Client()
@@ -22,7 +24,7 @@ def convert_audio_to_m4a(input_path, output_path):
 
 # Then, in your text_to_speech function:
 
-def text_to_speech(text):
+def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     voice = texttospeech.VoiceSelectionParams(
@@ -46,16 +48,15 @@ def text_to_speech(text):
         convert_audio_to_m4a(temp.name, m4a_path)
 
         # Upload the file to GCS
-        bucket_name = 'your-bucket-name'  # Replace with your bucket name
-        destination_blob_name = 'your-path/' + os.path.basename(m4a_path)  # Replace 'your-path' with the desired path within the bucket
         public_url = upload_blob(bucket_name, m4a_path, destination_blob_name)
-        
+
         # Remove the local file after upload
         os.remove(m4a_path)
 
-    return public_url
+    return public_url, m4a_path
 
-def send_audio_to_line(audio_path, user_id):
+
+def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
     url = 'https://api.line.me/v2/bot/message/push'
     headers = {
         'Content-Type': 'application/json',
@@ -72,8 +73,20 @@ def send_audio_to_line(audio_path, user_id):
         ]
     }
     response = requests.post(url, headers=headers, json=data)
+
     if response.status_code == 200:
+        delete_blob(bucket_name, blob_path)
         return True
     else:
         print(f"Failed to send audio: {response.content}")
         return False
+
+
+def delete_blob(bucket_name, blob_name):
+    """Deletes a blob from the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.delete()
+    print(f"Blob {blob_name} deleted.")
+
