@@ -20,7 +20,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
     
         # Construct public url
         public_url = f"https://storage.googleapis.com/{bucket_name}/{destination_blob_name}"
-        print(f"Successfully uploaded file to {public_url}")
+        #print(f"Successfully uploaded file to {public_url}")
         return public_url
     except Exception as e:
         print(f"Failed to upload file: {e}")
@@ -28,10 +28,9 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
         
 def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, '-c:a', 'aac', output_path]
-    #command = ['ffmpeg', '-i', input_path, output_path]
     result = subprocess.run(command, check=True, capture_output=True, text=True)
-    print("stdout:", result.stdout)
-    print("stderr:", result.stderr)
+    #print("stdout:", result.stdout)
+    #print("stderr:", result.stderr)
 
 def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
@@ -103,7 +102,7 @@ def send_audio_to_line(audio_path, user_id, duration):
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        print(f"Audio successfully sent to user {user_id}")
+        #print(f"Audio successfully sent to user {user_id}")
         return True
     else:
         print(f"Failed to send audio: {response.content}")
@@ -113,9 +112,9 @@ def delete_local_file(file_path):
     """Deletes a local file."""
     if os.path.isfile(file_path):
         os.remove(file_path)
-        print(f"Local file {file_path} deleted.")
+        #print(f"Local file {file_path} deleted.")
     else:
-        print(f"No local file found at {file_path}.")    
+        #print(f"No local file found at {file_path}.")    
 
 def delete_blob(bucket_name, blob_name):
     """Deletes a blob from the bucket."""
@@ -123,11 +122,11 @@ def delete_blob(bucket_name, blob_name):
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
     blob.delete()
-    print(f"Blob {blob_name} deleted.")
+    #print(f"Blob {blob_name} deleted.")
     
 def get_duration(file_path):
     info = mediainfo(file_path)
-    print(f"mediainfo: {info}")
+    #print(f"mediainfo: {info}")
     duration = info.get('duration')  # durationの値がない場合はNoneを返す
     if duration is None:
         print(f"No duration information found for {file_path}.")
@@ -155,5 +154,5 @@ def set_bucket_lifecycle(bucket_name, age):
     bucket.lifecycle_rules = [rule]
     bucket.patch()
 
-    print(f"Lifecycle rule set for bucket {bucket_name}.")
+    #print(f"Lifecycle rule set for bucket {bucket_name}.")
 
