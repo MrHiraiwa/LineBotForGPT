@@ -8,3 +8,4 @@ pytz==2023.3
 beautifulsoup4==4.12.2
 tiktoken==0.4.0
 google-cloud-texttospeech==2.14.1
+google-cloud-storage==2.9.0
