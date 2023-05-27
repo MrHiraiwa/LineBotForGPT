@@ -3,6 +3,7 @@ from tempfile import NamedTemporaryFile
 import requests
 from google.cloud import texttospeech, storage
 import subprocess
+from pydub.utils import mediainfo
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
@@ -52,14 +53,10 @@ def text_to_speech(text, bucket_name, destination_blob_name):
         m4a_path = temp.name.replace(".mp3", ".m4a")
         convert_audio_to_m4a(temp.name, m4a_path)
 
-        # Upload the file to GCS
-        public_url = upload_blob(bucket_name, m4a_path, destination_blob_name)
+        # Return the local path of the file
+    return m4a_path
 
-        # Remove the local file after upload
-        os.remove(m4a_path)
-
-    return public_url, m4a_path
-
+# Then, in your send_audio_to_line function:
 
 def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
     url = 'https://api.line.me/v2/bot/message/push'
@@ -67,13 +64,20 @@ def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
     }
+
+    # Get the duration of the local file before uploading
+    duration = get_duration(audio_path)
+
+    # Now upload the blob
+    public_url = upload_blob(bucket_name, audio_path, blob_path)
+
     data = {
         "to": user_id,
         "messages":[
             {
                 "type":"audio",
-                "originalContentUrl": audio_path,
-                "duration": 240000
+                "originalContentUrl": public_url,
+                "duration": duration
             }
         ]
     }
@@ -85,7 +89,6 @@ def send_audio_to_line(audio_path, user_id, bucket_name, blob_path):
     else:
         print(f"Failed to send audio: {response.content}")
         return False
-
 
 def delete_blob(bucket_name, blob_name):
     """Deletes a blob from the bucket."""
