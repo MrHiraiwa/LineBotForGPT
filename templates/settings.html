@@ -121,7 +121,7 @@ input[type="button"] {
 {% endfor %}
   <div>
     <label for="VOICE_ON">VOICE_ON</label>
-    <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON", False) %} checked {% endif %}>
+    <input type="checkbox" id="VOICE_ON" name="VOICE_ON"  {% if settings.get("VOICE_ON", "False") == "True" %} checked {% endif %}
   </div>
       
     <input type="submit" value="Save">
