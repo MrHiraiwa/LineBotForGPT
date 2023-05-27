@@ -189,7 +189,6 @@ def settings():
                 value = request.form.get(key)
             update_setting(key, value)
         reload_settings()
-        flash("Settings have been updated successfully.")
     settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
     return render_template('settings.html', settings=settings, default_settings=DEFAULT_ENV_VARS, required_env_vars=REQUIRED_ENV_VARS)
 
