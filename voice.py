@@ -27,9 +27,9 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
 def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, output_path]
-    subprocess.run(command, check=True)
-
-# Then, in your text_to_speech function:
+    result = subprocess.run(command, check=True)
+    if result.returncode != 0:
+        print(f"ffmpeg command failed with return code {result.returncode}")
 
 def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
