@@ -117,6 +117,11 @@ input[type="button"] {
   {% else %}
   <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
   {% endif %}
+  <div>
+  <label for="VOICE_ON">VOICE_ON</label>
+  <input type="checkbox" id="VOICE_ON" name="VOICE_ON" {% if settings.get("VOICE_ON", False) %} checked {% endif %}>
+  </div>
+
 </div>
 {% endfor %}
       
