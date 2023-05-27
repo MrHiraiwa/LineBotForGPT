@@ -24,8 +24,8 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
     except Exception as e:
         print(f"Failed to upload file: {e}")
         raise
-
-  def convert_audio_to_m4a(input_path, output_path):
+        
+def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, output_path]
     result = subprocess.run(command, check=True, capture_output=True, text=True)
     print("stdout:", result.stdout)
