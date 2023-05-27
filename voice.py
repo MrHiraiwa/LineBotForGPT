@@ -25,11 +25,11 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
         print(f"Failed to upload file: {e}")
         raise
 
-def convert_audio_to_m4a(input_path, output_path):
+  def convert_audio_to_m4a(input_path, output_path):
     command = ['ffmpeg', '-i', input_path, output_path]
-    result = subprocess.run(command, check=True)
-    if result.returncode != 0:
-        print(f"ffmpeg command failed with return code {result.returncode}")
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    print("stdout:", result.stdout)
+    print("stderr:", result.stderr)
 
 def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
