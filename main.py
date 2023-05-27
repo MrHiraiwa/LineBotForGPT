@@ -445,7 +445,7 @@ def lineBot():
             if exec_audio == True and VOICE_ON == 'True':
                 blob_path = f'{userId}/file.m4a'
 
-                public_url, local_path = text_to_speech(botReply, bucket_name, blob_path)
+                public_url, local_path = text_to_speech(botReply, BACKET_NAME, blob_path)
                 send_audio_to_line(public_url, userId, BACKET_NAME, local_path)
                 return 'OK'
 
