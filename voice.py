@@ -98,10 +98,14 @@ def delete_blob(bucket_name, blob_name):
     blob = bucket.blob(blob_name)
     blob.delete()
     print(f"Blob {blob_name} deleted.")
-
+    
 def get_duration(file_path):
     info = mediainfo(file_path)
     print(f"mediainfo: {info}")
-    duration = int(float(info['duration'])) * 1000  # Convert to milliseconds
-    return duration
+    duration = info.get('duration')  # durationの値がない場合はNoneを返す
+    if duration is None:
+        print(f"No duration information found for {file_path}.")
+        return 0  # または適当なデフォルト値
+    else:
+        return int(float(duration)) * 1000  # Convert to milliseconds
 
