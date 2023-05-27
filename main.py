@@ -181,23 +181,17 @@ def login():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    if 'is_admin' not in session or not session['is_admin']:
-        return redirect(url_for('login'))
-    
-    current_settings = {key: get_setting(key) or DEFAULT_ENV_VARS.get(key, '') for key in REQUIRED_ENV_VARS}
-
     if request.method == 'POST':
         for key in REQUIRED_ENV_VARS:
-            value = request.form.get(key)
-            if value:
-                update_setting(key, value)
-        return redirect(url_for('settings'))
-    return render_template(
-    'settings.html', 
-    settings=current_settings, 
-    default_settings=DEFAULT_ENV_VARS, 
-    required_env_vars=REQUIRED_ENV_VARS
-    )
+            if key == 'VOICE_ON':
+                value = 'True' if request.form.get(key) else 'False'
+            else:
+                value = request.form.get(key)
+            update_setting(key, value)
+        reload_settings()
+        flash("Settings have been updated successfully.")
+    settings = {key: get_setting(key) for key in REQUIRED_ENV_VARS}
+    return render_template('settings.html', settings=settings, default_settings=DEFAULT_ENV_VARS, required_env_vars=REQUIRED_ENV_VARS)
 
 countMaxMessage = f'1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。'
 
