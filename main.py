@@ -16,7 +16,7 @@ from web import get_search_results, get_contents, summarize_contents
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
-from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file
+from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -264,6 +264,7 @@ def your_handler_function():
 def lineBot():
     try:
         reload_settings()
+        set_bucket_lifecycle(BACKET_NAME)
         if 'events' not in request.json or not request.json['events']:
             return 'No events in the request', 200  # Return a 200 HTTP status code
         
