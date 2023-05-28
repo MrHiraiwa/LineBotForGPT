@@ -298,6 +298,7 @@ def lineBot():
             exec_functions = False
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
+            maps_search_keywords = ""
                 
             if doc.exists:
                 user = doc.to_dict()
