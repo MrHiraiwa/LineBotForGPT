@@ -23,6 +23,7 @@ REQUIRED_ENV_VARS = [
     "SYSTEM_PROMPT",
     "MAX_DAILY_USAGE",
     "MAX_DAILY_MESSAGE",
+    "FREE_LIMIT_DAY",
     "MAX_TOKEN_NUM",
     "NG_KEYWORDS",
     "NG_MESSAGE",
@@ -53,6 +54,7 @@ DEFAULT_ENV_VARS = {
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
     'MAX_DAILY_MESSAGE': '1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。',
+    'FREE_LIMIT_DAY': '0',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
     'FORGET_GUIDE_MESSAGE': 'ユーザーからあなたの記憶の削除が命令されました。別れの挨拶をしてください。',
@@ -86,7 +88,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE,MAX_DAILY_USAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -133,6 +135,7 @@ def reload_settings():
     VOICE_ON = get_setting('VOICE_ON')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
+    FREE_LIMIT_DAY = get_setting('FREE_LIMIT_DAY')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -261,9 +264,7 @@ def your_handler_function():
 
     flash('Settings have been saved successfully.')
     return redirect(url_for('your_template'))
-
 @app.route('/', methods=['POST'])
-
 def lineBot():
     try:
         reload_settings()
@@ -299,11 +300,13 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
+            start_free_day = "0"
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
+                start_free_day = user.get('start_free_day', "")
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -317,6 +320,7 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
+                user['start_free_day'] = nowDate.strftime('%Y/%m/%d')
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
@@ -390,8 +394,14 @@ def lineBot():
                 
             if any(word in userMessage for word in NG_KEYWORDS):
                 headMessage = headMessage + NG_MESSAGE 
+                
             
-            elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
+            if 'start_free_day' in user:
+                start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
+                    dailyUsage = None
+                    
+            if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
                 callLineApi(MAX_DAILY_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
@@ -446,6 +456,7 @@ def lineBot():
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
             user['maps_search_keywords'] = maps_search_keywords
+            user['start_free_day'] = start_free_day
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
             botReply = botReply + links
