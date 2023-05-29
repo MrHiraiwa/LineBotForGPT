@@ -266,7 +266,6 @@ def your_handler_function():
     return redirect(url_for('your_template'))
 
 @app.route('/', methods=['POST'])
-
 def lineBot():
     try:
         reload_settings()
@@ -322,6 +321,7 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
+                user['start_free_day'] = nowDate.strftime('%Y/%m/%d')
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
@@ -395,8 +395,14 @@ def lineBot():
                 
             if any(word in userMessage for word in NG_KEYWORDS):
                 headMessage = headMessage + NG_MESSAGE 
+                
             
-            elif MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
+            if 'start_free_day' in user:
+                start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
+                    dailyUsage = None
+                    
+            if MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
                 callLineApi(MAX_DAILY_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
