@@ -264,7 +264,6 @@ def your_handler_function():
 
     flash('Settings have been saved successfully.')
     return redirect(url_for('your_template'))
-
 @app.route('/', methods=['POST'])
 def lineBot():
     try:
@@ -402,7 +401,7 @@ def lineBot():
                 if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
                     dailyUsage = None
                     
-            if MAX_DAILY_USAGE is not None and dailyUsage is not None and MAX_DAILY_USAGE <= dailyUsage:
+            if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
                 callLineApi(MAX_DAILY_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
