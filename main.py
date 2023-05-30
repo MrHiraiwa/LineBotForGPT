@@ -95,7 +95,7 @@ def reload_settings():
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-    MAX_DAILY_MESSAGE = get_setting('MAX_DAILY_MESSAGE')
+    MAX_DAILY_MESSAGE = get_setting(f'MAX_DAILY_MESSAGE').format(MAX_DAILY_USAGE)
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
     FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
     if FORGET_KEYWORDS:
