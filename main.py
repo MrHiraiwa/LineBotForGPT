@@ -306,7 +306,10 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
-                start_free_day = user.get('start_free_day', "")
+                if 'start_free_day' in user and user['start_free_day']:
+                    start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                else:
+                    start_free_day = nowDate.date()  # or any default value
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
