@@ -311,7 +311,7 @@ def lineBot():
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
-                        start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                        start_free_day = datetime.datetime.combine(start_free_day, datetime.datetime.min.time())
                     except ValueError:
                         start_free_day = nowDate.date()  # or any default value
                 else:
