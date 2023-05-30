@@ -54,7 +54,7 @@ DEFAULT_ENV_VARS = {
     'BOT_NAME': '秘書',
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
-    'MAX_DAILY_MESSAGE': '1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。',
+    'MAX_DAILY_MESSAGE': '1日の最大使用回数を超過しました。',
     'FREE_LIMIT_DAY': '0',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
@@ -95,7 +95,7 @@ def reload_settings():
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     MAX_TOKEN_NUM = int(get_setting('MAX_TOKEN_NUM') or 2000)
     MAX_DAILY_USAGE = int(get_setting('MAX_DAILY_USAGE') or 0)
-    MAX_DAILY_MESSAGE = get_setting(f'MAX_DAILY_MESSAGE').format(MAX_DAILY_USAGE)
+    MAX_DAILY_MESSAGE = get_setting('MAX_DAILY_MESSAGE')
     ERROR_MESSAGE = get_setting('ERROR_MESSAGE')
     FORGET_KEYWORDS = get_setting('FORGET_KEYWORDS')
     if FORGET_KEYWORDS:
