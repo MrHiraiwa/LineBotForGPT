@@ -313,10 +313,10 @@ def lineBot():
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
                     except ValueError:
-                        start_free_day = datetime.combine(nowDate.date(), datetime.time.min)
+                        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
                 else:
-                    start_free_day = datetime.combine(nowDate.date(), datetime.time.min)                    
-
+                    start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+                    
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
