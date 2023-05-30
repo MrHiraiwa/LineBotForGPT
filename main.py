@@ -54,7 +54,7 @@ DEFAULT_ENV_VARS = {
     'BOT_NAME': '秘書',
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
-    'MAX_DAILY_MESSAGE': '1日の最大使用回数{MAX_DAILY_USAGE}回を超過しました。',
+    'MAX_DAILY_MESSAGE': '1日の最大使用回数を超過しました。',
     'FREE_LIMIT_DAY': '0',
     'ERROR_MESSAGE': '現在アクセスが集中しているため、しばらくしてからもう一度お試しください。',
     'FORGET_KEYWORDS': '忘れて,わすれて',
@@ -89,7 +89,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -407,9 +407,8 @@ def lineBot():
             if any(word in userMessage for word in NG_KEYWORDS):
                 headMessage = headMessage + NG_MESSAGE 
                 
-            
             if 'start_free_day' in user:
-                if (nowDate.date() - start_free_day.date()).days <= FREE_LIMIT_DAY:
+                if (nowDate.date() - start_free_day.date()).days < FREE_LIMIT_DAY and (nowDate.date() - start_free_day.date()).days != 0:
                     dailyUsage = None
                     
             if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
