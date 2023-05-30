@@ -330,7 +330,8 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-                user['start_free_day'] = datetime.datetime.combine(nowDate.date(), datetime.datetime.min.time())
+                user['start_free_day'] = start_free_day
+
 
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
