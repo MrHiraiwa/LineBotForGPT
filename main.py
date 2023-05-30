@@ -407,9 +407,8 @@ def lineBot():
             if any(word in userMessage for word in NG_KEYWORDS):
                 headMessage = headMessage + NG_MESSAGE 
                 
-            
             if 'start_free_day' in user:
-                if (nowDate.date() - start_free_day.date()).days <= FREE_LIMIT_DAY:
+                if (nowDate.date() - start_free_day.date()).days < FREE_LIMIT_DAY and (nowDate.date() - start_free_day.date()).days != 0:
                     dailyUsage = None
                     
             if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
