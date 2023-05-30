@@ -310,7 +310,10 @@ def lineBot():
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 if 'start_free_day' in user and user['start_free_day']:
-                    start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                    try:
+                        start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
+                    except ValueError:
+                        start_free_day = nowDate.date()  # or any default value
                 else:
                     start_free_day = nowDate.date()  # or any default value
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
