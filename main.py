@@ -311,11 +311,12 @@ def lineBot():
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
-                        start_free_day = datetime.datetime.combine(start_free_day, datetime.datetime.min.time())
+                        start_free_day = datetime.datetime.combine(user['start_free_day'], datetime.datetime.min.time())
                     except ValueError:
-                        start_free_day = nowDate.date()  # or any default value
+                        start_free_day = datetime.datetime.combine(nowDate.date(), datetime.datetime.min.time())
                 else:
-                    start_free_day = nowDate.date()  # or any default value
+                    start_free_day = datetime.datetime.combine(nowDate.date(), datetime.datetime.min.time())
+
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
