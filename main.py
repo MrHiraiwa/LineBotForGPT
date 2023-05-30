@@ -409,7 +409,7 @@ def lineBot():
                 
             
             if 'start_free_day' in user:
-                if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
+                if (nowDate.date() - start_free_day.date()).days <= FREE_LIMIT_DAY:
                     dailyUsage = None
                     
             if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
