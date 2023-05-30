@@ -8,7 +8,8 @@ from Crypto.Hash import SHA256
 import requests
 import pytz
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
-from google.cloud import firestore
+from google.cloud import firestore, storage
+
 import re
 import tiktoken
 from tiktoken.core import Encoding
