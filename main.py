@@ -406,7 +406,6 @@ def lineBot():
                 
             
             if 'start_free_day' in user:
-                start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
                 if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
                     dailyUsage = None
                     
