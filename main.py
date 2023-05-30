@@ -136,7 +136,7 @@ def reload_settings():
     VOICE_ON = get_setting('VOICE_ON')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
-    FREE_LIMIT_DAY = get_setting('FREE_LIMIT_DAY')
+    FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
