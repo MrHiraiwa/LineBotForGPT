@@ -269,10 +269,12 @@ def lineBot():
     try:
         reload_settings()
         if VOICE_ON == 'True':
-            set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
+            if bucket_exists(BACKET_NAME):
+                set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
+            else:
+                print(f"Bucket {BACKET_NAME} does not exist.")
         if 'events' not in request.json or not request.json['events']:
-            return 'No events in the request', 200  # Return a 200 HTTP status code
-        
+            return 'No events in the request', 200  # Return a 200 HTTP status code      
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
@@ -496,6 +498,14 @@ def get_profile(userId):
     }
     response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
     return response
+
+def bucket_exists(bucket_name):
+    """Check if a bucket exists."""
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    return bucket.exists()
 
 def create_quick_reply(quick_reply):
     if '🌐インターネットで「' in quick_reply:
