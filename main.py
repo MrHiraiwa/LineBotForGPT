@@ -8,7 +8,8 @@ from Crypto.Hash import SHA256
 import requests
 import pytz
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
-from google.cloud import firestore
+from google.cloud import firestore, storage
+
 import re
 import tiktoken
 from tiktoken.core import Encoding
@@ -135,7 +136,7 @@ def reload_settings():
     VOICE_ON = get_setting('VOICE_ON')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
-    FREE_LIMIT_DAY = get_setting('FREE_LIMIT_DAY')
+    FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -269,10 +270,12 @@ def lineBot():
     try:
         reload_settings()
         if VOICE_ON == 'True':
-            set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
+            if bucket_exists(BACKET_NAME):
+                set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
+            else:
+                print(f"Bucket {BACKET_NAME} does not exist.")
         if 'events' not in request.json or not request.json['events']:
-            return 'No events in the request', 200  # Return a 200 HTTP status code
-        
+            return 'No events in the request', 200  # Return a 200 HTTP status code      
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
@@ -306,7 +309,14 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
-                start_free_day = user.get('start_free_day', "")
+                if 'start_free_day' in user and user['start_free_day']:
+                    try:
+                        start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
+                    except ValueError:
+                        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+                else:
+                    start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+                    
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -320,7 +330,9 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0
                 }
-                user['start_free_day'] = nowDate.strftime('%Y/%m/%d')
+                user['start_free_day'] = start_free_day
+
+
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
@@ -397,8 +409,7 @@ def lineBot():
                 
             
             if 'start_free_day' in user:
-                start_free_day = datetime.strptime(user['start_free_day'], '%Y/%m/%d').date()
-                if (nowDate.date() - start_free_day).days <= FREE_LIMIT_DAY:
+                if (nowDate.date() - start_free_day.date()).days <= FREE_LIMIT_DAY:
                     dailyUsage = None
                     
             if MAX_DAILY_USAGE is not None and dailyUsage is not None and dailyUsage >= MAX_DAILY_USAGE:
@@ -493,6 +504,14 @@ def get_profile(userId):
     }
     response = requests.get(url, headers=headers, timeout=5)  # Timeout after 5 seconds
     return response
+
+def bucket_exists(bucket_name):
+    """Check if a bucket exists."""
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    return bucket.exists()
 
 def create_quick_reply(quick_reply):
     if '🌐インターネットで「' in quick_reply:
