@@ -416,6 +416,7 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
+                VOICE_ON = 'False'
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -426,23 +427,28 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
+                VOICE_ON = 'False'
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
+                VOICE_ON = 'False'
                 
             if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and VOICE_ON == 'True':
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
+                VOICE_ON = 'False'
+                
             if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and VOICE_ON == 'True':
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
+                VOICE_ON = 'False'
                 
             if len(quick_reply) == 0:
                 quick_reply = []
