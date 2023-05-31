@@ -520,7 +520,7 @@ def lineBot():
             
             botReply = botReply + links
             
-            if not quick_reply_on = True:
+            if not quick_reply_on == True:
                 if voice_or_text == "VOICE" and VOICE_ON == 'True' and quick_reply_on = 'False':
                     blob_path = f'{userId}/{message_id}.m4a'
                     # Call functions
