@@ -328,10 +328,10 @@ def lineBot():
                     'userId': userId,
                     'messages': [],
                     'updatedDateString': nowDate,
-                    'dailyUsage': 0
+                    'dailyUsage': 0,
+                    'start_free_day': start_free_day  # start_free_day is set to current date at the beginning of the function
                 }
-                user['start_free_day'] = start_free_day
-
+                transaction.set(doc_ref, user)
 
             if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
                 user['messages'] = []
