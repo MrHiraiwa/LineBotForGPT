@@ -14,7 +14,7 @@ def get_search_results(query, num, start_index=1):
         "num": num,
         "start": start_index,
         "hl": "ja",  # User interface language
-        "cr": "countryJP"  # Search results from a certain country
+        "cr": "JP"  # Search results from a certain country
     }
 
     response = requests.get(base_url, params=params)
