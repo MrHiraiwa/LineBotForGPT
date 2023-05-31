@@ -44,6 +44,12 @@ REQUIRED_ENV_VARS = [
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
     "VOICE_ON",
+    "CHANGE_TO_TEXT",
+    "CHANGE_TO_TEXT_MESSAGE",
+    "CHANGE_TO_TEXT_GUIDE_MESSAGE",
+    "CHANGE_TO_VOICE",
+    "CHANGE_TO_VOICE_MESSAGE",
+    "CHANGE_TO_VOICE_GUIDE_MESSAGE",
     "BACKET_NAME",
     "FILE_AGE",
     "GPT_MODEL"
@@ -74,6 +80,12 @@ DEFAULT_ENV_VARS = {
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
+    'CHANGE_TO_TEXT': '文字', 
+    'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
+    'CHANGE_TO_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」のリンクをタップすると私は文字で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_VOICE': '音声',
+    'CHANGE_TO_VOICE_MESSAGE': '返信を文字に変更しました。',
+    'CHANGE_TO_VOICE_GUIDE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -89,7 +101,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, CHANGE_TO_TEXT, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_TEXT_GUIDE_MESSAGE, CHANGE_TO_VOICE, CHANGE_TO_VOICE_MESSAGE, CHANGE_TO_VOICE_GUIDE_MESSAGE, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -134,6 +146,12 @@ def reload_settings():
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
+    CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
+    CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
+    CHANGE_TO_TEXT_GUIDE_MESSAGE = get_setting('CHANGE_TO_TEXT_GUIDE_MESSAGE')
+    CHANGE_TO_VOICE = get_setting('CHANGE_TO_VOICE')
+    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
+    CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
@@ -304,11 +322,13 @@ def lineBot():
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
             start_free_day = datetime.now(jst)
+            quick_reply_on = False
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
+                voice_or_text = user.get('voice_or_text', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -376,6 +396,18 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
+            elif "📝文字で返信" in userMessage and VOICE_ON == 'True':
+                exec_functions = True
+                user['voice_or_text'] = "TEXT"
+                callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🗣️音声で返信" in userMessage and VOICE_ON == 'True':
+                exec_functions = True
+                user['voice_or_text'] = "VOICE"
+                callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -385,6 +417,7 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
+                quick_reply_on = True
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -395,12 +428,28 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
+                quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
+                quick_reply_on = True
+                
+            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and VOICE_ON == 'True':
+                be_quick_reply = "📝文字で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
+                quick_reply_on = True
+                
+            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and VOICE_ON == 'True':
+                be_quick_reply = "🗣️音声で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
+                quick_reply_on = True
                 
             if len(quick_reply) == 0:
                 quick_reply = []
@@ -472,16 +521,17 @@ def lineBot():
             
             botReply = botReply + links
             
-            if exec_audio == True and VOICE_ON == 'True':
-                blob_path = f'{userId}/{message_id}.m4a'
-                # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
-                success = send_audio_to_line(public_url, userId, duration)
+            if not quick_reply_on == True:
+                if voice_or_text == "VOICE" and VOICE_ON == 'True':
+                    blob_path = f'{userId}/{message_id}.m4a'
+                    # Call functions
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                    success = send_audio_to_line(public_url, userId, duration)
 
-                # After sending the audio, delete the local file
-                if success:
-                    delete_local_file(local_path)
-                return 'OK'
+                    # After sending the audio, delete the local file
+                    if success:
+                        delete_local_file(local_path)
+                    return 'OK'
 
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
@@ -538,6 +588,24 @@ def create_quick_reply(quick_reply):
             "action": {
                 "type": "location",
                 "label": '🗺️地図で検索',
+            }
+        }
+    elif '📝文字で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '📝文字で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🗣️音声で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🗣️音声で返信',
+                "text": quick_reply
             }
         }
 
