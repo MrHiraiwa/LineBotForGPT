@@ -321,6 +321,7 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
+                voice_or_text = user.get('voice_or_text', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -388,6 +389,18 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
+            elif "📝文字で返信" in userMessage:
+                exec_functions = True
+                user['voice_or_text'] = "TEXT"
+                callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🗣️音声で返信" in userMessage:
+                exec_functions = True
+                user['voice_or_text'] = "VOICE"
+                callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
