@@ -521,7 +521,7 @@ def lineBot():
             botReply = botReply + links
             
             if not quick_reply_on == True:
-                if voice_or_text == "VOICE" and VOICE_ON == 'True' and quick_reply_on = 'False':
+                if voice_or_text == "VOICE" and VOICE_ON == 'True':
                     blob_path = f'{userId}/{message_id}.m4a'
                     # Call functions
                     public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
