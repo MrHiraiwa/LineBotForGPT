@@ -401,8 +401,9 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
+                
             if len(quick_reply) == 0:
-                quick_reply = ""
+                quick_reply = []
                 
             if any(word in userMessage for word in NG_KEYWORDS):
                 headMessage = headMessage + NG_MESSAGE 
