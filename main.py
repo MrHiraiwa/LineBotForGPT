@@ -341,8 +341,10 @@ def lineBot():
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
                 
-                if (nowDate - updatedDate) > timedelta(days=1):
+                if nowDate.date() != updatedDate.date():
                     dailyUsage = 0
+                    user['dailyUsage'] = dailyUsage
+
             else:
                 user = {
                     'userId': userId,
