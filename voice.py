@@ -4,7 +4,7 @@ import requests
 from google.cloud import texttospeech, storage
 import subprocess
 from pydub.utils import mediainfo
-from langdetect import detect
+import langid
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
@@ -36,7 +36,7 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
-    detected_lang = detect_language(text)
+    detected_lang, dialect = detect_language(text)
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
@@ -44,16 +44,20 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     elif detected_lang == 'en':
         language_code = "en-US"
         ssml_gender = texttospeech.SsmlVoiceGender.MALE
-    elif detected_lang == 'zh-cn':
-        language_code = "zh-CN"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'zh':
+        if dialect == 'Hant':
+            language_code = "zh-HK"  # Hong Kong for Cantonese
+            ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        else:
+            language_code = "zh-CN"  # Mainland China for Mandarin
+            ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'ko':
         language_code = "ko-KR"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-
+        
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
         ssml_gender=ssml_gender
@@ -136,9 +140,10 @@ def get_duration(file_path):
 
 def detect_language(text):
     try:
-        return detect(text)
+        lang, dialect = langid.classify(text)
+        return lang, dialect
     except:
-        return None
+        return None, None
     
 from google.cloud import storage
 
