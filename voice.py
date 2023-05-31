@@ -36,7 +36,7 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
-    detected_lang, dialect = detect_language(text)
+    detected_lang, dialect = "yue-Hant-HK"
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
