@@ -343,6 +343,7 @@ def lineBot():
                 
                 if nowDate.date() != updatedDate.date():
                     dailyUsage = 0
+                    user['dailyUsage'] = dailyUsage
 
             else:
                 user = {
