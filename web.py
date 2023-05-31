@@ -13,7 +13,7 @@ def get_search_results(query, num, start_index=1):
         "q": query,
         "num": num,
         "start": start_index,
-        lr = 'lang_ja'
+        "lr": 'lang_ja'
     }
 
     response = requests.get(base_url, params=params)
