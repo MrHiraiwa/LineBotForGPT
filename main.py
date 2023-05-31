@@ -81,7 +81,7 @@ DEFAULT_ENV_VARS = {
     'CHANGE_TO_TEXT': '文字', 
     'CHANGE_TO_TEXT_MESSAGE': 'ユーザーに「画面下の「文字で返信」のリンクをタップすると私は文字で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_VOICE': '音声',
-    'CHANGE_TO_TEXT_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_VOICE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
