@@ -586,16 +586,18 @@ def create_quick_reply(quick_reply):
         return {
             "type": "action",
             "action": {
-                "type": "location",
+                "type": "message",
                 "label": '📝文字で返信',
+                "text": quick_reply
             }
         }
     elif '🗣️音声で返信' in quick_reply:
         return {
             "type": "action",
             "action": {
-                "type": "location",
+                "type": "message",
                 "label": '🗣️音声で返信',
+                "text": quick_reply
             }
         }
 
