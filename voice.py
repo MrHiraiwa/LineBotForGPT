@@ -46,7 +46,7 @@ def text_to_speech(text, bucket_name, destination_blob_name):
         ssml_gender = texttospeech.SsmlVoiceGender.MALE
     elif detected_lang == 'zh':
         if dialect == 'Hant':
-            language_code = "zh-HK"  # Hong Kong for Cantonese
+            language_code = "yue-Hant-HK"  # Hong Kong for Cantonese
             ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
         else:
             language_code = "zh-CN"  # Mainland China for Mandarin
