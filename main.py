@@ -303,7 +303,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
-            start_free_day = "0"
+            start_free_day = datetime.now(jst)
                 
             if doc.exists:
                 user = doc.to_dict()
