@@ -322,6 +322,7 @@ def lineBot():
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
             start_free_day = datetime.now(jst)
+            quick_reply_on = False
                 
             if doc.exists:
                 user = doc.to_dict()
