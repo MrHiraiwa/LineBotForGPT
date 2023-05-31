@@ -2,7 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-def get_search_results(query, num, start_index=0):
+def get_search_results(query, num, start_index=1):
     google_api_key = os.getenv("GOOGLE_API_KEY")
     google_cse_id = os.getenv("GOOGLE_CSE_ID")
 
@@ -13,8 +13,7 @@ def get_search_results(query, num, start_index=0):
         "q": query,
         "num": num,
         "start": start_index,
-        "hl": "ja",  # User interface language
-        "cr": "countryJP"  # Search results from a certain country
+        "lr": 'lang_ja'
     }
 
     response = requests.get(base_url, params=params)
