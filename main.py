@@ -395,13 +395,13 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
-            elif "📝文字で返信" in userMessage:
+            elif "📝文字で返信" in userMessage and VOICE_ON == 'True':
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
                 callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🗣️音声で返信" in userMessage:
+            elif "🗣️音声で返信" in userMessage and VOICE_ON == 'True':
                 exec_functions = True
                 user['voice_or_text'] = "VOICE"
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
@@ -433,12 +433,12 @@ def lineBot():
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 
-            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False:
+            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and VOICE_ON == 'True':
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
-            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False:
+            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and VOICE_ON == 'True':
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
@@ -514,7 +514,7 @@ def lineBot():
             
             botReply = botReply + links
             
-            if exec_audio == True and VOICE_ON == 'True':
+            if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
                 public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
