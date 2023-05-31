@@ -12,8 +12,7 @@ def get_search_results(query, num, start_index=1):
         "cx": google_cse_id,
         "q": query,
         "num": num,
-        "start": start_index,
-        "lr": 'lang_ja'
+        "start": start_index
     }
 
     response = requests.get(base_url, params=params)
