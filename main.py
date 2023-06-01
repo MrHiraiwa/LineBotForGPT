@@ -195,11 +195,22 @@ def reset_logs():
             users = users_ref.stream()
             for user in users:
                 user_ref = users_ref.document(user.id)
-                user_ref.update({'messages': []})
-            return 'All user logs reset successfully', 200
+                # Set default values for all user fields.
+                default_data = {
+                    'userId': user.id,  # Preserve the user ID
+                    'messages': [],
+                    'updatedDateString': datetime.now(),
+                    'dailyUsage': 0,
+                    'start_free_day': datetime.now(),  # or any other default date
+                    # Add here any other fields that you have in your user document
+                }
+                # Set the document with the default data.
+                user_ref.set(default_data)
+            return 'All user data reset successfully', 200
         except Exception as e:
-            print(f"Error resetting user logs: {e}")
-            return 'Error resetting user logs', 500
+            print(f"Error resetting user data: {e}")
+            return 'Error resetting user data', 500
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
