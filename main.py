@@ -323,6 +323,7 @@ def lineBot():
             maps_search_keywords = ""
             start_free_day = datetime.now(jst)
             quick_reply_on = False
+            voice_or_text = 'TEXT'
                 
             if doc.exists:
                 user = doc.to_dict()
