@@ -535,7 +535,7 @@ def lineBot():
                 if success:
                     delete_local_file(local_path)
             if not quick_reply_on == True:            
-                if voice_or_text == "VOICE" and VOICE_ON == 'Else':
+                if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
