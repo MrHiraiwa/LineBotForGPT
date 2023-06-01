@@ -537,8 +537,6 @@ def lineBot():
                     # After sending the audio, delete the local file
                     if success:
                         delete_local_file(local_path)
-                    return 'OK'
-
             return 'OK'
 
         return update_in_transaction(db.transaction(), doc_ref)
