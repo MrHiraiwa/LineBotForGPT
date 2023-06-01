@@ -195,11 +195,11 @@ def reset_logs():
             users = users_ref.stream()
             for user in users:
                 user_ref = users_ref.document(user.id)
-                user_ref.update({'messages': []})
-            return 'All user logs reset successfully', 200
+                user_ref.delete()
+            return 'All user data reset successfully', 200
         except Exception as e:
-            print(f"Error resetting user logs: {e}")
-            return 'Error resetting user logs', 500
+            print(f"Error resetting user data: {e}")
+            return 'Error resetting user data', 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -323,6 +323,7 @@ def lineBot():
             maps_search_keywords = ""
             start_free_day = datetime.now(jst)
             quick_reply_on = False
+            voice_or_text = 'TEXT'
                 
             if doc.exists:
                 user = doc.to_dict()
@@ -351,7 +352,8 @@ def lineBot():
                     'messages': [],
                     'updatedDateString': nowDate,
                     'dailyUsage': 0,
-                    'start_free_day': start_free_day  # start_free_day is set to current date at the beginning of the function
+                    'start_free_day': start_free_day,
+                    'voice_or_text' : 'TEXT'
                 }
                 transaction.set(doc_ref, user)
 

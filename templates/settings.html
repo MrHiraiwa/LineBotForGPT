@@ -83,7 +83,7 @@ input[type="button"] {
     elem.style.overflow = 'hidden';
 }
 
-  window.onload = function() {
+window.onload = function() {
   var resetButton = document.getElementById('resetButton');
   resetButton.addEventListener('click', function(e) {
     e.preventDefault(); // Prevent the form from being submitted
@@ -94,7 +94,19 @@ input[type="button"] {
   if (systemPromptElem) {
     adjustHeight(systemPromptElem);
   }
+
+  // Get the reset logs form and the reset button
+  var resetLogsForm = document.getElementById('resetLogsForm');
+  var resetAllUserLogsButton = document.getElementById('resetAllUserLogsButton');
+
+  resetAllUserLogsButton.addEventListener('click', function(e) {
+    // Show a confirm dialog. If the user clicks "Cancel", prevent the form from being submitted.
+    if (!window.confirm('Are you sure you want to reset all user logs? This action cannot be undone.')) {
+      e.preventDefault();
+    }
+  });
 };
+
   </script>
 </head>
 <body>
@@ -122,8 +134,8 @@ input[type="button"] {
     <input type="submit" value="Save">
     <input id="resetButton" type="button" value="Reset to Default">
   </form>
-  <form action="{{ url_for('reset_logs') }}" method="post">
-    <input type="submit" value="Reset All User Logs">
+  <form action="{{ url_for('reset_logs') }}" method="post" id="resetLogsForm">
+    <input type="submit" value="Reset All User Logs" id="resetAllUserLogsButton">
   </form>
 </body>
 </html>
