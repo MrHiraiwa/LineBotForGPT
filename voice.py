@@ -111,7 +111,35 @@ def send_audio_to_line(audio_path, user_id, duration):
     else:
         print(f"Failed to send audio: {response.content}")
         return False
+    
+def send_audio_to_line_reply(audio_path, reply_token, duration):
+    url = 'https://api.line.me/v2/bot/message/reply'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+    }
 
+    data = {
+        "replyToken": reply_token,
+        "messages":[
+            {
+                "type":"audio",
+                "originalContentUrl": audio_path,
+                "duration": duration
+            }
+        ]
+    }
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        #print(f"Audio successfully sent to user {user_id}")
+        return True
+    else:
+        print(f"Failed to send audio: {response.content}")
+        return False
+
+    
+    
 def delete_local_file(file_path):
     """Deletes a local file."""
     if os.path.isfile(file_path):
