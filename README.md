@@ -18,9 +18,10 @@
 2. 同じプロジェクト内でFirestoreを有効にします：左側のナビゲーションメニューで「Firestore」を選択し、Firestoreをプロジェクトで有効にします。
 3. データベースを作成します：Firestoreダッシュボードに移動し、「データベースの作成」をクリックします。「ネイティブ」モードを選択します。
 4. Custom Search、Cloud Vision、Place、Text-To-SpeechのAPIを有効にします。
-5. Cloud RunのURLに「/login」を付与して管理画面にログインし、パラメータを設定します
-6. LINE Developerにログインします：https://account.line.biz/login
-7. チャネルを作成し、webhookの宛先にCloud RunのサービスURLを指定します。
+5. Cloud Strageのバケットをインターネット公開で設定します。
+6. Cloud RunのURLに「/login」を付与して管理画面にログインし、パラメータを設定します
+7. LINE Developerにログインします：https://account.line.biz/login
+8. チャネルを作成し、webhookの宛先にCloud RunのサービスURLを指定します。
 
 ## 環境変数
 - OPENAI_APIKEY: OpenAI APIのAPIキー。ChatGPTとWhisperで使用する。
