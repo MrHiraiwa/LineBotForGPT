@@ -421,7 +421,7 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
-                #quick_reply_on = True
+                quick_reply_on = True
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
                 userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -432,14 +432,14 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
-                #quick_reply_on = True
+                quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
-                #quick_reply_on = True
+                quick_reply_on = True
                 
             if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and VOICE_ON == 'True':
                 be_quick_reply = "📝文字で返信"
@@ -453,7 +453,7 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
-                #quick_reply_on = True
+                quick_reply_on = True
                 
             if len(quick_reply) == 0:
                 quick_reply = []
@@ -525,17 +525,21 @@ def lineBot():
             
             botReply = botReply + links
             
-            if not quick_reply_on == True:
-                if voice_or_text == "VOICE" and VOICE_ON == 'True':
-                    blob_path = f'{userId}/{message_id}.m4a'
-                    # Call functions
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
-                    success = send_audio_to_line(public_url, userId, duration)
+            if voice_or_text == "VOICE" and VOICE_ON == 'True':
+                blob_path = f'{userId}/{message_id}.m4a'
+                # Call functions
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                success = send_audio_to_line(public_url, userId, duration)
 
-                    # After sending the audio, delete the local file
-                    if success:
-                        delete_local_file(local_path)
-                        
+                # After sending the audio, delete the local file
+                if success:
+                    delete_local_file(local_path)
+            if not quick_reply_on == True:            
+                if voice_or_text == "VOICE" and VOICE_ON == 'Else':
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                    success = send_audio_to_line_reply(public_url, userId, duration)
+                    return 'OK'
+                    
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
 
