@@ -500,7 +500,7 @@ def lineBot():
                 callLineApi(ERROR_MESSAGE, replyToken, {'items': quick_reply})
                 return 'OK'
             
-            user['messages'].append({'role': 'user', 'content': headMessage + "\n" + display_name + ":" + userMessage})
+            user['messages'].append({'role': 'user', 'content': nowDateStr + " " + headMessage + "\n" + display_name + ":" + userMessage})
 
             response_json = response.json()
 
