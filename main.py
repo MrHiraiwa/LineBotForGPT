@@ -525,6 +525,8 @@ def lineBot():
             
             botReply = botReply + links
             
+            callLineApi(botReply, replyToken, {'items': quick_reply})
+
             if not quick_reply_on == True:
                 if voice_or_text == "VOICE" and VOICE_ON == 'True':
                     blob_path = f'{userId}/{message_id}.m4a'
@@ -537,7 +539,6 @@ def lineBot():
                         delete_local_file(local_path)
                     return 'OK'
 
-            callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
 
         return update_in_transaction(db.transaction(), doc_ref)
