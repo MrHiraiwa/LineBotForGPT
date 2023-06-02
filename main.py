@@ -298,13 +298,13 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         sourceType =  event['source']['type']
-        #if sourceType == "group":
-        #    userId = event['source']['groupId']
-        #elif sourceType == "room":
-        #    userId = event['source']['roomId']
         nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
+        if sourceType == "group":
+            userId = event['source']['groupId']
+        elif sourceType == "room":
+            userId = event['source']['roomId']
         act_as = BOT_NAME + "として返信して。\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
 
