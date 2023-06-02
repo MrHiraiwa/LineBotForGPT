@@ -297,7 +297,7 @@ def lineBot():
         event = request.json['events'][0]
         replyToken = event['replyToken']
         userId = event['source']['userId']
-        sourceType =  eventevent['source']['type']
+        sourceType =  event['source']['type']
         if sourceType == "group" or sourceType == "room":
             userId = event['source']['groupId']
         nowDate = datetime.now(jst) 
