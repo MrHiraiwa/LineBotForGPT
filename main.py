@@ -298,6 +298,8 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         sourceType =  event['source']['type']
+        if sourceType == "group" or sourceType == "room":
+            userId = 
         nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
