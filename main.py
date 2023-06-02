@@ -402,13 +402,13 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
-            elif "📝文字で返信" in userMessage and VOICE_ON == 'True':
+            elif "📝文字で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
                 callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🗣️音声で返信" in userMessage and VOICE_ON == 'True':
+            elif "🗣️音声で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "VOICE"
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
