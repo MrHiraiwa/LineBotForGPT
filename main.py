@@ -298,6 +298,8 @@ def lineBot():
         replyToken = event['replyToken']
         userId = event['source']['userId']
         sourceType =  event['source']['type']
+        if sourceType == "group" or sourceType == "room":
+            userId = event['source']['groupId']
         nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
@@ -400,13 +402,13 @@ def lineBot():
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
-            elif "📝文字で返信" in userMessage and VOICE_ON == 'True':
+            elif "📝文字で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
                 callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🗣️音声で返信" in userMessage and VOICE_ON == 'True':
+            elif "🗣️音声で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "VOICE"
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
@@ -441,14 +443,14 @@ def lineBot():
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and VOICE_ON == 'True':
+            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and VOICE_ON == 'True':
+            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
@@ -534,7 +536,7 @@ def lineBot():
                 # After sending the audio, delete the local file
                 if success:
                     delete_local_file(local_path)
-            if not quick_reply_on == True:            
+            if quick_reply_on == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
                     public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
