@@ -32,7 +32,7 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name):
+def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantonese):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
@@ -44,8 +44,11 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     elif detected_lang == 'en':
         language_code = "en-US"
         ssml_gender = texttospeech.SsmlVoiceGender.MALE
-    elif detected_lang == 'zh':
-        language_code = "yue-Hant-HK"  # Hong Kong for Cantonese
+    elif detected_lang == 'zh' and mandarin_or_cantonese == 'MANDARIN':
+        language_code = "zh-CN"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'zh' and mandarin_or_cantonese == 'CANTONESE':
+        language_code = "yue-Hant-HK"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'ko':
         language_code = "ko-KR"

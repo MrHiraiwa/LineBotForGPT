@@ -50,6 +50,12 @@ REQUIRED_ENV_VARS = [
     "CHANGE_TO_VOICE",
     "CHANGE_TO_VOICE_MESSAGE",
     "CHANGE_TO_VOICE_GUIDE_MESSAGE",
+    "CHANGE_TO_MANDARIN",
+    "CHANGE_TO_MANDARIN_MESSAGE",
+    "CHANGE_TO_MANDARIN_GUIDE_MESSAGE",
+    "CHANGE_TO_CANTONESE",
+    "CHANGE_TO_CANTONESE_MESSAGE",
+    "CHANGE_TO_CANTONESE_GUIDE_MESSAGE",
     "BACKET_NAME",
     "FILE_AGE",
     "GPT_MODEL"
@@ -86,6 +92,12 @@ DEFAULT_ENV_VARS = {
     'CHANGE_TO_VOICE': '音声,声で',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
     'CHANGE_TO_VOICE_GUIDE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_MANDARIN': '音声を北京語', 
+    'CHANGE_TO_MANDARIN_MESSAGE': '中国語の音声を北京語しました。',
+    'CHANGE_TO_MANDARIN_GUIDE_MESSAGE': 'ユーザーに「画面下の「北京語で返信」のリンクをタップすると私は北京語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_CANTONESE': '音声を広東語',
+    'CHANGE_TO_CANTONESE_MESSAGE': '中国語の音声を広東語しました。',
+    'CHANGE_TO_CANTONESE_GUIDE_MESSAGE': 'ユーザーに「画面下の「広東語で返信」のリンクをタップすると私は広東語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -101,7 +113,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, CHANGE_TO_TEXT, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_TEXT_GUIDE_MESSAGE, CHANGE_TO_VOICE, CHANGE_TO_VOICE_MESSAGE, CHANGE_TO_VOICE_GUIDE_MESSAGE, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, CHANGE_TO_TEXT, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_TEXT_GUIDE_MESSAGE, CHANGE_TO_VOICE, CHANGE_TO_VOICE_MESSAGE, CHANGE_TO_VOICE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_MANDARIN_GUIDE_MESSAGE, CHANGE_TO_CANTONESE, CHANGE_TO_CANTONESE_MESSAGE, CHANGE_TO_CANTONESE_GUIDE_MESSAGE, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -160,6 +172,20 @@ def reload_settings():
         CHANGE_TO_VOICE = []
     CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
     CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
+    CHANGE_TO_MANDARIN = get_setting('CHANGE_TO_MANDARIN')
+    if CHANGE_TO_MANDARIN:
+        CHANGE_TO_MANDARIN = CHANGE_TO_MANDARIN.split(',')
+    else:
+        CHANGE_TO_MANDARIN = []
+    CHANGE_TO_MANDARIN_MESSAGE = get_setting('CHANGE_TO_MANDARIN_MESSAGE')
+    CHANGE_TO_MANDARIN_GUIDE_MESSAGE = get_setting('CHANGE_TO_MANDARIN_GUIDE_MESSAGE')
+    CHANGE_TO_CANTONESE = get_setting('CHANGE_TO_CANTONESE')
+    if CHANGE_TO_CANTONESE:
+        CHANGE_TO_CANTONESE = CHANGE_TO_CANTONESE.split(',')
+    else:
+        CHANGE_TO_CANTONESE = []
+    CHANGE_TO_CANTONESE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_MESSAGE')
+    CHANGE_TO_CANTONESE_GUIDE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
@@ -336,12 +362,14 @@ def lineBot():
             start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
+            mandarin_or_cantonese = 'MANDARIN'
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "")
+                mandarin_or_cantonese = user.get('mandarin_or_cantonese', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -365,7 +393,8 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
-                    'voice_or_text' : 'TEXT'
+                    'voice_or_text' : 'TEXT',
+                    'mandarin_or_cantonese' : 'MANDARIN'
                 }
                 transaction.set(doc_ref, user)
 
@@ -424,6 +453,19 @@ def lineBot():
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
+            elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['mandarin_or_cantonese'] = "MANDARIN"
+                callLineApi(CHANGE_TO_MANDARIN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['mandarin_or_cantonese'] = "CANTONESE"
+                callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -466,7 +508,21 @@ def lineBot():
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
                 quick_reply_on = True
+    
+            if any(word in userMessage for word in CHANGE_TO_MANDARIN) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🏛️北京語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_MANDARIN_GUIDE_MESSAGE
+                quick_reply_on = True
                 
+            if any(word in userMessage for word in CHANGE_TO_CANTONESE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🌃広東語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_CANTONESE_GUIDE_MESSAGE
+                quick_reply_on = True
+    
             if len(quick_reply) == 0:
                 quick_reply = []
                 
@@ -540,7 +596,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
@@ -549,7 +605,7 @@ def lineBot():
             if quick_reply_on == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
                         delete_local_file(local_path)
@@ -628,6 +684,24 @@ def create_quick_reply(quick_reply):
             "action": {
                 "type": "message",
                 "label": '🗣️音声で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🏛️北京語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🏛️北京語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🌃広東語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🌃広東語で返信',
                 "text": quick_reply
             }
         }
