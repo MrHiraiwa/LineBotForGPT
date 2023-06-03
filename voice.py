@@ -4,7 +4,10 @@ import requests
 from google.cloud import texttospeech, storage
 import subprocess
 from pydub.utils import mediainfo
-import langid
+from fastlangid.langid import LID
+
+# Instantiate the LangId class
+li = LID()
 
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 
@@ -32,11 +35,12 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
+    
 def text_to_speech(text, bucket_name, destination_blob_name):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
-    detected_lang, dialect = detect_language(text)
+    detected_lang = detect_language(text)
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
@@ -44,13 +48,15 @@ def text_to_speech(text, bucket_name, destination_blob_name):
     elif detected_lang == 'en':
         language_code = "en-US"
         ssml_gender = texttospeech.SsmlVoiceGender.MALE
-    elif detected_lang == 'zh':
-        if dialect == 'Hant':
-            language_code = "yue-Hant-HK"  # Hong Kong for Cantonese
-            ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-        else:
-            language_code = "zh-CN"  # Mainland China for Mandarin
-            ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'zh-hans':
+        language_code = "zh-CN"  # Mainland China for Mandarin
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'zh-hant':
+        language_code = "zh-TW"  # Taiwan for Traditional Chinese
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'yue':  # or 'zh-yue' depending on the library output
+        language_code = "yue-Hant-HK"  # Hong Kong for Cantonese
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'ko':
         language_code = "ko-KR"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
@@ -168,10 +174,11 @@ def get_duration(file_path):
 
 def detect_language(text):
     try:
-        lang, dialect = langid.classify(text)
-        return lang, dialect
+        lang = li.predict(text)
+        return lang
     except:
-        return None, None
+        return None
+
     
 from google.cloud import storage
 
