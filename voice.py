@@ -32,11 +32,11 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name):
+def text_to_speech(text, bucket_name, destination_blob_name,userMessage):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
-    detected_lang, dialect = detect_language(text)
+    detected_lang, dialect = detect_language(userMessage)
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
