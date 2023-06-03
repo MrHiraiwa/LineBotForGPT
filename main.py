@@ -445,14 +445,14 @@ def lineBot():
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(change_text in userMessage for change_text in CHANGE_TO_TEXT) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in CHANGE_TO_TEXT) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(change_voice in userMessage for change_voice in CHANGE_TO_VOICE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in CHANGE_TO_VOICE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
