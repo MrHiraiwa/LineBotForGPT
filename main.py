@@ -151,7 +151,6 @@ def reload_settings():
         CHANGE_TO_TEXT = CHANGE_TO_TEXT.split(',')
     else:
         CHANGE_TO_TEXT = []
-    CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
     CHANGE_TO_TEXT_GUIDE_MESSAGE = get_setting('CHANGE_TO_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_VOICE = get_setting('CHANGE_TO_VOICE')
