@@ -50,6 +50,12 @@ REQUIRED_ENV_VARS = [
     "CHANGE_TO_VOICE",
     "CHANGE_TO_VOICE_MESSAGE",
     "CHANGE_TO_VOICE_GUIDE_MESSAGE",
+    "CHANGE_TO_MANDARIN",
+    "CHANGE_TO_MANDARIN_MESSAGE",
+    "CHANGE_TO_MANDARIN_GUIDE_MESSAGE",
+    "CHANGE_TO_CANTONESE",
+    "CHANGE_TO_CANTONESE_MESSAGE",
+    "CHANGE_TO_CANTONESE_GUIDE_MESSAGE",
     "BACKET_NAME",
     "FILE_AGE",
     "GPT_MODEL"
@@ -86,6 +92,12 @@ DEFAULT_ENV_VARS = {
     'CHANGE_TO_VOICE': '音声,声で',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
     'CHANGE_TO_VOICE_GUIDE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_MANDARIN': '北京語', 
+    'CHANGE_TO_MANDARIN_MESSAGE': '中国語の音声を北京語しました。',
+    'CHANGE_TO_MANDARIN_GUIDE_MESSAGE': 'ユーザーに「画面下の「北京語で返信」のリンクをタップすると私は北京語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_CANTONESE': '広東語',
+    'CHANGE_TO_CANTONESE_MESSAGE': '中国語の音声を広東語しました。',
+    'CHANGE_TO_CANTONESE_GUIDE_MESSAGE': 'ユーザーに「画面下の「広東語で返信」のリンクをタップすると私は広東語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -160,6 +172,20 @@ def reload_settings():
         CHANGE_TO_VOICE = []
     CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
     CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
+    CHANGE_TO__MANDARIN = get_setting('CHANGE_TO__MANDARIN')
+    if CHANGE_TO__MANDARIN:
+        CHANGE_TO__MANDARIN = CHANGE_TO__MANDARIN.split(',')
+    else:
+        CHANGE_TO__MANDARIN = []
+    CHANGE_TO_MANDARIN_MESSAGE = get_setting('CHANGE_TO_MANDARIN_MESSAGE')
+    CHANGE_TO_MANDARIN_GUIDE_MESSAGE = get_setting('CHANGE_TO_MANDARIN_GUIDE_MESSAGE')
+       CHANGE_TO_CANTONESE = get_setting('CHANGE_TO_CANTONESE')
+    if CHANGE_TO_CANTONESE:
+        CHANGE_TO_CANTONESE = CHANGE_TO_CANTONESE.split(',')
+    else:
+        CHANGE_TO_CANTONESE = []
+    CHANGE_TO_CANTONESE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_MESSAGE')
+    CHANGE_TO_CANTONESE_GUIDE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
