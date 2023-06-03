@@ -147,9 +147,18 @@ def reload_settings():
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
     CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
+    if CHANGE_TO_TEXT:
+        CHANGE_TO_TEXT = CHANGE_TO_TEXT.split(',')
+    else:
+        CHANGE_TO_TEXT = []
+    CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
     CHANGE_TO_TEXT_GUIDE_MESSAGE = get_setting('CHANGE_TO_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_VOICE = get_setting('CHANGE_TO_VOICE')
+    if CHANGE_TO_VOICE:
+        CHANGE_TO_VOICE = CHANGE_TO_VOICE.split(',')
+    else:
+        CHANGE_TO_VOICE = []
     CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
     CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
