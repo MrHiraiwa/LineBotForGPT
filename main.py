@@ -456,13 +456,13 @@ def lineBot():
             elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['mandarin_or_cantonese'] = "MANDARIN"
-                callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
+                callLineApi(CHANGE_TO_MANDARIN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['mandarin_or_cantonese'] = "CANTONESE"
-                callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
+                callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             
