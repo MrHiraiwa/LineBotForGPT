@@ -532,7 +532,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path,userMessage)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
