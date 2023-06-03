@@ -393,7 +393,7 @@ def lineBot():
                     'updatedDateString': nowDate,
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
-                    'voice_or_text' : 'TEXT'
+                    'voice_or_text' : 'TEXT',
                     'mandarin_or_cantonese' : 'MANDARIN'
                 }
                 transaction.set(doc_ref, user)
