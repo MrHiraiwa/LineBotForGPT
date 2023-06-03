@@ -450,6 +450,19 @@ def lineBot():
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
+            elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['mandarin_or_cantonese'] = "MANDARIN"
+                callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['mandarin_or_cantonese'] = "CANTONESE"
+                callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -492,7 +505,21 @@ def lineBot():
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
                 quick_reply_on = True
+    
+            if any(word in userMessage for word in CHANGE_TO_MANDARIN) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🏛️北京語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_MANDARIN_GUIDE_MESSAGE
+                quick_reply_on = True
                 
+            if any(word in userMessage for word in CHANGE_TO_CANTONESE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🌃広東語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + CHANGE_TO_CANTONESE_GUIDE_MESSAGE
+                quick_reply_on = True
+    
             if len(quick_reply) == 0:
                 quick_reply = []
                 
@@ -654,6 +681,24 @@ def create_quick_reply(quick_reply):
             "action": {
                 "type": "message",
                 "label": '🗣️音声で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🏛️北京語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🏛️北京語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🌃広東語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🌃広東語で返信',
                 "text": quick_reply
             }
         }
