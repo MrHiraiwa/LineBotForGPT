@@ -32,7 +32,7 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name,userMessage):
+def text_to_speech(text, bucket_name, destination_blob_name, userMessage):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
