@@ -179,9 +179,6 @@ def detect_language(text):
     except:
         return None
 
-    
-from google.cloud import storage
-
 def set_bucket_lifecycle(bucket_name, age):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
