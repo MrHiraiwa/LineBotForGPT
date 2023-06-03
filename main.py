@@ -362,12 +362,14 @@ def lineBot():
             start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
+            mandarin_or_cantonese = 'MANDARIN'
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "")
+                mandarin_or_cantonese = user.get('mandarin_or_cantonese', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -392,6 +394,7 @@ def lineBot():
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
                     'voice_or_text' : 'TEXT'
+                    'mandarin_or_cantonese' : 'MANDARIN'
                 }
                 transaction.set(doc_ref, user)
 
