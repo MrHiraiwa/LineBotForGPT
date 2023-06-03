@@ -80,10 +80,10 @@ DEFAULT_ENV_VARS = {
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
-    'CHANGE_TO_TEXT': '文字', 
+    'CHANGE_TO_TEXT': '文字,テキスト', 
     'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
     'CHANGE_TO_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」のリンクをタップすると私は文字で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
-    'CHANGE_TO_VOICE': '音声',
+    'CHANGE_TO_VOICE': '音声,声で',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
     'CHANGE_TO_VOICE_GUIDE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
@@ -147,9 +147,17 @@ def reload_settings():
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
     CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
+    if CHANGE_TO_TEXT:
+        CHANGE_TO_TEXT = CHANGE_TO_TEXT.split(',')
+    else:
+        CHANGE_TO_TEXT = []
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
     CHANGE_TO_TEXT_GUIDE_MESSAGE = get_setting('CHANGE_TO_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_VOICE = get_setting('CHANGE_TO_VOICE')
+    if CHANGE_TO_VOICE:
+        CHANGE_TO_VOICE = CHANGE_TO_VOICE.split(',')
+    else:
+        CHANGE_TO_VOICE = []
     CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
     CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
@@ -445,14 +453,14 @@ def lineBot():
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in CHANGE_TO_TEXT) and exec_functions == False and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in CHANGE_TO_TEXT) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in CHANGE_TO_VOICE) and exec_functions == False and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in CHANGE_TO_VOICE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
