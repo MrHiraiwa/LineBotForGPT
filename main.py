@@ -339,7 +339,7 @@ def lineBot():
             userId = event['source']['groupId']
         elif sourceType == "room":
             userId = event['source']['roomId']
-        act_as = BOT_NAME + "として返信して。\n"
+        act_as = "Act as " + BOT_NAME + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
 
         db = firestore.Client()
