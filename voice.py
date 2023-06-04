@@ -43,7 +43,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantone
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'en':
         language_code = "en-US"
-        ssml_gender = texttospeech.SsmlVoiceGender.MALE
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'zh' and mandarin_or_cantonese == 'MANDARIN':
         language_code = "zh-CN"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
