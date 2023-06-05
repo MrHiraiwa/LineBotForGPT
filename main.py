@@ -44,18 +44,20 @@ REQUIRED_ENV_VARS = [
     "MAPS_GUIDE_MESSAGE",
     "MAPS_MESSAGE",
     "VOICE_ON",
-    "CHANGE_TO_TEXT",
+    "VOICE_OR_TEXT_KEYWORDS",
+    "VOICE_OR_TEXT_GUIDE_MESSAGE",
     "CHANGE_TO_TEXT_MESSAGE",
-    "CHANGE_TO_TEXT_GUIDE_MESSAGE",
-    "CHANGE_TO_VOICE",
     "CHANGE_TO_VOICE_MESSAGE",
-    "CHANGE_TO_VOICE_GUIDE_MESSAGE",
-    "CHANGE_TO_MANDARIN",
+    "OR_ENGLISH_KEYWORDS",
+    "OR_ENGLISH_GUIDE_MESSAGE",
+    "CHANGE_TO_AMERICAN_MESSAGE",
+    "CHANGE_TO_BRIDISH_MESSAGE",
+    "CHANGE_TO_AUSTRALIAN_MESSAGE",
+    "CHANGE_TO_INDIAN_MESSAGE",
+    "OR_CHINESE_KEYWORDS",
+    "OR_CHINESE_GUIDE_MESSAGE",
     "CHANGE_TO_MANDARIN_MESSAGE",
-    "CHANGE_TO_MANDARIN_GUIDE_MESSAGE",
-    "CHANGE_TO_CANTONESE",
     "CHANGE_TO_CANTONESE_MESSAGE",
-    "CHANGE_TO_CANTONESE_GUIDE_MESSAGE",
     "BACKET_NAME",
     "FILE_AGE",
     "GPT_MODEL"
@@ -86,18 +88,20 @@ DEFAULT_ENV_VARS = {
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
-    'CHANGE_TO_TEXT': '文字,テキスト', 
+    'VOICE_OR_TEXT_KEYWORDS': '文字で,テキストで,音声で,声で', 
+    'VOICE_OR_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」又は「音声で返信」のリンクをタップすると私の音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
-    'CHANGE_TO_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」のリンクをタップすると私は文字で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
-    'CHANGE_TO_VOICE': '音声,声で',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
-    'CHANGE_TO_VOICE_GUIDE_MESSAGE': 'ユーザーに「画面下の「音声で返信」のリンクをタップすると私は音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
-    'CHANGE_TO_MANDARIN': '音声を北京語', 
+    'OR_ENGLISH_KEYWORDS': '英語音声', 
+    'OR_ENGLISH_GUIDE_MESSAGE': 'ユーザーに「画面下の「アメリカ英語で返信」又は「イギリス英語で返信」又は「オーストラリア英語で返信」又は「インド英語で返信」のリンクをタップすると私の中国音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_AMERICAN_MESSAGE': '英語の音声をアメリカ英語にしました。',
+    'CHANGE_TO_BRIDISH_MESSAGE': '英語の音声をイギリス英語にしました。',
+    'CHANGE_TO_AUSTRALIAN_MESSAGE': '英語の音声をオーストラリア英語にしました。',
+    'CHANGE_TO_INDIAN_MESSAGE': '英語の音声をインド英語にしました。',
+    'OR_CHINESE_KEYWORDS': '中国語音声', 
+    'OR_CHINESE_GUIDE_MESSAGE': 'ユーザーに「画面下の「北京語で返信」又は「広東語で返信」のリンクをタップすると私の中国音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_MANDARIN_MESSAGE': '中国語の音声を北京語にしました。',
-    'CHANGE_TO_MANDARIN_GUIDE_MESSAGE': 'ユーザーに「画面下の「北京語で返信」のリンクをタップすると私は北京語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
-    'CHANGE_TO_CANTONESE': '音声を広東語',
     'CHANGE_TO_CANTONESE_MESSAGE': '中国語の音声を広東語にしました。',
-    'CHANGE_TO_CANTONESE_GUIDE_MESSAGE': 'ユーザーに「画面下の「広東語で返信」のリンクをタップすると私は広東語の音声で返信する」と案内してください。以下の文章はユーザーから送られたものです。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo'
@@ -113,7 +117,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, CHANGE_TO_TEXT, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_TEXT_GUIDE_MESSAGE, CHANGE_TO_VOICE, CHANGE_TO_VOICE_MESSAGE, CHANGE_TO_VOICE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_MANDARIN_GUIDE_MESSAGE, CHANGE_TO_CANTONESE, CHANGE_TO_CANTONESE_MESSAGE, CHANGE_TO_CANTONESE_GUIDE_MESSAGE, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -158,34 +162,32 @@ def reload_settings():
     MAPS_GUIDE_MESSAGE = get_setting('MAPS_GUIDE_MESSAGE')
     MAPS_MESSAGE = get_setting('MAPS_MESSAGE')
     VOICE_ON = get_setting('VOICE_ON')
-    CHANGE_TO_TEXT = get_setting('CHANGE_TO_TEXT')
-    if CHANGE_TO_TEXT:
-        CHANGE_TO_TEXT = CHANGE_TO_TEXT.split(',')
+    VOICE_OR_TEXT_KEYWORDS = get_setting('VOICE_OR_TEXT_KEYWORDS')
+    if VOICE_OR_TEXT_KEYWORDS:
+        VOICE_OR_TEXT_KEYWORDS = VOICE_OR_TEXT_KEYWORDS.split(',')
     else:
-        CHANGE_TO_TEXT = []
+        VOICE_OR_TEXT_KEYWORDS = []
+    VOICE_OR_TEXT_GUIDE_MESSAGE = get_setting('VOICE_OR_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
-    CHANGE_TO_TEXT_GUIDE_MESSAGE = get_setting('CHANGE_TO_TEXT_GUIDE_MESSAGE')
-    CHANGE_TO_VOICE = get_setting('CHANGE_TO_VOICE')
-    if CHANGE_TO_VOICE:
-        CHANGE_TO_VOICE = CHANGE_TO_VOICE.split(',')
+    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')    
+    OR_ENGLISH_KEYWORDS = get_setting('OR_ENGLISH_KEYWORDS')
+    if OR_ENGLISH_KEYWORDS:
+        OR_ENGLISH_KEYWORDS = OR_ENGLISH_KEYWORDS.split(',')
     else:
-        CHANGE_TO_VOICE = []
-    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
-    CHANGE_TO_VOICE_GUIDE_MESSAGE = get_setting('CHANGE_TO_VOICE_GUIDE_MESSAGE')
-    CHANGE_TO_MANDARIN = get_setting('CHANGE_TO_MANDARIN')
-    if CHANGE_TO_MANDARIN:
-        CHANGE_TO_MANDARIN = CHANGE_TO_MANDARIN.split(',')
+        OR_ENGLISH_KEYWORDS = []
+    OR_ENGLISH_GUIDE_MESSAGE = get_setting('OR_ENGLISH_GUIDE_MESSAGE')
+    CHANGE_TO_AMERICAN_MESSAGE = get_setting('CHANGE_TO_AMERICAN_MESSAGE')
+    CHANGE_TO_BRIDISH_MESSAGE = get_setting('CHANGE_TO_BRIDISH_MESSAGE')
+    CHANGE_TO_AUSTRALIAN_MESSAGE = get_setting('CHANGE_TO_AUSTRALIAN_MESSAGE')
+    CHANGE_TO_INDIAN_MESSAGE = get_setting('CHANGE_TO_INDIAN_MESSAGE')
+    OR_CHINESE_KEYWORDS = get_setting('OR_CHINESE_KEYWORDS')
+    if OR_CHINESE_KEYWORDS:
+        OR_CHINESE_KEYWORDS = OR_CHINESE_KEYWORDS.split(',')
     else:
-        CHANGE_TO_MANDARIN = []
+        OR_CHINESE_KEYWORDS = []
+    OR_CHINESE_GUIDE_MESSAGE = get_setting('OR_CHINESE_GUIDE_MESSAGE')
     CHANGE_TO_MANDARIN_MESSAGE = get_setting('CHANGE_TO_MANDARIN_MESSAGE')
-    CHANGE_TO_MANDARIN_GUIDE_MESSAGE = get_setting('CHANGE_TO_MANDARIN_GUIDE_MESSAGE')
-    CHANGE_TO_CANTONESE = get_setting('CHANGE_TO_CANTONESE')
-    if CHANGE_TO_CANTONESE:
-        CHANGE_TO_CANTONESE = CHANGE_TO_CANTONESE.split(',')
-    else:
-        CHANGE_TO_CANTONESE = []
     CHANGE_TO_CANTONESE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_MESSAGE')
-    CHANGE_TO_CANTONESE_GUIDE_MESSAGE = get_setting('CHANGE_TO_CANTONESE_GUIDE_MESSAGE')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
@@ -362,14 +364,16 @@ def lineBot():
             start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
-            mandarin_or_cantonese = 'MANDARIN'
+            or_chinese = 'MANDARIN'
+            or_english = 'en-US'
                 
             if doc.exists:
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "")
-                mandarin_or_cantonese = user.get('mandarin_or_cantonese', "")
+                or_chinese = user.get('or_chinese', "")
+                or_english = user.get('or_english', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -394,7 +398,8 @@ def lineBot():
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
                     'voice_or_text' : 'TEXT',
-                    'mandarin_or_cantonese' : 'MANDARIN'
+                    'or_chinese' : 'MANDARIN',
+                    'or_english' : 'en-US'
                 }
                 transaction.set(doc_ref, user)
 
@@ -455,14 +460,38 @@ def lineBot():
                 return 'OK'
             elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
-                user['mandarin_or_cantonese'] = "MANDARIN"
+                user['or_chinese'] = "MANDARIN"
                 callLineApi(CHANGE_TO_MANDARIN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
-                user['mandarin_or_cantonese'] = "CANTONESE"
+                user['or_chinese'] = "CANTONESE"
                 callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🗽アメリカ英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-US"
+                callLineApi(CHANGE_TO_AMERICAN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🏰イギリス英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-GB"
+                callLineApi(CHANGE_TO_BRIDISH_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🦘オーストラリア英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-AU"
+                callLineApi(CHANGE_TO_AUSTRALIAN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🐘インド英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-IN"
+                callLineApi(CHANGE_TO_INDIAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             
@@ -495,32 +524,41 @@ def lineBot():
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in CHANGE_TO_TEXT) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in VOICE_OR_TEXT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = headMessage + CHANGE_TO_TEXT_GUIDE_MESSAGE
-                quick_reply_on = True
-                
-            if any(word in userMessage for word in CHANGE_TO_VOICE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗣️音声で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = headMessage + CHANGE_TO_VOICE_GUIDE_MESSAGE
+                headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
-            if any(word in userMessage for word in CHANGE_TO_MANDARIN) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🏛️北京語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = headMessage + CHANGE_TO_MANDARIN_GUIDE_MESSAGE
-                quick_reply_on = True
-                
-            if any(word in userMessage for word in CHANGE_TO_CANTONESE) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🌃広東語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = headMessage + CHANGE_TO_CANTONESE_GUIDE_MESSAGE
+                headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
+                quick_reply_on = True
+    
+    
+            if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🗽アメリカ英語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                be_quick_reply = "🏰イギリス英語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                be_quick_reply = "🦘オーストラリア英語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                be_quick_reply = "🐘インド英語で返信"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if len(quick_reply) == 0:
@@ -596,7 +634,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
@@ -605,7 +643,7 @@ def lineBot():
             if quick_reply_on == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese)
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
                         delete_local_file(local_path)
@@ -705,7 +743,43 @@ def create_quick_reply(quick_reply):
                 "text": quick_reply
             }
         }
-
+    elif '🗽アメリカ英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🗽アメリカ英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🏰イギリス英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🏰イギリス英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🦘オーストラリア英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🦘オーストラリア英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🐘インド英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🐘インド英語で返信',
+                "text": quick_reply
+            }
+        }
+    
 # ひらがなと句読点を削除
 def replace_hiragana_with_spaces(text):
     hiragana_regex = r'[\u3040-\u309F。、！～？]'
