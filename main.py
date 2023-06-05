@@ -761,7 +761,7 @@ def create_quick_reply(quick_reply):
                 "text": quick_reply
             }
         }
-        elif '🦘オーストラリア英語で返信' in quick_reply:
+    elif '🦘オーストラリア英語で返信' in quick_reply:
         return {
             "type": "action",
             "action": {
