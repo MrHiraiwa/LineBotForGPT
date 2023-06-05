@@ -50,7 +50,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     elif detected_lang == 'en' and or_english == 'en-IN':
         language_code = "en-IN"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-    elif detected_lang == 'en' and or_english == 'en-BG':
+    elif detected_lang == 'en' and or_english == 'en-GB':
         language_code = "en-GB"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'zh' and or_chinese == 'MANDARIN':
