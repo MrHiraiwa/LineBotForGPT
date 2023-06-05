@@ -37,6 +37,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
     detected_lang, dialect = detect_language(text)
+    name = ''
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
@@ -44,6 +45,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        name = "en-US-Standard-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
@@ -81,7 +83,8 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
         
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
-        ssml_gender=ssml_gender
+        ssml_gender=ssml_gender,
+        name = name
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
