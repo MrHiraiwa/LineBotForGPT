@@ -32,7 +32,7 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantonese):
+def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantonese, or_english):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
@@ -41,8 +41,17 @@ def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantone
     if detected_lang == 'ja':
         language_code = "ja-JP"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-    elif detected_lang == 'en':
+    elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'en' and or_english == 'en-AU':
+        language_code = "en-AU"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'en' and or_english == 'en-IN':
+        language_code = "en-IN"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'en' and or_english == 'en-BG':
+        language_code = "en-GB"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     elif detected_lang == 'zh' and mandarin_or_cantonese == 'MANDARIN':
         language_code = "zh-CN"
