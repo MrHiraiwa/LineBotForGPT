@@ -534,14 +534,14 @@ def lineBot():
                 headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
-            if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🏛️北京語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🌃広東語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
+                headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
     
