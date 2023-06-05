@@ -32,7 +32,7 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english):
+def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english, voice_speed):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
@@ -72,12 +72,20 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
         language_code = "ja-JP"  # Default to Japanese if language detection fails
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
         
+    if voice_speed == 'slow':
+        speaking_rate = 0.75
+    elif voice_speed == 'fast':
+        speaking_rate = 1.5
+    else:
+        speaking_rate = 1.0
+        
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
         ssml_gender=ssml_gender
     )
     audio_config = texttospeech.AudioConfig(
-        audio_encoding=texttospeech.AudioEncoding.MP3
+        audio_encoding=texttospeech.AudioEncoding.MP3,
+        speaking_rate=speaking_rate
     )
 
     response = client.synthesize_speech(
@@ -187,7 +195,6 @@ def detect_language(text):
     except:
         return None, None
     
-from google.cloud import storage
 
 def set_bucket_lifecycle(bucket_name, age):
     storage_client = storage.Client()
