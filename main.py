@@ -48,6 +48,11 @@ REQUIRED_ENV_VARS = [
     "VOICE_OR_TEXT_GUIDE_MESSAGE",
     "CHANGE_TO_TEXT_MESSAGE",
     "CHANGE_TO_VOICE_MESSAGE",
+    "VOICE_SPEED_KEYWORDS",
+    "VOICE_SPEED_GUIDE_MESSAGE",
+    "VOICE_SPEED_SLOW_MESSAGE",
+    "VOICE_SPEED_NORMAL_MESSAGE",
+    "VOICE_SPEED_FAST_MESSAGE",
     "OR_ENGLISH_KEYWORDS",
     "OR_ENGLISH_GUIDE_MESSAGE",
     "CHANGE_TO_AMERICAN_MESSAGE",
@@ -92,6 +97,11 @@ DEFAULT_ENV_VARS = {
     'VOICE_OR_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」又は「音声で返信」のリンクをタップすると私の音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
+    'VOICE_SPEED_KEYWORDS': '音声速度',
+    'VOICE_SPEED_GUIDE_MESSAGE': 'ユーザーに「画面下の「遅い」又は「普通」又は「早い」のリンクをタップすると私の音声速度の設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
+    'VOICE_SPEED_SLOW_MESSAGE': '音声の速度を遅くしました。',
+    'VOICE_SPEED_NORMAL_MESSAGE': '音声の速度を普通にしました。',
+    'VOICE_SPEED_FAST_MESSAGE': '音声の速度を早くしました。',
     'OR_ENGLISH_KEYWORDS': '英語音声', 
     'OR_ENGLISH_GUIDE_MESSAGE': 'ユーザーに「画面下の「アメリカ英語で返信」又は「イギリス英語で返信」又は「オーストラリア英語で返信」又は「インド英語で返信」のリンクをタップすると私の中国音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_AMERICAN_MESSAGE': '英語の音声をアメリカ英語にしました。',
@@ -117,7 +127,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE", OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -169,7 +179,16 @@ def reload_settings():
         VOICE_OR_TEXT_KEYWORDS = []
     VOICE_OR_TEXT_GUIDE_MESSAGE = get_setting('VOICE_OR_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
-    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')    
+    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
+    VOICE_SPEED_KEYWORDS = get_setting('VOICE_SPEED_KEYWORDS')
+    if VOICE_SPEED_KEYWORDS:
+        VOICE_SPEED_KEYWORDS = VOICE_SPEED_KEYWORDS.split(',')
+    else:
+        VOICE_SPEED_KEYWORDS = []
+    VOICE_SPEED_GUIDE_MESSAGE = get_setting('VOICE_SPEED_GUIDE_MESSAGE')
+    VOICE_SPEED_SLOW_MESSAGE = get_setting('VOICE_SPEED_SLOW_MESSAGE')
+    VOICE_SPEED_NORMAL_MESSAGE = get_setting('VOICE_SPEED_NORMAL_MESSAGE')
+    VOICE_SPEED_FAST_MESSAGE = get_setting('VOICE_SPEED_FAST_MESSAGE')
     OR_ENGLISH_KEYWORDS = get_setting('OR_ENGLISH_KEYWORDS')
     if OR_ENGLISH_KEYWORDS:
         OR_ENGLISH_KEYWORDS = OR_ENGLISH_KEYWORDS.split(',')
@@ -366,6 +385,7 @@ def lineBot():
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
             or_english = 'en-US'
+            voice_speed = 'normal'
                 
             if doc.exists:
                 user = doc.to_dict()
@@ -374,6 +394,7 @@ def lineBot():
                 voice_or_text = user.get('voice_or_text', "TEXT")
                 or_chinese = user.get('or_chinese', "MANDARIN")
                 or_english = user.get('or_english', "en-US")
+                voice_speed = user.get('voice_speed', "normal")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
@@ -399,7 +420,8 @@ def lineBot():
                     'start_free_day': start_free_day,
                     'voice_or_text' : 'TEXT',
                     'or_chinese' : 'MANDARIN',
-                    'or_english' : 'en-US'
+                    'or_english' : 'en-US',
+                    'voice_speed' : 'normal'
                 }
                 transaction.set(doc_ref, user)
 
@@ -544,7 +566,6 @@ def lineBot():
                 headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
-    
             if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗽アメリカ英語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
@@ -634,7 +655,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
@@ -643,7 +664,7 @@ def lineBot():
             if quick_reply_on == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
                         delete_local_file(local_path)
