@@ -362,7 +362,7 @@ def lineBot():
             start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
-            mandarin_or_cantonese = 'MANDARIN'
+            or_chinese = 'MANDARIN'
             or_english = 'en-US'
                 
             if doc.exists:
@@ -395,7 +395,7 @@ def lineBot():
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
                     'voice_or_text' : 'TEXT',
-                    'mandarin_or_cantonese' : 'MANDARIN',
+                    'or_chinese' : 'MANDARIN',
                     'or_english' : 'en-US'
                 }
                 transaction.set(doc_ref, user)
@@ -457,13 +457,13 @@ def lineBot():
                 return 'OK'
             elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
-                user['mandarin_or_cantonese'] = "MANDARIN"
+                user['or_chinese'] = "MANDARIN"
                 callLineApi(CHANGE_TO_MANDARIN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
-                user['mandarin_or_cantonese'] = "CANTONESE"
+                user['or_chinese'] = "CANTONESE"
                 callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
@@ -594,7 +594,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese, or_english)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
@@ -603,7 +603,7 @@ def lineBot():
             if quick_reply_on == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, mandarin_or_cantonese, or_english)
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
                         delete_local_file(local_path)
