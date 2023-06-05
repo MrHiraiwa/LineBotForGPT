@@ -88,7 +88,7 @@ DEFAULT_ENV_VARS = {
     'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
-    'VOICE_OR_TEXT_KEYWORDS': '文字で,テキストで,音声で,声で', 
+    'VOICE_OR_TEXT_KEYWORDS': '音声設定', 
     'VOICE_OR_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」又は「音声で返信」のリンクをタップすると私の音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
