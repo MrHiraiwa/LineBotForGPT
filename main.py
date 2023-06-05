@@ -370,7 +370,8 @@ def lineBot():
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "")
-                mandarin_or_cantonese = user.get('mandarin_or_cantonese', "")
+                or_chinese = user.get('or_chinese', "")
+                or_english = user.get('or_english', "")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
