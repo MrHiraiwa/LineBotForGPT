@@ -490,7 +490,7 @@ def lineBot():
                 return 'OK'
             elif "🐘インド英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
-                user['or_english'] = "en-ID"
+                user['or_english'] = "en-IN"
                 callLineApi(CHANGE_TO_INDIAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
