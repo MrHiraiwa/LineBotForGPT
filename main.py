@@ -371,9 +371,9 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
-                voice_or_text = user.get('voice_or_text', "")
-                or_chinese = user.get('or_chinese', "")
-                or_english = user.get('or_english', "")
+                voice_or_text = user.get('voice_or_text', "TEXT")
+                or_chinese = user.get('or_chinese', "MANDARIN")
+                or_english = user.get('or_english', "en-US")
                 if 'start_free_day' in user and user['start_free_day']:
                     try:
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
