@@ -53,6 +53,12 @@ def text_to_speech(text, bucket_name, destination_blob_name, mandarin_or_cantone
     elif detected_lang == 'ko':
         language_code = "ko-KR"
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'id':
+        language_code = "id-ID"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+    elif detected_lang == 'th':
+        language_code = "th-TH"
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
