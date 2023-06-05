@@ -48,6 +48,12 @@ REQUIRED_ENV_VARS = [
     "VOICE_OR_TEXT_GUIDE_MESSAGE",
     "CHANGE_TO_TEXT_MESSAGE",
     "CHANGE_TO_VOICE_MESSAGE",
+    "OR_ENGLISH_KEYWORDS",
+    "OR_ENGLISH_GUIDE_MESSAGE",
+    "CHANGE_TO_AMERICAN_MESSAGE",
+    "CHANGE_TO_BRIDISH_MESSAGE",
+    "CHANGE_TO_AUSTRALIAN_MESSAGE",
+    "CHANGE_TO_INDIAN_MESSAGE",
     "OR_CHINESE_KEYWORDS",
     "OR_CHINESE_GUIDE_MESSAGE",
     "CHANGE_TO_MANDARIN_MESSAGE",
@@ -86,6 +92,12 @@ DEFAULT_ENV_VARS = {
     'VOICE_OR_TEXT_GUIDE_MESSAGE': 'ユーザーに「画面下の「文字で返信」又は「音声で返信」のリンクをタップすると私の音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_TEXT_MESSAGE': '返信を文字に変更しました。',
     'CHANGE_TO_VOICE_MESSAGE': '返信を音声に変更しました。',
+    'OR_ENGLISH_KEYWORDS': '英語音声', 
+    'OR_ENGLISH_GUIDE_MESSAGE': 'ユーザーに「画面下の「アメリカ英語で返信」又は「イギリス英語で返信」又は「オーストラリア英語で返信」又は「インド英語で返信」のリンクをタップすると私の中国音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
+    'CHANGE_TO_AMERICAN_MESSAGE': '英語の音声をアメリカ英語にしました。',
+    'CHANGE_TO_BRIDISH_MESSAGE': '英語の音声をイギリス英語にしました。',
+    'CHANGE_TO_AUSTRALIAN_MESSAGE': '英語の音声をオーストラリア英語にしました。',
+    'CHANGE_TO_INDIAN_MESSAGE': '英語の音声をインド英語にしました。',
     'OR_CHINESE_KEYWORDS': '中国語音声', 
     'OR_CHINESE_GUIDE_MESSAGE': 'ユーザーに「画面下の「北京語で返信」又は「広東語で返信」のリンクをタップすると私の中国音声設定が変更される」と案内してください。以下の文章はユーザーから送られたものです。',
     'CHANGE_TO_MANDARIN_MESSAGE': '中国語の音声を北京語にしました。',
@@ -157,7 +169,17 @@ def reload_settings():
         VOICE_OR_TEXT_KEYWORDS = []
     VOICE_OR_TEXT_GUIDE_MESSAGE = get_setting('VOICE_OR_TEXT_GUIDE_MESSAGE')
     CHANGE_TO_TEXT_MESSAGE = get_setting('CHANGE_TO_TEXT_MESSAGE')
-    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')
+    CHANGE_TO_VOICE_MESSAGE = get_setting('CHANGE_TO_VOICE_MESSAGE')    
+    OR_ENGLISH_KEYWORDS = get_setting('OR_ENGLISH_KEYWORDS')
+    if OR_ENGLISH_KEYWORDS:
+        OR_ENGLISH_KEYWORDS = OR_ENGLISH_KEYWORDS.split(',')
+    else:
+        OR_ENGLISH_KEYWORDS = []
+    OR_ENGLISH_GUIDE_MESSAGE = get_setting('OR_ENGLISH_GUIDE_MESSAGE')
+    CHANGE_TO_AMERICAN_MESSAGE = get_setting('CHANGE_TO_AMERICAN_MESSAGE')
+    CHANGE_TO_BRIDISH_MESSAGE = get_setting('CHANGE_TO_BRIDISH_MESSAGE')
+    CHANGE_TO_AUSTRALIAN_MESSAGE = get_setting('CHANGE_TO_AUSTRALIAN_MESSAGE')
+    CHANGE_TO_INDIAN_MESSAGE = get_setting('CHANGE_TO_INDIAN_MESSAGE')
     OR_CHINESE_KEYWORDS = get_setting('OR_CHINESE_KEYWORDS')
     if OR_CHINESE_KEYWORDS:
         OR_CHINESE_KEYWORDS = OR_CHINESE_KEYWORDS.split(',')
@@ -448,6 +470,30 @@ def lineBot():
                 callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
+            elif "🗽アメリカ英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-US"
+                callLineApi(CHANGE_TO_AMERICAN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🏰イギリス英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-GB"
+                callLineApi(CHANGE_TO_BRIDISH_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🦘オーストラリア英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-AU"
+                callLineApi(CHANGE_TO_AUSTRALIAN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🐘インド英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['or_english'] = "en-ID"
+                callLineApi(CHANGE_TO_INDIAN_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
             
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
@@ -499,23 +545,20 @@ def lineBot():
                 quick_reply_on = True
     
     
-            if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "🏛️イギリス英語で返信"
+            if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🗽アメリカ英語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🌃アメリカ英語で返信"
+                be_quick_reply = "🏰イギリス英語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🏛️イギリス英語で返信"
+                be_quick_reply = "🦘オーストラリア英語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🌃アメリカ英語で返信"
+                be_quick_reply = "🐘インド英語で返信"
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🌃アメリカ英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
-                quick_reply.append(be_quick_reply)
-                headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
+                headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if len(quick_reply) == 0:
@@ -700,7 +743,43 @@ def create_quick_reply(quick_reply):
                 "text": quick_reply
             }
         }
-
+    elif '🗽アメリカ英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🗽アメリカ英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🏰イギリス英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🏰イギリス英語で返信',
+                "text": quick_reply
+            }
+        }
+        elif '🦘オーストラリア英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🦘オーストラリア英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🐘インド英語で返信' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🐘インド英語で返信',
+                "text": quick_reply
+            }
+        }
+    
 # ひらがなと句読点を削除
 def replace_hiragana_with_spaces(text):
     hiragana_regex = r'[\u3040-\u309F。、！～？]'
