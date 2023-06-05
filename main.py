@@ -516,7 +516,24 @@ def lineBot():
                 callLineApi(CHANGE_TO_INDIAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            
+            elif "🐢遅い" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['voice_speed'] = "slow"
+                callLineApi(VOICE_SPEED_SLOW_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🚶普通" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['voice_speed'] = "normal"
+                callLineApi(VOICE_SPEED_NORMAL_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
+            elif "🏃‍♀️早い" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                exec_functions = True
+                user['voice_speed'] = "fast"
+                callLineApi(VOICE_SPEED_FAST_MESSAGE, replyToken, "")
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
+                return 'OK'
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
                 be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
@@ -580,6 +597,19 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
+                quick_reply_on = True
+            
+            if any(word in userMessage for word in VOICE_SPEED_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "🐢遅い"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                be_quick_reply = "🚶普通"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                be_quick_reply = "🏃‍♀️早い"
+                be_quick_reply = create_quick_reply(be_quick_reply)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if len(quick_reply) == 0:
@@ -797,6 +827,33 @@ def create_quick_reply(quick_reply):
             "action": {
                 "type": "message",
                 "label": '🐘インド英語で返信',
+                "text": quick_reply
+            }
+        }
+    elif '🐢遅い' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🐢遅い',
+                "text": quick_reply
+            }
+        }
+    elif '🚶普通' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🚶普通',
+                "text": quick_reply
+            }
+        }
+    elif '🏃‍♀️早い' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "message",
+                "label": '🏃‍♀️早い',
                 "text": quick_reply
             }
         }
