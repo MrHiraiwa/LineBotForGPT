@@ -425,15 +425,7 @@ def lineBot():
                 or_english = user.get('or_english', "en-US")
                 voice_speed = user.get('voice_speed', "normal")
                 if 'start_free_day' in user and user['start_free_day']:
-                    try:
-                        start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
-                    except ValueError:
-                        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-                        start_free_day -= timedelta(hours=hours_to_subtract)
-                else:
-                    start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-                    start_free_day -= timedelta(hours=hours_to_subtract)
-                    
+                    start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
