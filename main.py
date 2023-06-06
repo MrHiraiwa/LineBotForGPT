@@ -407,9 +407,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
-            hours_to_subtract = 9
-            start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-            start_free_day -= timedelta(hours=hours_to_subtract)
+            start_free_day = datetime.combine(nowDate.date(), time())
             quick_reply_on = False
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
@@ -945,8 +943,7 @@ def stripe_webhook():
         hours_to_subtract = 9
 
         # Create the datetime object
-        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-        start_free_day -= timedelta(hours=hours_to_subtract)
+        start_free_day =  datetime.combine(nowDate.date(), time())
         
         doc_ref.update({
             'start_free_day': start_free_day
