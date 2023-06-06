@@ -949,6 +949,14 @@ def stripe_webhook():
 
     return Response(status=200)
 
+@app.route('/success', methods=['GET'])
+def success():
+    return render_template('success.html')
+
+@app.route('/cancel', methods=['GET'])
+def cancel():
+    return render_template('cancel.html')
+
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
     if request.method == 'POST':
