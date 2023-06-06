@@ -946,8 +946,9 @@ def stripe_webhook():
         doc_ref = db.collection('users').document(userId)
 
         # Update the document with the payment date
+        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
         doc_ref.update({
-            'start_free_day': datetime.combine(nowDate.date(), datetime.min.time())
+            'start_free_day': start_free_day
         })
 
     return Response(status=200)
