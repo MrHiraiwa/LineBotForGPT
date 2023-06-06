@@ -446,7 +446,7 @@ def lineBot():
                 return 'OK'
             elif PAYMENT_KEYWORDS in userMessage:
                 checkout_url = create_checkout_session(PAYMENT_AMOUNT, PAYMENT_CURRENCY, 'http://localhost', 'http://localhost') 
-                callLineApi(PAYMENT_GUIDE_MESSAGE + '：' + checkout_url, replyToken) 
+                callLineApi(PAYMENT_GUIDE_MESSAGE + '：' + checkout_url, replyToken, "") 
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
