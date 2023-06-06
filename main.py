@@ -936,7 +936,8 @@ def handle_webhook():
         session = event['data']['object']
 
         # Handle checkout session completion here
-        line_user_id = session['metadata']['line_user_id']
+        userId = session['metadata']['line_user_id']
+        user['start_free_day'] = datetime.now(jst)
         print(f'Payment was successful for LINE user: {line_user_id}.')
 
     return '', 200
