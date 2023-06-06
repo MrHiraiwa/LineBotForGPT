@@ -3,7 +3,7 @@ import stripe
 
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
-def create_checkout_session(amount, currency, success_url, cancel_url):
+def create_checkout_session(line_user_id, amount, currency, success_url, cancel_url):
     stripe.api_key = STRIPE_SECRET_KEY
 
     session = stripe.checkout.Session.create(
@@ -21,6 +21,9 @@ def create_checkout_session(amount, currency, success_url, cancel_url):
         mode='payment',
         success_url=success_url,
         cancel_url=cancel_url,
+        metadata={
+            'line_user_id': line_user_id,
+        },
     )
 
     return session.url
