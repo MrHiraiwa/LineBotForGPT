@@ -407,6 +407,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
+            hours_to_subtract = 9
             start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
@@ -427,8 +428,10 @@ def lineBot():
                         start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
                     except ValueError:
                         start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+                        start_free_day -= timedelta(hours=hours_to_subtract)
                 else:
                     start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+                    start_free_day -= timedelta(hours=hours_to_subtract)
                     
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
