@@ -23,4 +23,4 @@ def create_checkout_session(amount, currency, success_url, cancel_url):
         cancel_url=cancel_url,
     )
 
-    return session
+    return session.url
