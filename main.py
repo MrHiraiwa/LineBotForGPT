@@ -408,7 +408,8 @@ def lineBot():
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
             hours_to_subtract = 9
-            start_free_day = datetime.now(jst)
+            start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+            start_free_day -= timedelta(hours=hours_to_subtract)
             quick_reply_on = False
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
