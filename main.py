@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from hashlib import md5
 import base64
 from Crypto.Cipher import AES
