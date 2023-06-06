@@ -940,7 +940,7 @@ def stripe_webhook():
         session = event['data']['object']
 
         # Get the user_id from the metadata
-        userId = session['metadata']['user_id']
+        userId = session['metadata']['line_user_id']
 
         # Get the Firestore document reference
         doc_ref = db.collection('users').document(userId)
