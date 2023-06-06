@@ -220,10 +220,6 @@ def reload_settings():
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
     PAYMENT_KEYWORDS = get_setting('PAYMENT_KEYWORDS')
-    if PAYMENT_KEYWORDS:
-        PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
-    else:
-        PAYMENT_KEYWORDS = []
     PAYMENT_AMOUNT = get_setting('PAYMENT_AMOUNT')
     PAYMENT_CURRENCY = get_setting('PAYMENT_CURRENCY')
     PAYMENT_GUIDE_MESSAGE = get_setting('PAYMENT_GUIDE_MESSAGE')
