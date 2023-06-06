@@ -1,14 +1,15 @@
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from hashlib import md5
 import base64
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
 import pytz
-from flask import Flask, request, render_template, session, redirect, url_for, jsonify
+from flask import Flask, request, render_template, session, redirect, url_for, jsonify, abort
 from google.cloud import firestore, storage
+import stripe
 
 import re
 import tiktoken
@@ -18,6 +19,7 @@ from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
 from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle, send_audio_to_line_reply
+from payment import create_checkout_session
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -65,7 +67,12 @@ REQUIRED_ENV_VARS = [
     "CHANGE_TO_CANTONESE_MESSAGE",
     "BACKET_NAME",
     "FILE_AGE",
-    "GPT_MODEL"
+    "GPT_MODEL",
+    "PAYMENT_KEYWORDS",
+    "PAYMENT_AMOUNT",
+    "PAYMENT_CURRENCY",
+    "PAYMENT_GUIDE_MESSAGE",
+    "PAYMENT_RESULT_URL"
 ]
 
 DEFAULT_ENV_VARS = {
@@ -114,7 +121,12 @@ DEFAULT_ENV_VARS = {
     'CHANGE_TO_CANTONESE_MESSAGE': '中国語の音声を広東語にしました。',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
-    'GPT_MODEL': 'gpt-3.5-turbo'
+    'GPT_MODEL': 'gpt-3.5-turbo',
+    'PAYMENT_KEYWORDS': '',
+    'PAYMENT_AMOUNT': '0',
+    'PAYMENT_CURRENCY': 'jpy',
+    'PAYMENT_GUIDE_MESSAGE': 'ユーザーに「画面下の「支払い」のリンクをタップすると私の利用料の支払い画面が表示される」と案内して感謝の言葉を述べてください。以下の文章はユーザーから送られたものです。',
+    'PAYMENT_RESULT_URL': 'http://example'
 }
 
 jst = pytz.timezone('Asia/Tokyo')
@@ -127,7 +139,7 @@ except Exception as e:
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, BACKET_NAME, FILE_AGE
+    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, MAX_TOKEN_NUM, MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, VOICE_ON, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, BACKET_NAME, FILE_AGE, PAYMENT_KEYWORDS, PAYMENT_AMOUNT, PAYMENT_CURRENCY, PAYMENT_GUIDE_MESSAGE, PAYMENT_RESULT_URL
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
@@ -210,6 +222,15 @@ def reload_settings():
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
+    PAYMENT_KEYWORDS = get_setting('PAYMENT_KEYWORDS')
+    if PAYMENT_KEYWORDS:
+        PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
+    else:
+        PAYMENT_KEYWORDS = []
+    PAYMENT_AMOUNT = get_setting('PAYMENT_AMOUNT')
+    PAYMENT_CURRENCY = get_setting('PAYMENT_CURRENCY')
+    PAYMENT_GUIDE_MESSAGE = get_setting('PAYMENT_GUIDE_MESSAGE')
+    PAYMENT_RESULT_URL = get_setting('PAYMENT_RESULT_URL')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -232,6 +253,12 @@ OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+# Stripe secret key
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+stripe.api_key = STRIPE_SECRET_KEY
+
+# Stripe webhook secret, used to verify the event
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 reload_settings()
 
@@ -380,7 +407,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
-            start_free_day = datetime.now(jst)
+            start_free_day = datetime.combine(nowDate.date(), time())
             quick_reply_on = False
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
@@ -396,13 +423,7 @@ def lineBot():
                 or_english = user.get('or_english', "en-US")
                 voice_speed = user.get('voice_speed', "normal")
                 if 'start_free_day' in user and user['start_free_day']:
-                    try:
-                        start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
-                    except ValueError:
-                        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-                else:
-                    start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
-                    
+                    start_free_day = datetime.combine(user['start_free_day'], datetime.min.time())
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
@@ -540,7 +561,7 @@ def lineBot():
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
                 be_quick_reply = be_quick_reply.strip() 
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -551,65 +572,73 @@ def lineBot():
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
             if any(word in userMessage for word in VOICE_OR_TEXT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🗣️音声で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🏛️北京語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🌃広東語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗽アメリカ英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏰イギリス英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🦘オーストラリア英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🐘インド英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in VOICE_SPEED_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🐢遅い"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🚶普通"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏃‍♀️早い"
-                be_quick_reply = create_quick_reply(be_quick_reply)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
+                quick_reply_on = True
+                
+            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "💸支払い"
+                checkout_url = create_checkout_session(userId, PAYMENT_AMOUNT, PAYMENT_CURRENCY, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
+                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if len(quick_reply) == 0:
@@ -672,6 +701,8 @@ def lineBot():
             botReply = re.sub(date_pattern, "", botReply).strip()
             name_pattern = r"^"+ BOT_NAME + ":"
             botReply = re.sub(name_pattern, "", botReply).strip()
+            dot_pattern = r"^、"
+            botReply = re.sub(dot_pattern, "", botReply).strip()
 
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
@@ -731,7 +762,7 @@ def bucket_exists(bucket_name):
 
     return bucket.exists()
 
-def create_quick_reply(quick_reply):
+def create_quick_reply(quick_reply, uri):
     if '🌐インターネットで「' in quick_reply:
         return {
             "type": "action",
@@ -857,6 +888,15 @@ def create_quick_reply(quick_reply):
                 "text": quick_reply
             }
         }
+    elif '💸支払い' in quick_reply:
+        return {
+            "type": "action",
+            "action": {
+                "type": "uri",
+                "label": '💸支払い',
+                "uri": uri
+            }
+        }
     
 # ひらがなと句読点を削除
 def replace_hiragana_with_spaces(text):
@@ -870,6 +910,56 @@ def remove_specific_character(text, characters_to_remove):
     return text
 
 app.register_blueprint(vision, url_prefix='/vision')
+
+@app.route('/webhook', methods=['POST'])
+def stripe_webhook():
+    db = firestore.Client()
+
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('Stripe-Signature')
+
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        return Response(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return Response(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+
+        # Get the user_id from the metadata
+        userId = session['metadata']['line_user_id']
+
+        # Get the Firestore document reference
+        doc_ref = db.collection('users').document(userId)
+
+        # Define the number of hours to subtract
+        hours_to_subtract = 9
+
+        # Create the datetime object
+        start_free_day =  datetime.combine(nowDate.date(), time())
+        
+        doc_ref.update({
+            'start_free_day': start_free_day
+        })
+
+    return Response(status=200)
+
+@app.route('/success', methods=['GET'])
+def success():
+    return render_template('success.html')
+
+@app.route('/cancel', methods=['GET'])
+def cancel():
+    return render_template('cancel.html')
 
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
