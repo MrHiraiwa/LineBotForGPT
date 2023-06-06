@@ -701,6 +701,8 @@ def lineBot():
             botReply = re.sub(date_pattern, "", botReply).strip()
             name_pattern = r"^"+ BOT_NAME + ":"
             botReply = re.sub(name_pattern, "", botReply).strip()
+            dot_pattern = r"^、"
+            botReply = re.sub(dot_pattern, "", botReply).strip()
 
             user['messages'].append({'role': 'assistant', 'content': botReply})
             user['updatedDateString'] = nowDate
