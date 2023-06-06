@@ -945,9 +945,13 @@ def stripe_webhook():
         # Get the Firestore document reference
         doc_ref = db.collection('users').document(userId)
 
-        # Update the document with the payment date
-        jst = pytz.timezone('Asia/Tokyo')
-        start_free_day = datetime.combine(nowDate.date(), time(0, 0, 0, tzinfo=jst))
+        # Define the number of hours to subtract
+        hours_to_subtract = 9
+
+        # Create the datetime object
+        start_free_day = datetime.combine(nowDate.date(), datetime.min.time())
+        start_free_day -= timedelta(hours=hours_to_subtract)
+        
         doc_ref.update({
             'start_free_day': start_free_day
         })
