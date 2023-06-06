@@ -124,7 +124,7 @@ DEFAULT_ENV_VARS = {
     'PAYMENT_KEYWORDS': '支払い',
     'PAYMENT_AMOUNT': '0',
     'PAYMENT_CURRENCY': 'jpy',
-    'PAYMENT_GUIDE_MESSAGE': '以下のリンクから支払いを行ってください。'
+    'PAYMENT_GUIDE_MESSAGE': 'ユーザーに「画面下の「支払い」のリンクをタップすると私の利用料の支払い画面が表示される」と案内して感謝の言葉を述べてください。以下の文章はユーザーから送られたものです。'
 }
 
 jst = pytz.timezone('Asia/Tokyo')
