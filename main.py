@@ -913,36 +913,41 @@ def remove_specific_character(text, characters_to_remove):
 app.register_blueprint(vision, url_prefix='/vision')
 
 @app.route('/webhook', methods=['POST'])
-def handle_webhook():
-    payload = request.get_data(as_text=True)
-    received_sig = request.headers.get('Stripe-Signature', None)
+def stripe_webhook():
+    db = firestore.Client()
 
-    # Verify the request against the webhook secret
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('Stripe-Signature')
+
+    event = None
+
     try:
         event = stripe.Webhook.construct_event(
-            payload, received_sig, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
         )
     except ValueError as e:
         # Invalid payload
-        print(f'Invalid payload: {str(e)}')
-        abort(400)
+        return Response(status=400)
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
-        print(f'Invalid signature: {str(e)}')
-        abort(400)
+        return Response(status=400)
 
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
 
-        # Handle checkout session completion here
-        userId = session['metadata']['line_user_id']
-        db = firestore.Client()
-        doc_ref = db.collection(u'users').document(userId)
-        user['start_free_day'] = datetime.now(jst)
-        print(f'Payment was successful for LINE user: {line_user_id}.')
+        # Get the user_id from the metadata
+        userId = session['metadata']['user_id']
 
-    return '', 200
+        # Get the Firestore document reference
+        doc_ref = db.collection('users').document(userId)
+
+        # Update the document with the payment date
+        doc_ref.update({
+            'start_free_day': datetime.now(jst)
+        })
+
+    return Response(status=200)
 
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
