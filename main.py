@@ -945,13 +945,30 @@ def stripe_webhook():
         hours_to_subtract = 9
 
         # Create the datetime object
-        start_free_day =  datetime.combine(nowDate.date(), time())
+        start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
         
         doc_ref.update({
             'start_free_day': start_free_day
         })
+    # Handle the invoice.payment_succeeded event
+    elif event['type'] == 'invoice.payment_succeeded':
+        invoice = event['data']['object']
+
+        # Get the user_id from the metadata
+        userId = invoice['metadata']['line_user_id']
+
+        # Get the Firestore document reference
+        doc_ref = db.collection('users').document(userId)
+
+        # You might want to adjust this depending on your timezone
+        start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
+
+        doc_ref.update({
+             'start_free_day': start_free_day
+        })
 
     return Response(status=200)
+
 
 @app.route('/success', methods=['GET'])
 def success():
