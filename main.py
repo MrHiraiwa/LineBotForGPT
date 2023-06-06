@@ -224,7 +224,7 @@ def reload_settings():
         PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
     else:
         PAYMENT_KEYWORDS = []
-    PAYMENT_AMOUNT = int(get_setting('PAYMENT_AMOUNT'))
+    PAYMENT_AMOUNT = get_setting('PAYMENT_AMOUNT')
     PAYMENT_CURRENCY = get_setting('PAYMENT_CURRENCY')
     PAYMENT_GUIDE_MESSAGE = get_setting('PAYMENT_GUIDE_MESSAGE')
     
