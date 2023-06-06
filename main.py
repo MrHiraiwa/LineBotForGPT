@@ -449,7 +449,7 @@ def lineBot():
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
             elif userMessage.strip() == PAYMENT_KEYWORDS:
-                checkout_url = create_checkout_session(PAYMENT_AMOUNT, PAYMENT_CURRENCY, PAYMENT_SUCCESS_URL, PAYMENT_CANCEL_URL) 
+                checkout_url = create_checkout_session(PAYMENT_AMOUNT, PAYMENT_CURRENCY, 'http://localhost', 'http://localhost') 
                 callLineApi(PAYMENT_GUIDE_MESSAGE'：' + checkout_url, replyToken)            
             elif message_type == 'image':
                 exec_functions = True
