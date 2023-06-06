@@ -7,8 +7,9 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 import requests
 import pytz
-from flask import Flask, request, render_template, session, redirect, url_for, jsonify
+from flask import Flask, request, render_template, session, redirect, url_for, jsonify, abort
 from google.cloud import firestore, storage
+import stripe
 
 import re
 import tiktoken
@@ -245,6 +246,12 @@ OPENAI_APIKEY = os.getenv('OPENAI_APIKEY')
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+# Stripe secret key
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+stripe.api_key = STRIPE_SECRET_KEY
+
+# Stripe webhook secret, used to verify the event
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 reload_settings()
 
@@ -887,6 +894,35 @@ def remove_specific_character(text, characters_to_remove):
     return text
 
 app.register_blueprint(vision, url_prefix='/vision')
+
+@app.route('/webhook', methods=['POST'])
+def handle_webhook():
+    payload = request.get_data(as_text=True)
+    received_sig = request.headers.get('Stripe-Signature', None)
+
+    # Verify the request against the webhook secret
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, received_sig, STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        print(f'Invalid payload: {str(e)}')
+        abort(400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        print(f'Invalid signature: {str(e)}')
+        abort(400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+
+        # Handle checkout session completion here
+        line_user_id = session['metadata']['line_user_id']
+        print(f'Payment was successful for LINE user: {line_user_id}.')
+
+    return '', 200
 
 @app.route("/search-form", methods=["GET", "POST"])
 def search_form():
