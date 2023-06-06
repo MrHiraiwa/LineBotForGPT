@@ -118,7 +118,7 @@ DEFAULT_ENV_VARS = {
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo',
-    'PAYMENT_KEYWORDS': '支払い'
+    'PAYMENT_KEYWORDS': '支払い',
     'PAYMENT_AMOUNT': '0'
 }
 
