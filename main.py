@@ -448,7 +448,7 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            elif userMessage.strip() == PAYMENT_KEYWORDS:
+            elif PAYMENT_KEYWORDS in userMessage:
                 checkout_url = create_checkout_session(PAYMENT_AMOUNT, PAYMENT_CURRENCY, 'http://localhost', 'http://localhost') 
                 callLineApi(PAYMENT_GUIDE_MESSAGE + '：' + checkout_url, replyToken) 
                 return 'OK'
