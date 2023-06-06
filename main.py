@@ -221,6 +221,10 @@ def reload_settings():
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
     PAYMENT_KEYWORDS = get_setting('PAYMENT_KEYWORDS')
+    if PAYMENT_KEYWORDS:
+        PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
+    else:
+        PAYMENT_KEYWORDS = []
     PAYMENT_AMOUNT = get_setting('PAYMENT_AMOUNT')
     PAYMENT_CURRENCY = get_setting('PAYMENT_CURRENCY')
     PAYMENT_GUIDE_MESSAGE = get_setting('PAYMENT_GUIDE_MESSAGE')
@@ -451,10 +455,6 @@ def lineBot():
                 callLineApi(FORGET_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': []})
                 return 'OK'
-            elif PAYMENT_KEYWORDS in userMessage:
-                checkout_url = create_checkout_session(userId, PAYMENT_AMOUNT, PAYMENT_CURRENCY, 'http://localhost', 'http://localhost') 
-                callLineApi(PAYMENT_GUIDE_MESSAGE + '：' + checkout_url, replyToken, "") 
-                return 'OK'
             elif message_type == 'image':
                 exec_functions = True
                 image_url = 'https://api-data.line.me/v2/bot/message/' + message_id + '/content'
@@ -634,6 +634,14 @@ def lineBot():
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
+                quick_reply_on = True
+                
+            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+                be_quick_reply = "💸支払い"
+                checkout_url = create_checkout_session(userId, PAYMENT_AMOUNT, PAYMENT_CURRENCY, 'http://localhost', 'http://localhost')
+                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
+                quick_reply.append(be_quick_reply)
+                headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if len(quick_reply) == 0:
