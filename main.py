@@ -913,8 +913,6 @@ def remove_specific_character(text, characters_to_remove):
         text = text.replace(char, '')
     return text
 
-app.register_blueprint(vision, url_prefix='/vision')
-
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
     db = firestore.Client()
