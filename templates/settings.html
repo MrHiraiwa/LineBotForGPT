@@ -126,6 +126,14 @@ window.onload = function() {
   <label for="{{ key }}">{{ key }}</label>
   {% if key == "SYSTEM_PROMPT" %}
     <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% if key == "SYSTEM_PROMPT" %}
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% if key == "SYSTEM_PROMPT" %}
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% if key == "SYSTEM_PROMPT" %}
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+  {% if key == "SYSTEM_PROMPT" %}
+    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
   {% else %}
     <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
   {% endif %}
