@@ -14,7 +14,7 @@ import stripe
 import re
 import tiktoken
 from tiktoken.core import Encoding
-from web import get_search_results, get_contents, summarize_contents
+from web import get_search_results, get_contents, summarize_contents, search 
 from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
@@ -981,37 +981,6 @@ def success():
 @app.route('/cancel', methods=['GET'])
 def cancel():
     return render_template('cancel.html')
-
-@app.route("/search-form", methods=["GET", "POST"])
-def search_form():
-    if request.method == 'POST':
-        question = request.form.get('question')
-        results = search(question)
-        return render_template('search-results.html', results=results)
-    return render_template('search-form.html')
-
-@app.route("/search-api", methods=["POST"])
-def search_api():
-    data = request.get_json()
-    if not data or "question" not in data:
-        return jsonify({"error": "Missing 'question' parameter"}), 400
-    search_result = search(data["question"])
-    return jsonify(search_result)
-
-def search(question):
-    search_result = get_search_results(question, 3)
-
-    links = [item["link"] for item in search_result.get("items", [])]
-    contents = get_contents(links)
-    summary = summarize_contents(contents, question)
-
-    if not summary:
-        summary = FAIL_SEARCH_MESSAGE
-
-    return {
-        "searchwords": SEARCH_MESSAGE + "\n" + summary,
-        "links": links
-    }
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
