@@ -20,6 +20,7 @@ from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
 from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle, send_audio_to_line_reply
 from payment import create_checkout_session
+from quickreply import create_quick_reply
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -726,7 +727,7 @@ def lineBot():
                 # After sending the audio, delete the local file
                 if success:
                     delete_local_file(local_path)
-            if quick_reply_on == False:            
+            if quick_reply_on == False and exec_functions == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
                     public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed)
@@ -734,7 +735,6 @@ def lineBot():
                     if success:
                         delete_local_file(local_path)
                     return 'OK'
-
                     
             callLineApi(botReply, replyToken, {'items': quick_reply})
             return 'OK'
@@ -765,142 +765,6 @@ def bucket_exists(bucket_name):
     bucket = storage_client.bucket(bucket_name)
 
     return bucket.exists()
-
-def create_quick_reply(quick_reply, uri, bot_name):
-    if '🌐インターネットで「' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🌐インターネットで検索',
-                "text": quick_reply
-            }
-        }
-    elif f'😱{bot_name}の記憶を消去' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": f'😱{bot_name}の記憶を消去',
-                "text": quick_reply
-            }
-        }
-    elif '🗺️地図で検索' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "location",
-                "label": '🗺️地図で検索',
-            }
-        }
-    elif '📝文字で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '📝文字で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🗣️音声で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🗣️音声で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🏛️北京語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🏛️北京語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🌃広東語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🌃広東語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🗽アメリカ英語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🗽アメリカ英語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🏰イギリス英語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🏰イギリス英語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🦘オーストラリア英語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🦘オーストラリア英語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🐘インド英語で返信' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🐘インド英語で返信',
-                "text": quick_reply
-            }
-        }
-    elif '🐢遅い' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🐢遅い',
-                "text": quick_reply
-            }
-        }
-    elif '🚶普通' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🚶普通',
-                "text": quick_reply
-            }
-        }
-    elif '🏃‍♀️早い' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "message",
-                "label": '🏃‍♀️早い',
-                "text": quick_reply
-            }
-        }
-    elif '💸支払い' in quick_reply:
-        return {
-            "type": "action",
-            "action": {
-                "type": "uri",
-                "label": '💸支払い',
-                "uri": uri
-            }
-        }
     
 # ひらがなと句読点を削除
 def replace_hiragana_with_spaces(text):
