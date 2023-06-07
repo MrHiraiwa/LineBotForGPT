@@ -527,74 +527,74 @@ def lineBot():
                 links = result['links']
                 userMessage = MAPS_MESSAGE
                 maps_search_keywords = ""
-            elif "🌐インターネットで検索" in userMessage:
+            elif SEARCH_QUICK_REPLY in userMessage:
                 exec_functions = True
                 result = search(web_search_keywords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
                 maps_search_keywords = ""
-            elif "📝文字で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_TEXT_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
                 callLineApi(CHANGE_TO_TEXT_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🗣️音声で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_VOICE_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "VOICE"
                 callLineApi(CHANGE_TO_VOICE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🏛️北京語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_CHINESE_MANDARIN_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_chinese'] = "MANDARIN"
                 callLineApi(CHANGE_TO_MANDARIN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🌃広東語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_CHINESE_CANTONESE_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_chinese'] = "CANTONESE"
                 callLineApi(CHANGE_TO_CANTONESE_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🗽アメリカ英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_ENGLISH_AMERICAN_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_english'] = "en-US"
                 callLineApi(CHANGE_TO_AMERICAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🏰イギリス英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_ENGLISH_BRIDISH_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_english'] = "en-GB"
                 callLineApi(CHANGE_TO_BRIDISH_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🦘オーストラリア英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_ENGLISH_AUSTRALIAN_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_english'] = "en-AU"
                 callLineApi(CHANGE_TO_AUSTRALIAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🐘インド英語で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif OR_ENGLISH_INDIAN_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['or_english'] = "en-IN"
                 callLineApi(CHANGE_TO_INDIAN_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🐢遅い" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif VOICE_SPEED_SLOW_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_speed'] = "slow"
                 callLineApi(VOICE_SPEED_SLOW_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🚶普通" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif VOICE_SPEED_NORMAL_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_speed'] = "normal"
                 callLineApi(VOICE_SPEED_NORMAL_MESSAGE, replyToken, "")
                 transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
-            elif "🏃‍♀️早い" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            elif VOICE_SPEED_FAST_QUICK_REPLY in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_speed'] = "fast"
                 callLineApi(VOICE_SPEED_FAST_MESSAGE, replyToken, "")
@@ -605,7 +605,7 @@ def lineBot():
                 web_search_keywords = remove_specific_character(userMessage, SEARCH_KEYWORDS)
                 web_search_keywords = replace_hiragana_with_spaces(web_search_keywords)
                 web_search_keywords = web_search_keywords.strip() 
-                be_quick_reply = "🌐インターネットで検索"
+                be_quick_reply = SEARCH_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
@@ -616,7 +616,7 @@ def lineBot():
                 maps_search_keywords = remove_specific_character(maps_search_keywords, MAPS_FILTER_KEYWORDS)
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
-                be_quick_reply = "🗺️地図で検索"
+                be_quick_reply = MAPS_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
@@ -630,56 +630,56 @@ def lineBot():
                 quick_reply_on = True
                 
             if any(word in userMessage for word in VOICE_OR_TEXT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "📝文字で返信"
+                be_quick_reply = OR_TEXT_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🗣️音声で返信"
+                be_quick_reply = OR_VOICE_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "🏛️北京語で返信"
+                be_quick_reply = OR_CHINESE_MANDARIN_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🌃広東語で返信"
+                be_quick_reply = OR_CHINESE_CANTONESE_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "🗽アメリカ英語で返信"
+                be_quick_reply = OR_ENGLISH_AMERICAN_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🏰イギリス英語で返信"
+                be_quick_reply = OR_ENGLISH_BRIDISH_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🦘オーストラリア英語で返信"
+                be_quick_reply = OR_ENGLISH_AUSTRALIAN_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🐘インド英語で返信"
+                be_quick_reply = OR_ENGLISH_INDIAN_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in VOICE_SPEED_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "🐢遅い"
+                be_quick_reply = VOICE_SPEED_SLOW_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🚶普通"
+                be_quick_reply = VOICE_SPEED_NORMAL_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
-                be_quick_reply = "🏃‍♀️早い"
+                be_quick_reply = VOICE_SPEED_FAST_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
                 
             if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
-                be_quick_reply = "💸支払い"
+                be_quick_reply = PAYMENT_QUICK_REPLY
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
                 be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
                 quick_reply.append(be_quick_reply)
