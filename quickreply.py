@@ -1,4 +1,4 @@
-def create_quick_reply(quick_reply, uri):
+def create_quick_reply(quick_reply, uri=""):
     if '🗺️地図で検索' in quick_reply:
         return {
             "type": "action",
