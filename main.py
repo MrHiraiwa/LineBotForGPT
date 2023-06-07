@@ -92,14 +92,14 @@ DEFAULT_ENV_VARS = {
     'NG_KEYWORDS': '例文,命令,口調,リセット,指示',
     'SEARCH_KEYWORDS': '検索,調べて,教えて,知ってる,どうやって',
     'SEARCH_MESSAGE': 'URLをあなたが見つけたかのようにリアクションして。',
-    'SEARCH_GUIDE_MESSAGE': 'ユーザーに「画面下の「インターネットで検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。',
+    'SEARCH_GUIDE_MESSAGE': 'ユーザーに「画面下の「インターネットで検索」のリンクをタップすると検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。',
     'FAIL_SEARCH_MESSAGE': '検索結果を読み込めませんでした。',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
     'MAPS_KEYWORDS': '店,場所,スポット,観光,レストラン',
     'MAPS_FILTER_KEYWORDS': '場所,スポット',
-    'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップするとキーワードが抽出されて検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
+    'MAPS_GUIDE_MESSAGE': 'ユーザーに「画面下の「地図で検索」のリンクをタップすると検索結果が表示される」と案内してください。以下の文章はユーザーから送られたものです。 ',
     'MAPS_MESSAGE': '地図検索を実行しました。',
     'VOICE_ON': 'False',
     'VOICE_OR_TEXT_KEYWORDS': '音声設定', 
@@ -409,6 +409,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
+            web_search_keywords = ""
             start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
             quick_reply_on = False
             voice_or_text = 'TEXT'
@@ -420,6 +421,7 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
+                web_search_keywords = user.get('web_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "TEXT")
                 or_chinese = user.get('or_chinese', "MANDARIN")
                 or_english = user.get('or_english', "en-US")
@@ -480,17 +482,13 @@ def lineBot():
                 links = result['links']
                 userMessage = MAPS_MESSAGE
                 maps_search_keywords = ""
-            elif "🌐インターネットで「" in userMessage:
+            elif "🌐インターネットで検索" in userMessage:
                 exec_functions = True
-                searchwords = remove_specific_character(userMessage, '」を検索')
-                searchwords = remove_specific_character(searchwords, '🌐インターネットで「')
-                searchwords = remove_specific_character(searchwords, BOT_NAME)
-                searchwords = replace_hiragana_with_spaces(searchwords)
-                searchwords = searchwords.strip()
-                result = search(searchwords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
+                result = search(web_search_keywords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
+                maps_search_keywords = ""
             elif "📝文字で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
@@ -559,78 +557,78 @@ def lineBot():
                 return 'OK'
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
-                be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
-                be_quick_reply = be_quick_reply.strip() 
-                be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                web_search_keywords = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                web_search_keywords = replace_hiragana_with_spaces(web_search_keywords)
+                web_search_keywords = web_search_keywords.strip() 
+                be_quick_reply = "🌐インターネットで検索"
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
-                userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                maps_search_keywords = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search_keywords = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                maps_search_keywords = remove_specific_character(maps_search_keywords, MAPS_FILTER_KEYWORDS)
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
-                be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = "😱記憶を消去"
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
             if any(word in userMessage for word in VOICE_OR_TEXT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🗣️音声で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🏛️北京語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🌃広東語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗽アメリカ英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏰イギリス英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🦘オーストラリア英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🐘インド英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in VOICE_SPEED_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🐢遅い"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🚶普通"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏃‍♀️早い"
-                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -638,7 +636,7 @@ def lineBot():
             if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "💸支払い"
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
-                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, BOT_NAME)
+                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -714,6 +712,7 @@ def lineBot():
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
             user['maps_search_keywords'] = maps_search_keywords
+            user['web_search_keywords'] = web_search_keywords
             user['start_free_day'] = start_free_day
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
