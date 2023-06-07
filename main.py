@@ -617,7 +617,7 @@ def lineBot():
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = MAPS_QUICK_REPLY
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", "map")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -681,7 +681,7 @@ def lineBot():
             if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = PAYMENT_QUICK_REPLY
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
-                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
+                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, "pay")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
                 quick_reply_on = True
