@@ -496,10 +496,10 @@ def lineBot():
                 transaction.set(doc_ref, user)
 
             if userMessage.strip() == FORGET_QUICK_REPLY:
-                user['messages'] = []
+                user['messages'] = previousdummy
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken, "")
-                transaction.set(doc_ref, {**user, 'messages': previousdummy})
+                transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
