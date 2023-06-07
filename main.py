@@ -797,9 +797,9 @@ def lineBot():
 def previous_dummy(nowDateStr, act_as, display_name, BOT_NAME):
     previous_context = [
         { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":初めまして。" },
-        { "role": "assistant", "content": "初めまして。" },
+        { "role": "assistant", "content": nowDateStr + display_name + "初めまして。" },
         { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":よろしくお願いします。" },
-        { "role": "assistant", "content": "こちらこそよろしくお願いします。" }
+        { "role": "assistant", "content": nowDateStr + display_name + "こちらこそよろしくお願いします。" }
     ]
     return previous_context
 
