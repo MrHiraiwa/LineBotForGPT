@@ -390,7 +390,7 @@ def lineBot():
             userId = event['source']['roomId']
         act_as = "Act as " + BOT_NAME + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
-        previousDummy(nowDateStr,act_as,display_name,BOT_NAME)
+        previous_dummy = previousDummy(nowDateStr,act_as,display_name,BOT_NAME)
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -437,7 +437,7 @@ def lineBot():
             else:
                 user = {
                     'userId': userId,
-                    'messages': [],
+                    'messages': previous_dummy,
                     'updatedDateString': nowDate,
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
