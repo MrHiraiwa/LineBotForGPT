@@ -495,7 +495,7 @@ def lineBot():
                 }
                 transaction.set(doc_ref, user)
 
-            if userMessage.strip() == "😱記憶を消去":
+            if userMessage.strip() == FORGET_QUICK_REPLY:
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken, "")
@@ -623,7 +623,7 @@ def lineBot():
                 quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
-                be_quick_reply = "😱記憶を消去"
+                be_quick_reply = FORGET_QUICK_REPLY
                 be_quick_reply = create_quick_reply(be_quick_reply, "")
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
