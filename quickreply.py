@@ -1,5 +1,5 @@
-def create_quick_reply(quick_reply, uri=""):
-    if '🗺️地図で検索' in quick_reply:
+def create_quick_reply(quick_reply, uri="", qreply_opt=""):
+    if qreply_opt =="map":
         return {
             "type": "action",
             "action": {
@@ -7,7 +7,7 @@ def create_quick_reply(quick_reply, uri=""):
                 "label": '🗺️地図で検索',
             }
         }
-    elif '💸支払い' in quick_reply:
+    elif qreply_opt == "pay":
         return {
             "type": "action",
             "action": {
