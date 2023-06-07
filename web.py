@@ -66,3 +66,17 @@ def summarize_contents(contents, question):
             extract_texts.append(m)
     return ''.join(extract_texts)[:1500]
 
+def search(question):
+    search_result = get_search_results(question, 3)
+
+    links = [item["link"] for item in search_result.get("items", [])]
+    contents = get_contents(links)
+    summary = summarize_contents(contents, question)
+
+    if not summary:
+        summary = FAIL_SEARCH_MESSAGE
+
+    return {
+        "searchwords": SEARCH_MESSAGE + "\n" + summary,
+        "links": links
+    }
