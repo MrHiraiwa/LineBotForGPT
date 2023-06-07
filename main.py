@@ -409,6 +409,7 @@ def lineBot():
             exec_audio = False
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
+            web_search_keywords = ""
             start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
             quick_reply_on = False
             voice_or_text = 'TEXT'
@@ -420,6 +421,7 @@ def lineBot():
                 user = doc.to_dict()
                 dailyUsage = user.get('dailyUsage', 0)
                 maps_search_keywords = user.get('maps_search_keywords', "")
+                web_search_keywords = user.get('web_search_keywords', "")
                 voice_or_text = user.get('voice_or_text', "TEXT")
                 or_chinese = user.get('or_chinese', "MANDARIN")
                 or_english = user.get('or_english', "en-US")
@@ -480,17 +482,13 @@ def lineBot():
                 links = result['links']
                 userMessage = MAPS_MESSAGE
                 maps_search_keywords = ""
-            elif "🌐インターネットで「" in userMessage:
+            elif "🌐インターネットで検索" in userMessage:
                 exec_functions = True
-                searchwords = remove_specific_character(userMessage, '」を検索')
-                searchwords = remove_specific_character(searchwords, '🌐インターネットで「')
-                searchwords = remove_specific_character(searchwords, BOT_NAME)
-                searchwords = replace_hiragana_with_spaces(searchwords)
-                searchwords = searchwords.strip()
-                result = search(searchwords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
+                result = search(web_search_keywords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
+                maps_search_keywords = ""
             elif "📝文字で返信" in userMessage and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 exec_functions = True
                 user['voice_or_text'] = "TEXT"
@@ -559,18 +557,18 @@ def lineBot():
                 return 'OK'
                 
             if any(word in userMessage for word in SEARCH_KEYWORDS) and exec_functions == False:
-                be_quick_reply = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
-                be_quick_reply = be_quick_reply.strip() 
-                be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
+                web_search_keywords = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                web_search_keywords = replace_hiragana_with_spaces(web_search_keywords)
+                web_search_keywords = web_search_keywords.strip() 
+                be_quick_reply = "🌐インターネットで検索"
                 be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in MAPS_KEYWORDS) and exec_functions == False:
-                userMessage = remove_specific_character(userMessage, SEARCH_KEYWORDS)
-                maps_search_keywords = remove_specific_character(userMessage, MAPS_FILTER_KEYWORDS)
+                maps_search_keywords = remove_specific_character(userMessage, SEARCH_KEYWORDS)
+                maps_search_keywords = remove_specific_character(maps_search_keywords, MAPS_FILTER_KEYWORDS)
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
@@ -714,6 +712,7 @@ def lineBot():
             user['updatedDateString'] = nowDate
             user['dailyUsage'] += 1
             user['maps_search_keywords'] = maps_search_keywords
+            user['web_search_keywords'] = web_search_keywords
             user['start_free_day'] = start_free_day
             transaction.set(doc_ref, {**user, 'messages': [{**msg, 'content': get_encrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]})
             
