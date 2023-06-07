@@ -98,6 +98,10 @@ REQUIRED_ENV_VARS = [
 DEFAULT_ENV_VARS = {
     'SYSTEM_PROMPT': 'あなたは有能な秘書です。',
     'BOT_NAME': '秘書',
+    'PREVIOUS_DUMMY_USER_MESSAGE1': 'はじめまして。',
+    'PREVIOUS_DUMMY_ASSISTANT_MESSAGE1': 'はじめまして。よろしくお願いします。',
+    'PREVIOUS_DUMMY_USER_MESSAGE2': 'こちらこそよろしく。',
+    'PREVIOUS_DUMMY_ASSISTANT_MESSAGE2': 'よろしくお願いします。',
     'MAX_TOKEN_NUM': '3700',
     'MAX_DAILY_USAGE': '1000',
     'GROUP_MAX_DAILY_USAGE': '1000',
