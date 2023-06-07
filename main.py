@@ -499,7 +499,7 @@ def lineBot():
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken, "")
-                transaction.set(doc_ref, {**user, 'messages': []})
+                transaction.set(doc_ref, {**user, 'messages': previousdummy})
                 return 'OK'
             elif message_type == 'image':
                 exec_functions = True
