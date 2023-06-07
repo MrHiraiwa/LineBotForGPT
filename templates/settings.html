@@ -121,27 +121,19 @@ window.onload = function() {
   <!-- Rest of your HTML code -->
   <h1>Settings</h1>
   <form method="post">
-    {% for key in required_env_vars %}
-<div>
-  <label for="{{ key }}">{{ key }}</label>
-  {% if key == "SYSTEM_PROMPT" %}
-    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% elif key == "PREVIOUS_DUMMY_USER_MESSAGE1" %}
-    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% elif key == "PREVIOUS_DUMMY_ASSISTANT_MESSAGE1" %}
-    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% elif key == "PREVIOUS_DUMMY_USER_MESSAGE2" %}
-    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% elif key == "PREVIOUS_DUMMY_ASSISTANT_MESSAGE2" %}
-    <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
-  {% else %}
-    <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
-  {% endif %}
-</div>
-{% endfor %}
-    <input type="submit" value="Save">
-    <input id="resetButton" type="button" value="Reset to Default">
-  </form>
+  {% for key in required_env_vars %}
+    <div>
+      <label for="{{ key }}">{{ key }}</label>
+      {% if key == "SYSTEM_PROMPT" or key == "PREVIOUS_DUMMY_USER_MESSAGE1" or key == "PREVIOUS_DUMMY_ASSISTANT_MESSAGE1" or key == "PREVIOUS_DUMMY_USER_MESSAGE2" or key == "PREVIOUS_DUMMY_ASSISTANT_MESSAGE2" %}
+        <textarea id="{{ key }}" name="{{ key }}" oninput="adjustHeight(this)">{{ settings[key] or '' }}</textarea>
+      {% else %}
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ settings[key] or '' }}">
+      {% endif %}
+    </div>
+  {% endfor %}
+  <input type="submit" value="Save">
+  <input id="resetButton" type="button" value="Reset to Default">
+</form>
   <form action="{{ url_for('reset_logs') }}" method="post" id="resetLogsForm">
     <input type="submit" value="Reset All User Logs" id="resetAllUserLogsButton">
   </form>
