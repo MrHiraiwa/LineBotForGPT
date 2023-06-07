@@ -561,7 +561,7 @@ def lineBot():
                 be_quick_reply = replace_hiragana_with_spaces(be_quick_reply)
                 be_quick_reply = be_quick_reply.strip() 
                 be_quick_reply = "🌐インターネットで「" + be_quick_reply + "」を検索"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + SEARCH_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -572,63 +572,63 @@ def lineBot():
                 maps_search_keywords = replace_hiragana_with_spaces(maps_search_keywords)
                 maps_search_keywords = maps_search_keywords.strip()
                 be_quick_reply = "🗺️地図で検索"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + MAPS_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in FORGET_KEYWORDS) and exec_functions == False:
                 be_quick_reply = f"😱{BOT_NAME}の記憶を消去"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + FORGET_GUIDE_MESSAGE
                 quick_reply_on = True
                 
             if any(word in userMessage for word in VOICE_OR_TEXT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "📝文字で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🗣️音声で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_OR_TEXT_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_CHINESE_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🏛️北京語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🌃広東語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_CHINESE_GUIDE_MESSAGE
                 quick_reply_on = True
     
             if any(word in userMessage for word in OR_ENGLISH_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🗽アメリカ英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏰イギリス英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🦘オーストラリア英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🐘インド英語で返信"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + OR_ENGLISH_GUIDE_MESSAGE
                 quick_reply_on = True
             
             if any(word in userMessage for word in VOICE_SPEED_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "🐢遅い"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🚶普通"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 be_quick_reply = "🏃‍♀️早い"
-                be_quick_reply = create_quick_reply(be_quick_reply, "")
+                be_quick_reply = create_quick_reply(be_quick_reply, "", BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -636,7 +636,7 @@ def lineBot():
             if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
                 be_quick_reply = "💸支払い"
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
-                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url)
+                be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, BOT_NAME)
                 quick_reply.append(be_quick_reply)
                 headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
                 quick_reply_on = True
@@ -766,7 +766,7 @@ def bucket_exists(bucket_name):
 
     return bucket.exists()
 
-def create_quick_reply(quick_reply, uri):
+def create_quick_reply(quick_reply, uri, bot_name):
     if '🌐インターネットで「' in quick_reply:
         return {
             "type": "action",
@@ -776,12 +776,12 @@ def create_quick_reply(quick_reply, uri):
                 "text": quick_reply
             }
         }
-    elif f'😱{BOT_NAME}の記憶を消去' in quick_reply:
+    elif f'😱{bot_name}の記憶を消去' in quick_reply:
         return {
             "type": "action",
             "action": {
                 "type": "message",
-                "label": f'😱{BOT_NAME}の記憶を消去',
+                "label": f'😱{bot_name}の記憶を消去',
                 "text": quick_reply
             }
         }
