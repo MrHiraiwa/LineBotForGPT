@@ -485,7 +485,7 @@ def lineBot():
                 searchwords = remove_specific_character(searchwords, BOT_NAME)
                 searchwords = replace_hiragana_with_spaces(searchwords)
                 searchwords = searchwords.strip()
-                result = search(searchwords)
+                result = search(searchwords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE)
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
