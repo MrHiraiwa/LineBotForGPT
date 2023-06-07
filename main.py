@@ -390,6 +390,7 @@ def lineBot():
             userId = event['source']['roomId']
         act_as = "Act as " + BOT_NAME + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
+        previousdummy = previous_dummy(nowDateStr,act_as,display_name,BOT_NAME)
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -436,7 +437,7 @@ def lineBot():
             else:
                 user = {
                     'userId': userId,
-                    'messages': [],
+                    'messages': previousdummy,
                     'updatedDateString': nowDate,
                     'dailyUsage': 0,
                     'start_free_day': start_free_day,
@@ -748,6 +749,15 @@ def lineBot():
         raise
     finally:
         return 'OK'
+
+def previous_dummy(nowDateStr, act_as, display_name, BOT_NAME):
+    previous_context = [
+        { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":初めまして。あなたのお名前は何と言いますか？。" },
+        { "role": "assistant", "content": "私は" + BOT_NAME + "です。よろしくお願いいたします。" },
+        { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":またよろしくお願いします。" },
+        { "role": "assistant", "content": "こちらこそよろしくお願いします。" }
+    ]
+    return previous_context
 
 def get_profile(userId):
     url = 'https://api.line.me/v2/bot/profile/' + userId
