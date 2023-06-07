@@ -12,3 +12,4 @@ google-cloud-storage==2.9.0
 pydub==0.25.0
 langid==1.1.6
 stripe==5.0.0
+line-bot-sdk==2.4.2
