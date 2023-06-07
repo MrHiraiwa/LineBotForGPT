@@ -77,6 +77,6 @@ def search(question, search_message, fail_search_message):
         summary = fail_search_message
 
     return {
-        "searchwords": fail_search_message + "\n" + summary,
+        "searchwords": search_message + "\n" + summary,
         "links": links
     }
