@@ -450,7 +450,7 @@ def lineBot():
                 }
                 transaction.set(doc_ref, user)
 
-            if userMessage.strip() == f"😱{BOT_NAME}の記憶を消去":
+            if userMessage.strip() == "😱記憶を消去":
                 user['messages'] = []
                 user['updatedDateString'] = nowDate
                 callLineApi(FORGET_MESSAGE, replyToken, "")
