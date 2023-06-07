@@ -20,6 +20,7 @@ from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
 from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle, send_audio_to_line_reply
 from payment import create_checkout_session
+from quickreply import create_quick_reply
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
