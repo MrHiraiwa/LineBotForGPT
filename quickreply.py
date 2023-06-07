@@ -1,4 +1,4 @@
-def create_quick_reply(quick_reply, uri, bot_name):
+def create_quick_reply(quick_reply, uri):
     if '🌐インターネットで「' in quick_reply:
         return {
             "type": "action",
