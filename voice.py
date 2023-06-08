@@ -123,12 +123,12 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
         ssml_gender=ssml_gender,
-        name=name,
-        pitch=pitch
+        name=name
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
         speaking_rate=speaking_rate
+        pitch=pitch
     )
 
     response = client.synthesize_speech(
