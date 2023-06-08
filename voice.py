@@ -32,7 +32,7 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english, voice_speed, model='standard', gender='female'):
+def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english, voice_speed, gender='female'):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
@@ -45,22 +45,14 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     else:
         ssml_gender = texttospeech.SsmlVoiceGender.FEMALE  # Default to female
 
-    # Set the voice model based on the input parameter
-    if model.lower() == 'standard':
-        name += 'Standard'
-    elif model.lower() == 'wave':
-        name += 'Wave'
-    else:
-        raise ValueError("Invalid model specified. Choose 'standard' or 'wave'.")
-
     if detected_lang == 'ja':
         language_code = "ja-JP"
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
         if gender.lower() == 'male':
-            name += "-A"
+            name = "en-US-Standard-A"
         else:
-            name += "-C"
+            name = "en-US-Standard-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
     elif detected_lang == 'en' and or_english == 'en-IN':
