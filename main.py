@@ -300,8 +300,12 @@ def get_setting(key):
         return doc.to_dict().get(key)
     else:
         default_value = DEFAULT_ENV_VARS.get(key, "")
-        doc_ref.set({key: default_value}, merge=True)
+        save_default_settings()  # デフォルト設定をデータベースに保存します。
         return default_value
+
+def save_default_settings():
+    doc_ref = db.collection(u'settings').document('app_settings')
+    doc_ref.set(DEFAULT_ENV_VARS, merge=True)  # DEFAULT_ENV_VARS のすべてのフィールドをデータベースに保存します。
 
 def update_setting(key, value):
     doc_ref = db.collection(u'settings').document('app_settings')
