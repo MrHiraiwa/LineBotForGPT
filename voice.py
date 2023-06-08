@@ -38,6 +38,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     
     detected_lang, dialect = detect_language(text)
     name = ''
+    pitch = 0
 
     # Set the gender based on the input parameter
     if gender.lower() == 'male':
@@ -122,7 +123,8 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
         ssml_gender=ssml_gender,
-        name = name
+        name=name,
+        pitch=pitch
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
