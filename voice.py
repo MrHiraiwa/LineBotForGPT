@@ -32,48 +32,82 @@ def convert_audio_to_m4a(input_path, output_path):
     #print("stdout:", result.stdout)
     #print("stderr:", result.stderr)
 
-def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english, voice_speed):
+def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_english, voice_speed, gender='female'):
     client = texttospeech.TextToSpeechClient()
     synthesis_input = texttospeech.SynthesisInput(text=text)
     
     detected_lang, dialect = detect_language(text)
     name = ''
 
+    # Set the gender based on the input parameter
+    if gender.lower() == 'male':
+        ssml_gender = texttospeech.SsmlVoiceGender.MALE
+    else:
+        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE  # Default to female
+
     if detected_lang == 'ja':
         language_code = "ja-JP"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "ja-JP-Standard-C"
+        else:
+            name = "ja-JP-Standard-A"    
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-        name = "en-US-Standard-C"
+        if gender.lower() == 'male':
+            name = "en-US-Standard-A"
+        else:
+            name = "en-US-Standard-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "en-AU-Standard-B"
+        else:
+            name = "en-AU-Standard-A"
     elif detected_lang == 'en' and or_english == 'en-IN':
         language_code = "en-IN"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "en-IN-Standard-B"
+        else:
+            name = "en-IN-Standard-A"
     elif detected_lang == 'en' and or_english == 'en-GB':
         language_code = "en-GB"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "en-GB-Standard-B"
+        else:
+            name = "en-GB-Standard-A"
     elif detected_lang == 'zh' and or_chinese == 'MANDARIN':
-        language_code = "zh-CN"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        language_code = "cmn-CN"
+        if gender.lower() == 'male':
+            name = "cmn-CN-Standard-B"
+        else:
+            name = "cmn-CN-Standard-A"
     elif detected_lang == 'zh' and or_chinese == 'CANTONESE':
-        language_code = "yue-Hant-HK"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        language_code = "yue-HK"
+        if gender.lower() == 'male':
+            name = "yue-HK-Standard-B"
+        else:
+            name = "yue-HK-Standard-A"
     elif detected_lang == 'ko':
         language_code = "ko-KR"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "ko-KR-Standard-B"
+        else:
+            name = "ko-KR-Standard-A"
     elif detected_lang == 'id':
         language_code = "id-ID"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
+        if gender.lower() == 'male':
+            name = "id-ID-Standard-B"
+        else:
+            name = "id-ID-Standard-A"
     elif detected_lang == 'th':
         language_code = "th-TH"
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
-        ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
-        
+        if gender.lower() == 'male':
+            name = "ja-JP-Standard-C"
+        else:
+            name = "ja-JP-Standard-A"
+
     if voice_speed == 'slow':
         speaking_rate = 0.75
     elif voice_speed == 'fast':
@@ -94,10 +128,12 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
+
     # Save the audio file temporarily
     with NamedTemporaryFile(suffix=".mp3", delete=False) as temp:
         temp.write(response.audio_content)
         temp.flush()
+
         # Convert the MP3 file to M4A
         m4a_path = temp.name.replace(".mp3", ".m4a")
         convert_audio_to_m4a(temp.name, m4a_path)
