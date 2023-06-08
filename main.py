@@ -343,12 +343,38 @@ def reset_logs():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    attempts_doc_ref = db.collection(u'settings').document('admin_attempts')
+    attempts_doc = attempts_doc_ref.get()
+    attempts_info = attempts_doc.to_dict() if attempts_doc.exists else {}
+
+    attempts = attempts_info.get('attempts', 0)
+    lockout_time = attempts_info.get('lockout_time', None)
+
+    # ロックアウト状態をチェック
+    if lockout_time:
+        if datetime.now(jst) < lockout_time:
+            return render_template('login.html', message='Too many failed attempts. Please try again later.')
+        else:
+            # ロックアウト時間が過ぎたらリセット
+            attempts = 0
+            lockout_time = None
+
     if request.method == 'POST':
         password = request.form.get('password')
+
         if password == ADMIN_PASSWORD:
             session['is_admin'] = True
+            # ログイン成功したら試行回数とロックアウト時間をリセット
+            attempts_doc_ref.set({'attempts': 0, 'lockout_time': None})
             return redirect(url_for('settings'))
+        else:
+            attempts += 1
+            lockout_time = datetime.now(jst) + timedelta(minutes=10) if attempts >= 5 else None
+            attempts_doc_ref.set({'attempts': attempts, 'lockout_time': lockout_time})
+            return render_template('login.html', message='Incorrect password. Please try again.')
+
     return render_template('login.html')
+
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
