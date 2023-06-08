@@ -47,6 +47,10 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
 
     if detected_lang == 'ja':
         language_code = "ja-JP"
+        if gender.lower() == 'male':
+            name = "ja-JP-Standard-C"
+        else:
+            name = "ja-JP-Standard-A"    
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
         if gender.lower() == 'male':
@@ -55,22 +59,54 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
             name = "en-US-Standard-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
+        if gender.lower() == 'male':
+            name = "en-AU-Standard-B"
+        else:
+            name = "en-AU-Standard-A"
     elif detected_lang == 'en' and or_english == 'en-IN':
         language_code = "en-IN"
+        if gender.lower() == 'male':
+            name = "en-IN-Standard-B"
+        else:
+            name = "en-IN-Standard-A"
     elif detected_lang == 'en' and or_english == 'en-GB':
         language_code = "en-GB"
+        if gender.lower() == 'male':
+            name = "en-GB-Standard-B"
+        else:
+            name = "en-GB-Standard-A"
     elif detected_lang == 'zh' and or_chinese == 'MANDARIN':
-        language_code = "zh-CN"
+        language_code = "cmn-CN"
+        if gender.lower() == 'male':
+            name = "cmn-CN-Standard-B"
+        else:
+            name = "cmn-CN-Standard-A"
     elif detected_lang == 'zh' and or_chinese == 'CANTONESE':
-        language_code = "yue-Hant-HK"
+        language_code = "yue-HK"
+        if gender.lower() == 'male':
+            name = "yue-HK-Standard-B"
+        else:
+            name = "yue-HK-Standard-A"
     elif detected_lang == 'ko':
         language_code = "ko-KR"
+        if gender.lower() == 'male':
+            name = "ko-KR-Standard-B"
+        else:
+            name = "ko-KR-Standard-A"
     elif detected_lang == 'id':
         language_code = "id-ID"
+        if gender.lower() == 'male':
+            name = "id-ID-Standard-B"
+        else:
+            name = "id-ID-Standard-A"
     elif detected_lang == 'th':
         language_code = "th-TH"
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
+        if gender.lower() == 'male':
+            name = "ja-JP-Standard-C"
+        else:
+            name = "ja-JP-Standard-A"
 
     if voice_speed == 'slow':
         speaking_rate = 0.75
