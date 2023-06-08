@@ -279,7 +279,7 @@ def reload_settings():
     OR_CHINESE_CANTONESE_QUICK_REPLY = get_setting('OR_CHINESE_CANTONESE_QUICK_REPLY')
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
-    FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY'))
+    FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY') or 0)
     PAYMENT_KEYWORDS = get_setting('PAYMENT_KEYWORDS')
     if PAYMENT_KEYWORDS:
         PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
