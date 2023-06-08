@@ -2,7 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-def get_search_results(query, num, start_index=1):
+def get_search_results(query, num, start_index=1, search_lang='lang_ja'):
     google_api_key = os.getenv("GOOGLE_API_KEY")
     google_cse_id = os.getenv("GOOGLE_CSE_ID")
 
@@ -13,7 +13,7 @@ def get_search_results(query, num, start_index=1):
         "q": query,
         "num": num,
         "start": start_index,
-        "lr": 'lang_ja'
+        "lr": search_lang
     }
 
     response = requests.get(base_url, params=params)
@@ -66,8 +66,8 @@ def summarize_contents(contents, question):
             extract_texts.append(m)
     return ''.join(extract_texts)[:1500]
 
-def search(question, search_message, fail_search_message):
-    search_result = get_search_results(question, 3)
+def search(question, search_message, fail_search_message, search_lang='lang_ja'):
+    search_result = get_search_results(question, 3, search_lang)
 
     links = [item["link"] for item in search_result.get("items", [])]
     contents = get_contents(links)
