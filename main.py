@@ -299,11 +299,8 @@ def get_setting(key):
     if doc.exists:
         return doc.to_dict().get(key)
     else:
-        if key in ['MAX_TOKEN_NUM', 'MAX_DAILY_USAGE']:
-            default_value = 2000
-        else:
-            default_value = ""
-        doc_ref.set({key: default_value})
+        default_value = DEFAULT_ENV_VARS.get(key, "")
+        doc_ref.set({key: default_value}, merge=True)
         return default_value
 
 def update_setting(key, value):
