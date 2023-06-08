@@ -811,7 +811,7 @@ def lineBot():
             if voice_or_text == "VOICE" and VOICE_ON == 'True':
                 blob_path = f'{userId}/{message_id}.m4a'
                 # Call functions
-                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed, "standard", VOICE_GENDER)
+                public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed, VOICE_GENDER)
                 success = send_audio_to_line(public_url, userId, duration)
 
                 # After sending the audio, delete the local file
@@ -820,7 +820,7 @@ def lineBot():
             if quick_reply_on == False and exec_functions == False:            
                 if voice_or_text == "VOICE" and VOICE_ON == 'Reply':
                     blob_path = f'{userId}/{message_id}.m4a'
-                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed, "standard", VOICE_GENDER)
+                    public_url, local_path, duration = text_to_speech(botReply, BACKET_NAME, blob_path, or_chinese, or_english, voice_speed, VOICE_GENDER)
                     success = send_audio_to_line_reply(public_url, replyToken, duration)
                     if success:
                         delete_local_file(local_path)
