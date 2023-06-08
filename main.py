@@ -493,7 +493,7 @@ def lineBot():
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
             web_search_keywords = ""
-            start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
+            start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
@@ -731,7 +731,7 @@ def lineBot():
                 headMessage = headMessage + NG_MESSAGE 
                 
             if 'start_free_day' in user:
-                if (nowDate.date() - start_free_day.date()).days < FREE_LIMIT_DAY and (nowDate.date() - start_free_day.date()).days != 0:
+                if (nowDate.date() - start_free_day.date()).days < FREE_LIMIT_DAY:
                     dailyUsage = None
                     
             if  sourceType == "group" or sourceType == "room":
