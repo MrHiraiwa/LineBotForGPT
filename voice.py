@@ -105,7 +105,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
         if gender.lower() == 'male':
             pitch = -15
         else:
-        
+            name = "th-TH-Standard-A"
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
         if gender.lower() == 'male':
