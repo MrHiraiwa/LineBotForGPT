@@ -57,7 +57,10 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
         language_code = "ja-JP"
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
-        name += "-C"
+        if gender.lower() == 'male':
+            name += "-A"
+        else:
+            name += "-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
     elif detected_lang == 'en' and or_english == 'en-IN':
