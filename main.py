@@ -574,7 +574,7 @@ def lineBot():
                 maps_search_keywords = ""
             elif SEARCH_QUICK_REPLY in userMessage:
                 exec_functions = True
-                result = search(web_search_keywords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, "1",SEARCH_LANG)
+                result = search(web_search_keywords, SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, 1,SEARCH_LANG)
                 headMessage = result['searchwords']
                 links = result['links']
                 links = "\n❗参考\n" + "\n".join(links)
