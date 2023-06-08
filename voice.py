@@ -127,7 +127,7 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
-        speaking_rate=speaking_rate
+        speaking_rate=speaking_rate,
         pitch=pitch
     )
 
