@@ -191,6 +191,7 @@ def reload_settings():
         BOT_NAME = BOT_NAME.split(',')
     else:
         BOT_NAME = []
+    bot_name = BOT_NAME[0]
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     PREVIOUS_DUMMY_USER_MESSAGE1 = get_setting('PREVIOUS_DUMMY_USER_MESSAGE1')
     PREVIOUS_DUMMY_ASSISTANT_MESSAGE1 = get_setting('PREVIOUS_DUMMY_ASSISTANT_MESSAGE1')
@@ -494,9 +495,9 @@ def lineBot():
             userId = event['source']['groupId']
         elif sourceType == "room":
             userId = event['source']['roomId']
-        act_as = "Act as " + BOT_NAME + ".\n"
+        act_as = "Act as " + bot_name + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
-        previousdummy = previous_dummy(nowDateStr,act_as,display_name,BOT_NAME)
+        previousdummy = previous_dummy(nowDateStr,act_as,display_name,bot_name)
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -767,7 +768,7 @@ def lineBot():
                 return 'OK'
             
             if sourceType == "group" or sourceType == "room":
-                if BOT_NAME in userMessage or exec_functions == True:
+                if any(word in userMessage for word in BOT_NAME) or exec_functions == True:
                     pass
                 else:
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
@@ -810,7 +811,7 @@ def lineBot():
             
             date_pattern = r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} [A-Z]{3,4}"
             botReply = re.sub(date_pattern, "", botReply).strip()
-            name_pattern = r"^"+ BOT_NAME + ":"
+            name_pattern = r"^"+ bot_name + ":"
             botReply = re.sub(name_pattern, "", botReply).strip()
             dot_pattern = r"^、"
             botReply = re.sub(dot_pattern, "", botReply).strip()
@@ -856,7 +857,7 @@ def lineBot():
     finally:
         return 'OK'
 
-def previous_dummy(nowDateStr, act_as, display_name, BOT_NAME):
+def previous_dummy(nowDateStr, act_as, display_name, bot_name):
     previous_context = [
         { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":" + PREVIOUS_DUMMY_USER_MESSAGE1},
         { "role": "assistant", "content": PREVIOUS_DUMMY_ASSISTANT_MESSAGE1},
