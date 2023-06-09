@@ -66,7 +66,7 @@ def summarize_contents(contents, question):
             extract_texts.append(m)
     return ''.join(extract_texts)[:1500]
 
-def search(question, search_message, fail_search_message, search_lang='lang_ja'):
+def search(question, search_message, success_fail_search_message, search_lang='lang_ja'):
     search_result = get_search_results(question, 3, 1, search_lang)
 
     links = [item["link"] for item in search_result.get("items", [])]
@@ -77,6 +77,6 @@ def search(question, search_message, fail_search_message, search_lang='lang_ja')
         summary = fail_search_message
 
     return {
-        "searchwords": search_message + "\n" + summary,
+        "searchwords": success_search_message + "\n" + summary,
         "links": links
     }
