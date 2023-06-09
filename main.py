@@ -306,12 +306,12 @@ def get_setting(key):
         return doc.to_dict().get(key)
     else:
         default_value = DEFAULT_ENV_VARS.get(key, "")
-        save_setting(key, default_value)  # デフォルト設定をデータベースに保存します。
+        save_default_settings()  # デフォルト設定をデータベースに保存します。
         return default_value
 
-def save_setting(key, value):
+def save_default_settings():
     doc_ref = db.collection(u'settings').document('app_settings')
-    doc_ref.set({key: value}, merge=True) 
+    doc_ref.set(DEFAULT_ENV_VARS, merge=True)
 
 def update_setting(key, value):
     doc_ref = db.collection(u'settings').document('app_settings')
