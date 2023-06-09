@@ -494,6 +494,7 @@ def lineBot():
             userId = event['source']['groupId']
         elif sourceType == "room":
             userId = event['source']['roomId']
+        bot_name = BOT_NAME[0]
         act_as = "Act as " + bot_name + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
         previousdummy = previous_dummy(nowDateStr,act_as,display_name,bot_name)
@@ -522,7 +523,6 @@ def lineBot():
             or_chinese = 'MANDARIN'
             or_english = 'en-US'
             voice_speed = 'normal'
-            bot_name = BOT_NAME[0]
                 
             if doc.exists:
                 user = doc.to_dict()
