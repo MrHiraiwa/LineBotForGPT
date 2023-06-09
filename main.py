@@ -100,7 +100,7 @@ REQUIRED_ENV_VARS = [
 
 DEFAULT_ENV_VARS = {
     'SYSTEM_PROMPT': 'あなたは有能な秘書です。',
-    'BOT_NAME': '秘書',
+    'BOT_NAME': '秘書,secretary,秘书,เลขานุการ,sekretaris',
     'PREVIOUS_DUMMY_USER_MESSAGE1': 'はじめまして。',
     'PREVIOUS_DUMMY_ASSISTANT_MESSAGE1': 'はじめまして。よろしくお願いします。',
     'PREVIOUS_DUMMY_USER_MESSAGE2': 'こちらこそよろしく。',
@@ -187,6 +187,10 @@ def reload_settings():
     global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, PREVIOUS_DUMMY_USER_MESSAGE1, PREVIOUS_DUMMY_ASSISTANT_MESSAGE1, PREVIOUS_DUMMY_USER_MESSAGE2, PREVIOUS_DUMMY_ASSISTANT_MESSAGE2, MAX_TOKEN_NUM, MAX_DAILY_USAGE, GROUP_MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, FORGET_QUICK_REPLY, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, SUCCESS_SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, SEARCH_QUICK_REPLY,SEARCH_LANG, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, MAPS_QUICK_REPLY, VOICE_ON, VOICE_GENDER, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, OR_TEXT_QUICK_REPLY, OR_VOICE_QUICK_REPLY, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE, VOICE_SPEED_SLOW_QUICK_REPLY, VOICE_SPEED_NORMAL_QUICK_REPLY, VOICE_SPEED_FAST_QUICK_REPLY, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_ENGLISH_AMERICAN_QUICK_REPLY, OR_ENGLISH_BRIDISH_QUICK_REPLY, OR_ENGLISH_AUSTRALIAN_QUICK_REPLY, OR_ENGLISH_INDIAN_QUICK_REPLY, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, OR_CHINESE_MANDARIN_QUICK_REPLY, OR_CHINESE_CANTONESE_QUICK_REPLY, BACKET_NAME, FILE_AGE, PAYMENT_KEYWORDS, PAYMENT_PRICE_ID, PAYMENT_GUIDE_MESSAGE, PAYMENT_QUICK_REPLY, PAYMENT_RESULT_URL
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
+    if BOT_NAME:
+        BOT_NAME = BOT_NAME.split(',')
+    else:
+        BOT_NAME = []
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     PREVIOUS_DUMMY_USER_MESSAGE1 = get_setting('PREVIOUS_DUMMY_USER_MESSAGE1')
     PREVIOUS_DUMMY_ASSISTANT_MESSAGE1 = get_setting('PREVIOUS_DUMMY_ASSISTANT_MESSAGE1')
@@ -490,9 +494,10 @@ def lineBot():
             userId = event['source']['groupId']
         elif sourceType == "room":
             userId = event['source']['roomId']
-        act_as = "Act as " + BOT_NAME + ".\n"
+        bot_name = BOT_NAME[0]
+        act_as = "Act as " + bot_name + ".\n"
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
-        previousdummy = previous_dummy(nowDateStr,act_as,display_name,BOT_NAME)
+        previousdummy = previous_dummy(nowDateStr,act_as,display_name,bot_name)
 
         db = firestore.Client()
         doc_ref = db.collection(u'users').document(userId)
@@ -763,7 +768,7 @@ def lineBot():
                 return 'OK'
             
             if sourceType == "group" or sourceType == "room":
-                if BOT_NAME in userMessage or exec_functions == True:
+                if any(word in userMessage for word in BOT_NAME) or exec_functions == True:
                     pass
                 else:
                     user['messages'].append({'role': 'user', 'content': display_name + ":" + userMessage})
@@ -806,7 +811,7 @@ def lineBot():
             
             date_pattern = r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} [A-Z]{3,4}"
             botReply = re.sub(date_pattern, "", botReply).strip()
-            name_pattern = r"^"+ BOT_NAME + ":"
+            name_pattern = r"^"+ bot_name + ":"
             botReply = re.sub(name_pattern, "", botReply).strip()
             dot_pattern = r"^、"
             botReply = re.sub(dot_pattern, "", botReply).strip()
@@ -852,7 +857,7 @@ def lineBot():
     finally:
         return 'OK'
 
-def previous_dummy(nowDateStr, act_as, display_name, BOT_NAME):
+def previous_dummy(nowDateStr, act_as, display_name, bot_name):
     previous_context = [
         { "role": "user", "content": nowDateStr + " " + act_as + "\n" + display_name + ":" + PREVIOUS_DUMMY_USER_MESSAGE1},
         { "role": "assistant", "content": PREVIOUS_DUMMY_ASSISTANT_MESSAGE1},
