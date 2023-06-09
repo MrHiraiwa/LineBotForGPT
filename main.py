@@ -302,16 +302,25 @@ def reload_settings():
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
     doc = doc_ref.get()
+
     if doc.exists:
-        return doc.to_dict().get(key)
+        doc_dict = doc.to_dict()
+        if key not in doc_dict:
+            # If the key does not exist in the document, use the default value
+            default_value = DEFAULT_ENV_VARS.get(key, "")
+            doc_ref.set({key: default_value}, merge=True)  # Add the new setting to the database
+            return default_value
+        else:
+            return doc_dict.get(key)
     else:
-        default_value = DEFAULT_ENV_VARS.get(key, "")
-        save_default_settings()  # デフォルト設定をデータベースに保存します。
-        return default_value
+        # If the document does not exist, create it using the default settings
+        save_default_settings()
+        return DEFAULT_ENV_VARS.get(key, "")
 
 def save_default_settings():
     doc_ref = db.collection(u'settings').document('app_settings')
     doc_ref.set(DEFAULT_ENV_VARS, merge=True)
+
 
 def update_setting(key, value):
     doc_ref = db.collection(u'settings').document('app_settings')
