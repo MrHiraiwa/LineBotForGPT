@@ -191,7 +191,6 @@ def reload_settings():
         BOT_NAME = BOT_NAME.split(',')
     else:
         BOT_NAME = []
-    bot_name = BOT_NAME[0]
     SYSTEM_PROMPT = get_setting('SYSTEM_PROMPT') 
     PREVIOUS_DUMMY_USER_MESSAGE1 = get_setting('PREVIOUS_DUMMY_USER_MESSAGE1')
     PREVIOUS_DUMMY_ASSISTANT_MESSAGE1 = get_setting('PREVIOUS_DUMMY_ASSISTANT_MESSAGE1')
@@ -523,6 +522,7 @@ def lineBot():
             or_chinese = 'MANDARIN'
             or_english = 'en-US'
             voice_speed = 'normal'
+            bot_name = BOT_NAME[0]
                 
             if doc.exists:
                 user = doc.to_dict()
