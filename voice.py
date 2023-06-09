@@ -49,21 +49,21 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     if detected_lang == 'ja':
         language_code = "ja-JP"
         if gender.lower() == 'male':
-            name = "ja-JP-Standard-C"
+            name = "ja-JP-Neural2-C"
         else:
-            name = "ja-JP-Standard-A"    
+            name = "ja-JP-Neural2-B"    
     elif detected_lang == 'en' and or_english == 'en-US':
         language_code = "en-US"
         if gender.lower() == 'male':
-            name = "en-US-Standard-A"
+            name = "en-US-Neural2-A"
         else:
-            name = "en-US-Standard-C"
+            name = "en-US-Neural2-C"
     elif detected_lang == 'en' and or_english == 'en-AU':
         language_code = "en-AU"
         if gender.lower() == 'male':
-            name = "en-AU-Standard-B"
+            name = "en-AU-Neural2-B"
         else:
-            name = "en-AU-Standard-A"
+            name = "en-AU-Neural2-A"
     elif detected_lang == 'en' and or_english == 'en-IN':
         language_code = "en-IN"
         if gender.lower() == 'male':
@@ -73,9 +73,9 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     elif detected_lang == 'en' and or_english == 'en-GB':
         language_code = "en-GB"
         if gender.lower() == 'male':
-            name = "en-GB-Standard-B"
+            name = "en-GB-Neural2-B"
         else:
-            name = "en-GB-Standard-A"
+            name = "en-GB-Neural2-A"
     elif detected_lang == 'zh' and or_chinese == 'MANDARIN':
         language_code = "cmn-CN"
         if gender.lower() == 'male':
@@ -91,9 +91,9 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     elif detected_lang == 'ko':
         language_code = "ko-KR"
         if gender.lower() == 'male':
-            name = "ko-KR-Standard-B"
+            name = "ko-KR-Neural2-C"
         else:
-            name = "ko-KR-Standard-A"
+            name = "ko-KR-Neural2-A"
     elif detected_lang == 'id':
         language_code = "id-ID"
         if gender.lower() == 'male':
@@ -109,9 +109,9 @@ def text_to_speech(text, bucket_name, destination_blob_name, or_chinese, or_engl
     else:
         language_code = "ja-JP"  # Default to Japanese if language detection fails
         if gender.lower() == 'male':
-            name = "ja-JP-Standard-C"
+            name = "ja-JP-Neural2-C"
         else:
-            name = "ja-JP-Standard-A"
+            name = "ja-JP-Neural2-B"   
 
     if voice_speed == 'slow':
         speaking_rate = 0.75
