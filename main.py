@@ -167,7 +167,7 @@ DEFAULT_ENV_VARS = {
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo',
-    'PAYMENT_KEYWORDS': '支払い',
+    'PAYMENT_KEYWORDS': '💸支払い',
     'PAYMENT_PRICE_ID': '環境変数にStripのSTRIPE_SECRET_KEYとSTRIPE_WEBHOOK_SECRETを設定しないと発動しません。',
     'PAYMENT_GUIDE_MESSAGE': 'ユーザーに「画面下の「支払い」の項目をタップすると私の利用料の支払い画面が表示される」と案内して感謝の言葉を述べてください。以下の文章はユーザーから送られたものです。',
     'PAYMENT_QUICK_REPLY': '💸支払い',
