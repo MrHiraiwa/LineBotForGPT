@@ -320,7 +320,20 @@ def get_setting(key):
         # If the document does not exist, create it using the default settings
         save_default_settings()
         return DEFAULT_ENV_VARS.get(key, "")
+    
+def get_setting_user(userid, key):
+    doc_ref = db.collection(u'users').document(userid) 
+    doc = doc_ref.get()
 
+    if doc.exists:
+        doc_dict = doc.to_dict()
+        if key not in doc_dict:
+            return ''
+        else:
+            return doc_dict.get(key)
+    else:
+        return ''
+    
 def save_default_settings():
     doc_ref = db.collection(u'settings').document('app_settings')
     doc_ref.set(DEFAULT_ENV_VARS, merge=True)
@@ -490,6 +503,9 @@ def lineBot():
         nowDate = datetime.now(jst) 
         line_profile = json.loads(get_profile(userId).text)
         display_name = line_profile['displayName']
+        start_free_day = get_setting_user(userId, 'start_free_day')
+        if start_free_day =='':
+            start_free_day = datetime.now(jst)
         if sourceType == "group":
             userId = event['source']['groupId']
         elif sourceType == "room":
@@ -517,7 +533,6 @@ def lineBot():
             encoding: Encoding = tiktoken.encoding_for_model(GPT_MODEL)
             maps_search_keywords = ""
             web_search_keywords = ""
-            start_free_day = datetime.now(jst)
             quick_reply_on = False
             voice_or_text = 'TEXT'
             or_chinese = 'MANDARIN'
@@ -533,8 +548,6 @@ def lineBot():
                 or_chinese = user.get('or_chinese', "MANDARIN")
                 or_english = user.get('or_english', "en-US")
                 voice_speed = user.get('voice_speed', "normal")
-                if 'start_free_day' in user and user['start_free_day']:
-                    start_free_day = user['start_free_day']
                 user['messages'] = [{**msg, 'content': get_decrypted_message(msg['content'], hashed_secret_key)} for msg in user['messages']]
                 updatedDateString = user['updatedDateString']
                 updatedDate = user['updatedDateString'].astimezone(jst)
