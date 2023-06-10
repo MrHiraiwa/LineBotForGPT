@@ -322,7 +322,7 @@ def get_setting(key):
         return DEFAULT_ENV_VARS.get(key, "")
     
 def get_setting_user(userid, key):
-    doc_ref = db.collection(u'users').document(userId) 
+    doc_ref = db.collection(u'users').document(userid) 
     doc = doc_ref.get()
 
     if doc.exists:
