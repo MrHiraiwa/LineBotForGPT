@@ -328,6 +328,9 @@ def get_setting_user(userid, key):
     if doc.exists:
         doc_dict = doc.to_dict()
         if key not in doc_dict:
+            if key == 'start_free_day':
+                start_free_day = datetime.now(jst)
+                doc_ref.set({'start_free_day': start_free_day}, merge=True)
             return ''
         else:
             return doc_dict.get(key)
