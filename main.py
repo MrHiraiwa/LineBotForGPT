@@ -757,7 +757,7 @@ def lineBot():
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply') and not (sourceType == "group" or sourceType == "room"):
                 be_quick_reply = PAYMENT_QUICK_REPLY
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
                 be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, "pay")
