@@ -167,8 +167,8 @@ DEFAULT_ENV_VARS = {
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
     'GPT_MODEL': 'gpt-3.5-turbo',
-    'PAYMENT_KEYWORDS': '',
-    'PAYMENT_PRICE_ID': '',
+    'PAYMENT_KEYWORDS': '支払い',
+    'PAYMENT_PRICE_ID': '環境変数にStripのSTRIPE_SECRET_KEYとSTRIPE_WEBHOOK_SECRETを設定しないと発動しません。',
     'PAYMENT_GUIDE_MESSAGE': 'ユーザーに「画面下の「支払い」の項目をタップすると私の利用料の支払い画面が表示される」と案内して感謝の言葉を述べてください。以下の文章はユーザーから送られたものです。',
     'PAYMENT_QUICK_REPLY': '💸支払い',
     'PAYMENT_RESULT_URL': 'http://example'
@@ -328,6 +328,9 @@ def get_setting_user(userid, key):
     if doc.exists:
         doc_dict = doc.to_dict()
         if key not in doc_dict:
+            if key == 'start_free_day':
+                start_free_day = datetime.now(jst)
+                doc_ref.set({'start_free_day': start_free_day}, merge=True)
             return ''
         else:
             return doc_dict.get(key)
@@ -754,7 +757,7 @@ def lineBot():
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and (VOICE_ON == 'True' or VOICE_ON == 'Reply'):
+            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions and sourceType == "user":
                 be_quick_reply = PAYMENT_QUICK_REPLY
                 checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
                 be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, "pay")
