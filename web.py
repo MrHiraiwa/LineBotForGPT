@@ -53,12 +53,12 @@ def get_contents(links):
 
     return contents
 
-def summarize_contents(contents, question):
+def summarize_contents(contents, question, content_count=1024):
     extract_texts = []
 
     for i, content in enumerate(contents):
         if len(content) > 10:
-            trimmed_content = content[:1024]
+            trimmed_content = content[:content_count]
             if i == 0:  # 最初のコンテンツに対してのみ文言を追加
                 m = f"以下の文章はインターネット検索を行って返ってきた情報です。「{question}」に関連する重要な情報を抽出します。\n{trimmed_content}"
             else:
