@@ -53,7 +53,7 @@ def get_contents(links):
 
     return contents
 
-def summarize_contents(contents, question, content_count=1024):
+def summarize_contents(contents, question, content_count):
     extract_texts = []
 
     for i, content in enumerate(contents):
@@ -66,12 +66,12 @@ def summarize_contents(contents, question, content_count=1024):
             extract_texts.append(m)
     return ''.join(extract_texts)[:1500]
 
-def search(question, success_search_message, fail_search_message, search_lang='lang_ja'):
+def search(question, success_search_message, fail_search_message, search_lang='lang_ja', content_count=1024):
     search_result = get_search_results(question, 3, 1, search_lang)
 
     links = [item["link"] for item in search_result.get("items", [])]
     contents = get_contents(links)
-    summary = summarize_contents(contents, question)
+    summary = summarize_contents(contents, question, content_count)
 
     if not summary:
         summary = fail_search_message
