@@ -224,7 +224,7 @@ def reload_settings():
     FAIL_SEARCH_MESSAGE = get_setting('FAIL_SEARCH_MESSAGE') 
     SEARCH_QUICK_REPLY = get_setting('SEARCH_QUICK_REPLY') 
     SEARCH_LANG = get_setting('SEARCH_LANG') 
-    SEARCH_CONTENT_COUNT = int(get_setting('SEARCH_CONTENT_COUNT') or 0)
+    SEARCH_CONTENT_COUNT = int(get_setting('SEARCH_CONTENT_COUNT') or 1024)
     NG_KEYWORDS = get_setting('NG_KEYWORDS')
     if NG_KEYWORDS:
         NG_KEYWORDS = NG_KEYWORDS.split(',')
