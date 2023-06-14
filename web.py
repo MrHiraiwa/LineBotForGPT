@@ -53,12 +53,12 @@ def get_contents(links):
 
     return contents
 
-def summarize_contents(contents, question):
+def summarize_contents(contents, question, content_count):
     extract_texts = []
 
     for i, content in enumerate(contents):
         if len(content) > 10:
-            trimmed_content = content[:1024]
+            trimmed_content = content[:content_count]
             if i == 0:  # 最初のコンテンツに対してのみ文言を追加
                 m = f"以下の文章はインターネット検索を行って返ってきた情報です。「{question}」に関連する重要な情報を抽出します。\n{trimmed_content}"
             else:
@@ -66,12 +66,12 @@ def summarize_contents(contents, question):
             extract_texts.append(m)
     return ''.join(extract_texts)[:1500]
 
-def search(question, success_search_message, fail_search_message, search_lang='lang_ja'):
+def search(question, success_search_message, fail_search_message, search_lang='lang_ja', content_count=1024):
     search_result = get_search_results(question, 3, 1, search_lang)
 
     links = [item["link"] for item in search_result.get("items", [])]
     contents = get_contents(links)
-    summary = summarize_contents(contents, question)
+    summary = summarize_contents(contents, question, content_count)
 
     if not summary:
         summary = fail_search_message
