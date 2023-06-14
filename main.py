@@ -126,7 +126,7 @@ DEFAULT_ENV_VARS = {
     'FAIL_SEARCH_MESSAGE': '検索結果を読み込めませんでした。',
     'SEARCH_QUICK_REPLY': '🌐インターネットで検索',
     'SEARCH_LANG': 'lang_ja',
-    'SEARCH_CONTENT_COUNT: '1024',
+    'SEARCH_CONTENT_COUNT': '1024',
     'STICKER_MESSAGE': '私の感情!',
     'FAIL_STICKER_MESSAGE': '読み取れないLineスタンプが送信されました。スタンプが読み取れなかったという反応を返してください。',
     'OCR_MESSAGE': '以下のテキストは写真に何が映っているかを文字列に変換したものです。この文字列を見て写真を見たかのように反応してください。',
