@@ -498,7 +498,7 @@ def your_handler_function():
 def lineBot():
     try:
         reload_settings()
-        if VOICE_ON == 'True':
+        if VOICE_ON == 'True' or VOICE_ON == 'Reply':
             if bucket_exists(BACKET_NAME):
                 set_bucket_lifecycle(BACKET_NAME, FILE_AGE)
             else:
