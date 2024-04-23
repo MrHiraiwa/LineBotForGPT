@@ -32,6 +32,7 @@ https://note.com/modern_echium586/n/nfb9181dcaebb
 - ADMIN_PASSWORD: 管理者パスワード。
 - GOOGLE_API_KEY: GoogleのAPIキー。Web検索と地図検索、画像認識で使用する。
 - GOOGLE_CSE_ID: Custom Searchの検索エンジンID。Web検索で使用する。
+- DATABASE_NAME:FireStoreのデータベース名を指定してください。
 
 ## 注意
 このアプリケーションはFlaskベースで作成されています。そのため、任意のウェブサーバー上にデプロイすることが可能ですが、前提としてはGoogle Cloud runでの動作を想定しています。デプロイ方法は使用するウェブサーバーによります。
