@@ -19,8 +19,9 @@ from vision import vision, analyze_image, get_image, vision_results_to_string
 from maps import maps, maps_search
 from whisper import get_audio, speech_to_text
 from voice import convert_audio_to_m4a, text_to_speech, send_audio_to_line, delete_local_file, set_bucket_lifecycle, send_audio_to_line_reply
-from payment import create_checkout_session
 from quickreply import create_quick_reply
+
+DATABASE_NAME = os.getenv('DATABASE_NAME', default='')
 
 REQUIRED_ENV_VARS = [
     "BOT_NAME",
@@ -91,13 +92,7 @@ REQUIRED_ENV_VARS = [
     "OR_CHINESE_CANTONESE_QUICK_REPLY",
     "BACKET_NAME",
     "FILE_AGE",
-    "GPT_MODEL",
-    "PAYMENT_KEYWORDS",
-    "PAYMENT_PRICE_ID",
-    "PAYMENT_GUIDE_MESSAGE",
-    "PAYMENT_FAIL_MESSAGE",
-    "PAYMENT_QUICK_REPLY",
-    "PAYMENT_RESULT_URL"
+    "GPT_MODEL"
 ]
 
 DEFAULT_ENV_VARS = {
@@ -169,26 +164,20 @@ DEFAULT_ENV_VARS = {
     'OR_CHINESE_CANTONESE_QUICK_REPLY': '🌃広東語',
     'BACKET_NAME': 'あなたがCloud Strageに作成したバケット名を入れてください。',
     'FILE_AGE': '7',
-    'GPT_MODEL': 'gpt-3.5-turbo',
-    'PAYMENT_KEYWORDS': '💸支払い',
-    'PAYMENT_PRICE_ID': '環境変数にStripのSTRIPE_SECRET_KEYとSTRIPE_WEBHOOK_SECRETを設定しないと発動しません。',
-    'PAYMENT_GUIDE_MESSAGE': 'ユーザーに「画面下の「支払い」の項目をタップすると私の利用料の支払い画面が表示される」と案内して感謝の言葉を述べてください。以下の文章はユーザーから送られたものです。',
-    'PAYMENT_FAIL_MESSAGE': '支払いはシングルチャットで実施してください。',
-    'PAYMENT_QUICK_REPLY': '💸支払い',
-    'PAYMENT_RESULT_URL': 'http://example'
+    'GPT_MODEL': 'gpt-3.5-turbo'
 }
 
 jst = pytz.timezone('Asia/Tokyo')
 nowDate = datetime.now(jst)
 
 try:
-    db = firestore.Client()
+    db = firestore.Client(database=DATABASE_NAME)
 except Exception as e:
     print(f"Error creating Firestore client: {e}")
     raise
     
 def reload_settings():
-    global GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, PREVIOUS_DUMMY_USER_MESSAGE1, PREVIOUS_DUMMY_ASSISTANT_MESSAGE1, PREVIOUS_DUMMY_USER_MESSAGE2, PREVIOUS_DUMMY_ASSISTANT_MESSAGE2, MAX_TOKEN_NUM, MAX_DAILY_USAGE, GROUP_MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, FORGET_QUICK_REPLY, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, SUCCESS_SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, SEARCH_QUICK_REPLY, SEARCH_LANG, SEARCH_CONTENT_COUNT, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, MAPS_QUICK_REPLY, VOICE_ON, VOICE_GENDER, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, OR_TEXT_QUICK_REPLY, OR_VOICE_QUICK_REPLY, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE, VOICE_SPEED_SLOW_QUICK_REPLY, VOICE_SPEED_NORMAL_QUICK_REPLY, VOICE_SPEED_FAST_QUICK_REPLY, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_ENGLISH_AMERICAN_QUICK_REPLY, OR_ENGLISH_BRIDISH_QUICK_REPLY, OR_ENGLISH_AUSTRALIAN_QUICK_REPLY, OR_ENGLISH_INDIAN_QUICK_REPLY, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, OR_CHINESE_MANDARIN_QUICK_REPLY, OR_CHINESE_CANTONESE_QUICK_REPLY, BACKET_NAME, FILE_AGE, PAYMENT_KEYWORDS, PAYMENT_PRICE_ID, PAYMENT_GUIDE_MESSAGE, PAYMENT_FAIL_MESSAGE, PAYMENT_QUICK_REPLY, PAYMENT_RESULT_URL
+    global DATABASE_NAME, GPT_MODEL, BOT_NAME, SYSTEM_PROMPT_EX, SYSTEM_PROMPT, PREVIOUS_DUMMY_USER_MESSAGE1, PREVIOUS_DUMMY_ASSISTANT_MESSAGE1, PREVIOUS_DUMMY_USER_MESSAGE2, PREVIOUS_DUMMY_ASSISTANT_MESSAGE2, MAX_TOKEN_NUM, MAX_DAILY_USAGE, GROUP_MAX_DAILY_USAGE, FREE_LIMIT_DAY, MAX_DAILY_MESSAGE, ERROR_MESSAGE, FORGET_KEYWORDS, FORGET_GUIDE_MESSAGE, FORGET_MESSAGE, FORGET_QUICK_REPLY, SEARCH_KEYWORDS, SEARCH_GUIDE_MESSAGE, SEARCH_MESSAGE, SUCCESS_SEARCH_MESSAGE, FAIL_SEARCH_MESSAGE, SEARCH_QUICK_REPLY, SEARCH_LANG, SEARCH_CONTENT_COUNT, NG_KEYWORDS, NG_MESSAGE, STICKER_MESSAGE, FAIL_STICKER_MESSAGE, OCR_MESSAGE, MAPS_KEYWORDS, MAPS_FILTER_KEYWORDS, MAPS_GUIDE_MESSAGE, MAPS_MESSAGE, MAPS_QUICK_REPLY, VOICE_ON, VOICE_GENDER, VOICE_OR_TEXT_KEYWORDS, VOICE_OR_TEXT_GUIDE_MESSAGE, CHANGE_TO_TEXT_MESSAGE, CHANGE_TO_VOICE_MESSAGE, OR_TEXT_QUICK_REPLY, OR_VOICE_QUICK_REPLY, VOICE_SPEED_KEYWORDS, VOICE_SPEED_GUIDE_MESSAGE, VOICE_SPEED_SLOW_MESSAGE, VOICE_SPEED_NORMAL_MESSAGE, VOICE_SPEED_FAST_MESSAGE, VOICE_SPEED_SLOW_QUICK_REPLY, VOICE_SPEED_NORMAL_QUICK_REPLY, VOICE_SPEED_FAST_QUICK_REPLY, OR_ENGLISH_KEYWORDS,OR_ENGLISH_GUIDE_MESSAGE, CHANGE_TO_AMERICAN_MESSAGE, CHANGE_TO_BRIDISH_MESSAGE, CHANGE_TO_AUSTRALIAN_MESSAGE, CHANGE_TO_INDIAN_MESSAGE, OR_ENGLISH_AMERICAN_QUICK_REPLY, OR_ENGLISH_BRIDISH_QUICK_REPLY, OR_ENGLISH_AUSTRALIAN_QUICK_REPLY, OR_ENGLISH_INDIAN_QUICK_REPLY, OR_CHINESE_KEYWORDS, OR_CHINESE_GUIDE_MESSAGE, CHANGE_TO_MANDARIN_MESSAGE, CHANGE_TO_CANTONESE_MESSAGE, OR_CHINESE_MANDARIN_QUICK_REPLY, OR_CHINESE_CANTONESE_QUICK_REPLY, BACKET_NAME, FILE_AGE
     GPT_MODEL = get_setting('GPT_MODEL')
     BOT_NAME = get_setting('BOT_NAME')
     if BOT_NAME:
@@ -298,16 +287,6 @@ def reload_settings():
     BACKET_NAME = get_setting('BACKET_NAME')
     FILE_AGE = get_setting('FILE_AGE')
     FREE_LIMIT_DAY = int(get_setting('FREE_LIMIT_DAY') or 0)
-    PAYMENT_KEYWORDS = get_setting('PAYMENT_KEYWORDS')
-    if PAYMENT_KEYWORDS:
-        PAYMENT_KEYWORDS = PAYMENT_KEYWORDS.split(',')
-    else:
-        PAYMENT_KEYWORDS = []
-    PAYMENT_PRICE_ID = get_setting('PAYMENT_PRICE_ID')
-    PAYMENT_GUIDE_MESSAGE = get_setting('PAYMENT_GUIDE_MESSAGE')
-    PAYMENT_FAIL_MESSAGE = get_setting('PAYMENT_FAIL_MESSAGE')
-    PAYMENT_QUICK_REPLY = get_setting('PAYMENT_QUICK_REPLY')
-    PAYMENT_RESULT_URL = get_setting('PAYMENT_RESULT_URL')
     
 def get_setting(key):
     doc_ref = db.collection(u'settings').document('app_settings')
@@ -524,7 +503,7 @@ def lineBot():
         nowDateStr = nowDate.strftime('%Y/%m/%d %H:%M:%S %Z') + "\n"
         previousdummy = previous_dummy(nowDateStr,act_as,display_name,bot_name)
 
-        db = firestore.Client()
+        db = firestore.Client(database=DATABASE_NAME)
         doc_ref = db.collection(u'users').document(userId)
 
         @firestore.transactional
@@ -763,17 +742,6 @@ def lineBot():
                 headMessage = headMessage + VOICE_SPEED_GUIDE_MESSAGE
                 quick_reply_on = True
                 
-            if any(word in userMessage for word in PAYMENT_KEYWORDS) and not exec_functions:
-                if sourceType == "user":
-                    be_quick_reply = PAYMENT_QUICK_REPLY
-                    checkout_url = create_checkout_session(userId, PAYMENT_PRICE_ID, PAYMENT_RESULT_URL + '/success', PAYMENT_RESULT_URL + '/cansel')
-                    be_quick_reply = create_quick_reply(be_quick_reply, checkout_url, "pay")
-                    quick_reply.append(be_quick_reply)
-                    headMessage = headMessage + PAYMENT_GUIDE_MESSAGE
-                    quick_reply_on = True
-                else:
-                    callLineApi(PAYMENT_FAIL_MESSAGE, replyToken, "")
-                    return 'OK'
     
             if len(quick_reply) == 0:
                 quick_reply = []
@@ -919,73 +887,6 @@ def remove_specific_character(text, characters_to_remove):
     for char in characters_to_remove:
         text = text.replace(char, '')
     return text
-
-@app.route('/webhook', methods=['POST'])
-def stripe_webhook():
-    db = firestore.Client()
-
-    payload = request.get_data(as_text=True)
-    sig_header = request.headers.get('Stripe-Signature')
-
-    event = None
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError as e:
-        # Invalid payload
-        return Response(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return Response(status=400)
-
-    # Handle the checkout.session.completed event
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-
-        # Get the user_id from the metadata
-        userId = session['metadata']['line_user_id']
-
-        # Get the Firestore document reference
-        doc_ref = db.collection('users').document(userId)
-
-        # Define the number of hours to subtract
-        hours_to_subtract = 9
-
-        # Create the datetime object
-        start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
-        
-        doc_ref.update({
-            'start_free_day': start_free_day
-        })
-    # Handle the invoice.payment_succeeded event
-    elif event['type'] == 'invoice.payment_succeeded':
-        invoice = event['data']['object']
-
-        # Get the user_id from the metadata
-        userId = invoice['metadata']['line_user_id']
-
-        # Get the Firestore document reference
-        doc_ref = db.collection('users').document(userId)
-
-        # You might want to adjust this depending on your timezone
-        start_free_day = datetime.combine(nowDate.date(), time()) - timedelta(hours=9)
-
-        doc_ref.update({
-             'start_free_day': start_free_day
-        })
-
-    return Response(status=200)
-
-
-@app.route('/success', methods=['GET'])
-def success():
-    return render_template('success.html')
-
-@app.route('/cancel', methods=['GET'])
-def cancel():
-    return render_template('cancel.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
