@@ -475,6 +475,8 @@ def your_handler_function():
     return redirect(url_for('your_template'))
 @app.route('/', methods=['POST'])
 def lineBot():
+    response = jsonify({'status': 'success'})
+    response.status_code = 200
     try:
         reload_settings()
         if VOICE_ON == 'True' or VOICE_ON == 'Reply':
